@@ -21,11 +21,13 @@
   {% assign partner_products = collections.all.products %}
 {% endif %}
 
+{% assign partner_mailto_recipient = section.settings.mailto_email | default: shop.email %}
+
 {% if current_page_handle == 'partner-hub' or current_page_handle == 'partner_hub' %}
 <section class="partner-hub py-80">
   <div class="container container-lg">
     <div class="partner-hub__intro text-center mb-40">
-      <span class="partner-hub__eyebrow">Priority Access</span>
+      <span class="partner-hub__eyebrow">B2B Wholesale Portal</span>
       <h1 class="partner-hub__title">{{ section.settings.page_title | escape }}</h1>
       <p class="partner-hub__subtitle">{{ section.settings.page_subtitle | escape }}</p>
     </div>
@@ -35,7 +37,7 @@
         <input type="hidden" name="contact[subject]" value="{{ section.settings.email_subject | escape }}">
         <input type="hidden" name="contact[note][Request source]" value="Partner Hub Page">
         <input type="hidden" name="contact[note][Requested products]" id="PartnerSelectedProducts" value="">
-        <input type="hidden" id="PartnerMailtoRecipient" value="{{ section.settings.mailto_email | default: shop.email | escape }}">
+        <input type="hidden" id="PartnerMailtoRecipient" value="{{ partner_mailto_recipient | escape }}">
         <input type="hidden" id="PartnerMailtoSubject" value="{{ section.settings.email_subject | default: 'Partner request from storefront' | escape }}">
 
         {%- if form.posted_successfully? -%}
@@ -72,13 +74,40 @@
                 <span>Average reply</span>
               </article>
               <article>
-                <strong>3</strong>
-                <span>Quick steps</span>
+                <strong>120+</strong>
+                <span>Wholesale partners</span>
               </article>
             </div>
+            <div class="partner-hub__trust-note">Built for gyms, nutrition stores, and distributors.</div>
           </aside>
 
           <div class="partner-hub__form-main">
+            <div class="partner-hub__trade-strip mb-16" role="list" aria-label="Commercial terms">
+              <article role="listitem">
+                <strong>MOQ</strong>
+                <span>{{ section.settings.moq_text | escape }}</span>
+              </article>
+              <article role="listitem">
+                <strong>Lead time</strong>
+                <span>{{ section.settings.lead_time_text | escape }}</span>
+              </article>
+              <article role="listitem">
+                <strong>Payment</strong>
+                <span>{{ section.settings.payment_terms_text | escape }}</span>
+              </article>
+              <article role="listitem">
+                <strong>SLA</strong>
+                <span>{{ section.settings.response_sla_text | escape }}</span>
+              </article>
+            </div>
+
+            <p class="partner-hub__quote-note mb-14">{{ section.settings.quote_note | escape }}</p>
+
+            <div class="partner-hub__quick-actions mb-18">
+              <a class="partner-hub__btn partner-hub__btn--ghost" href="mailto:{{ partner_mailto_recipient | escape }}?subject={{ 'Request sample pack' | url_encode }}">Request Sample Pack</a>
+              <a class="partner-hub__btn partner-hub__btn--ghost" href="mailto:{{ partner_mailto_recipient | escape }}?subject={{ 'Book wholesale call' | url_encode }}">Book Wholesale Call</a>
+            </div>
+
             <div class="partner-hub__progress mb-20" aria-hidden="true">
               <span id="PartnerProgressBar"></span>
             </div>
@@ -86,27 +115,27 @@
             <div class="partner-hub__stepper mb-28" role="list" aria-label="Form Steps">
               <div class="partner-hub__stepper-item is-active" data-step-indicator="1" role="listitem">
                 <span>1</span>
-                <strong>Profile</strong>
+                <strong>Company</strong>
               </div>
               <div class="partner-hub__stepper-item" data-step-indicator="2" role="listitem">
                 <span>2</span>
-                <strong>Products</strong>
+                <strong>RFQ Items</strong>
               </div>
               <div class="partner-hub__stepper-item" data-step-indicator="3" role="listitem">
                 <span>3</span>
-                <strong>Finalize</strong>
+                <strong>Commercial</strong>
               </div>
             </div>
 
             <div class="partner-hub__step is-active" data-step-panel="1">
-          <h6 class="partner-hub__section-title">Tell us about you</h6>
+          <h6 class="partner-hub__section-title">Company profile</h6>
           <div class="row gy-4">
             <div class="col-md-6 partner-hub__field">
-              <label class="partner-hub__label" for="Partner-name">Full name *</label>
+              <label class="partner-hub__label" for="Partner-name">Contact person *</label>
               <input id="Partner-name" class="common-input px-16" type="text" name="contact[name]" value="{% if form.name %}{{ form.name }}{% elsif customer %}{{ customer.name }}{% endif %}" placeholder="Example: Ahmed Hassan" required>
             </div>
             <div class="col-md-6 partner-hub__field">
-              <label class="partner-hub__label" for="Partner-email">Email *</label>
+              <label class="partner-hub__label" for="Partner-email">Business email *</label>
               <input id="Partner-email" class="common-input px-16" type="email" name="contact[email]" value="{% if form.email %}{{ form.email }}{% elsif customer %}{{ customer.email }}{% endif %}" placeholder="Example: ahmed@fitzone.com" required>
             </div>
             <div class="col-md-6 partner-hub__field">
@@ -114,12 +143,39 @@
               <input id="Partner-phone" class="common-input px-16" type="tel" name="contact[phone]" value="{% if form.phone %}{{ form.phone }}{% endif %}" placeholder="Example: +20 10 1234 5678" required>
             </div>
             <div class="col-md-6 partner-hub__field">
-              <label class="partner-hub__label" for="Partner-company">Company / Team *</label>
-              <input id="Partner-company" class="common-input px-16" type="text" name="contact[note][Company]" placeholder="Example: Fit Zone Gym" required>
+              <label class="partner-hub__label" for="Partner-role">Buyer role *</label>
+              <select id="Partner-role" class="common-input px-16" name="contact[note][Buyer role]" required>
+                <option value="">Select (e.g. Procurement Manager)</option>
+                <option value="Owner">Owner</option>
+                <option value="Procurement Manager">Procurement Manager</option>
+                <option value="Operations Manager">Operations Manager</option>
+                <option value="Retail Buyer">Retail Buyer</option>
+                <option value="Distributor">Distributor</option>
+              </select>
+            </div>
+            <div class="col-md-6 partner-hub__field">
+              <label class="partner-hub__label" for="Partner-company-legal">Company legal name *</label>
+              <input id="Partner-company-legal" class="common-input px-16" type="text" name="contact[note][Company legal name]" placeholder="Example: Fit Zone Trading LLC" required>
+            </div>
+            <div class="col-md-6 partner-hub__field">
+              <label class="partner-hub__label" for="Partner-company">Trading brand / store name</label>
+              <input id="Partner-company" class="common-input px-16" type="text" name="contact[note][Trading name]" placeholder="Example: Fit Zone Gym">
+            </div>
+            <div class="col-md-6 partner-hub__field">
+              <label class="partner-hub__label" for="Partner-vat">VAT / Tax ID *</label>
+              <input id="Partner-vat" class="common-input px-16" type="text" name="contact[note][VAT / Tax ID]" placeholder="Example: EG123456789" required>
+            </div>
+            <div class="col-md-6 partner-hub__field">
+              <label class="partner-hub__label" for="Partner-registration">Commercial registration no. *</label>
+              <input id="Partner-registration" class="common-input px-16" type="text" name="contact[note][Commercial registration]" placeholder="Example: CR-845921" required>
             </div>
             <div class="col-md-6 partner-hub__field">
               <label class="partner-hub__label" for="Partner-country">Country *</label>
               <input id="Partner-country" class="common-input px-16" type="text" name="contact[note][Country]" placeholder="Example: Egypt" required>
+            </div>
+            <div class="col-md-6 partner-hub__field">
+              <label class="partner-hub__label" for="Partner-delivery-countries">Delivery countries *</label>
+              <input id="Partner-delivery-countries" class="common-input px-16" type="text" name="contact[note][Delivery countries]" placeholder="Example: Egypt, Saudi Arabia" required>
             </div>
             <div class="col-md-6 partner-hub__field">
               <label class="partner-hub__label" for="Partner-website">Website / Social</label>
@@ -127,13 +183,13 @@
             </div>
           </div>
           <div class="partner-hub__actions mt-24">
-            <button type="button" class="partner-hub__btn partner-hub__btn--primary" data-step-next>Continue</button>
+            <button type="button" class="partner-hub__btn partner-hub__btn--primary" data-step-next>Next Step</button>
           </div>
         </div>
 
             <div class="partner-hub__step" data-step-panel="2">
-          <h6 class="partner-hub__section-title">Choose products you are interested in</h6>
-          <p class="partner-hub__section-subtitle">Pick one or more products and quantities. You can also add custom needs.</p>
+          <h6 class="partner-hub__section-title">RFQ products and terms</h6>
+          <p class="partner-hub__section-subtitle">Select product lines using wholesale units. Catalog prices are reference only.</p>
 
           <div class="partner-hub__products-grid mb-20">
             {% for product in partner_products limit: section.settings.product_limit %}
@@ -163,8 +219,17 @@
                       <span>Select</span>
                     </label>
 
+                    <div class="partner-product__unit-wrap">
+                      <label for="PartnerUnit-{{ forloop.index }}">Unit</label>
+                      <select id="PartnerUnit-{{ forloop.index }}" class="partner-product-unit" data-unit-for="{{ product.id }}" disabled>
+                        <option value="Case">Case</option>
+                        <option value="Carton">Carton</option>
+                        <option value="Pallet">Pallet</option>
+                      </select>
+                    </div>
+
                     <div class="partner-product__qty-wrap">
-                      <label for="PartnerQty-{{ forloop.index }}">Qty</label>
+                      <label for="PartnerQty-{{ forloop.index }}">Count</label>
                       <input id="PartnerQty-{{ forloop.index }}" class="partner-product-qty" type="number" min="1" value="1" data-qty-for="{{ product.id }}" disabled>
                     </div>
                   </div>
@@ -182,13 +247,58 @@
                 <option value="Retail Store">Retail Store</option>
                 <option value="Coach / Trainer">Coach / Trainer</option>
                 <option value="Online Store">Online Store</option>
+                <option value="Distributor">Distributor</option>
                 <option value="Other">Other</option>
               </select>
             </div>
             <div class="col-md-6 partner-hub__field">
-              <label class="partner-hub__label" for="Partner-volume">Expected monthly volume *</label>
-              <select id="Partner-volume" class="common-input px-16" name="contact[note][Monthly volume]" required>
-                <option value="">Select (e.g. 21-100 units)</option>
+              <label class="partner-hub__label" for="Partner-monthly-spend">Expected monthly spend *</label>
+              <select id="Partner-monthly-spend" class="common-input px-16" name="contact[note][Expected monthly spend]" required>
+                <option value="">Select (e.g. 2,000 - 10,000)</option>
+                <option value="Under 2,000">Under 2,000</option>
+                <option value="2,000 - 10,000">2,000 - 10,000</option>
+                <option value="10,000 - 50,000">10,000 - 50,000</option>
+                <option value="50,000+">50,000+</option>
+              </select>
+            </div>
+            <div class="col-md-6 partner-hub__field">
+              <label class="partner-hub__label" for="Partner-payment-terms">Preferred payment terms *</label>
+              <select id="Partner-payment-terms" class="common-input px-16" name="contact[note][Payment terms]" required>
+                <option value="">Select (e.g. Net 30)</option>
+                <option value="Prepaid">Prepaid</option>
+                <option value="Net 15">Net 15</option>
+                <option value="Net 30">Net 30</option>
+                <option value="Letter of credit">Letter of credit</option>
+              </select>
+            </div>
+            <div class="col-md-6 partner-hub__field">
+              <label class="partner-hub__label" for="Partner-payment-method">Preferred payment method *</label>
+              <select id="Partner-payment-method" class="common-input px-16" name="contact[note][Payment method]" required>
+                <option value="">Select (e.g. Bank transfer)</option>
+                <option value="Bank transfer">Bank transfer</option>
+                <option value="Card">Card</option>
+                <option value="Cash on delivery">Cash on delivery</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="col-md-6 partner-hub__field">
+              <label class="partner-hub__label" for="Partner-shipping-terms">Shipping terms *</label>
+              <select id="Partner-shipping-terms" class="common-input px-16" name="contact[note][Shipping terms]" required>
+                <option value="">Select (e.g. DDP)</option>
+                <option value="EXW">EXW</option>
+                <option value="FOB">FOB</option>
+                <option value="CIF">CIF</option>
+                <option value="DDP">DDP</option>
+              </select>
+            </div>
+            <div class="col-md-6 partner-hub__field">
+              <label class="partner-hub__label" for="Partner-destination">Delivery city / port *</label>
+              <input id="Partner-destination" class="common-input px-16" type="text" name="contact[note][Delivery destination]" placeholder="Example: Jeddah port" required>
+            </div>
+            <div class="col-12 partner-hub__field">
+              <label class="partner-hub__label" for="Partner-volume">Expected monthly volume</label>
+              <select id="Partner-volume" class="common-input px-16" name="contact[note][Monthly volume]">
+                <option value="">Select (optional)</option>
                 <option value="Small (1-20 units)">Small (1-20 units)</option>
                 <option value="Medium (21-100 units)">Medium (21-100 units)</option>
                 <option value="Large (100+ units)">Large (100+ units)</option>
@@ -202,15 +312,15 @@
 
           <div class="partner-hub__actions mt-24">
             <button type="button" class="partner-hub__btn partner-hub__btn--ghost" data-step-prev>Back</button>
-            <button type="button" class="partner-hub__btn partner-hub__btn--primary" data-step-next>Continue</button>
+            <button type="button" class="partner-hub__btn partner-hub__btn--primary" data-step-next>Review RFQ</button>
           </div>
         </div>
 
             <div class="partner-hub__step" data-step-panel="3">
-          <h6 class="partner-hub__section-title">Finalize your request</h6>
+          <h6 class="partner-hub__section-title">Finalize commercial request</h6>
           <div class="row gy-4">
             <div class="col-md-6 partner-hub__field">
-              <label class="partner-hub__label" for="Partner-budget">Budget range</label>
+              <label class="partner-hub__label" for="Partner-budget">Target PO value</label>
               <select id="Partner-budget" class="common-input px-16" name="contact[note][Budget range]">
                 <option value="Not specified">Not specified (e.g. 500 - 2,000)</option>
                 <option value="Under 500">Under 500</option>
@@ -233,20 +343,35 @@
               <label class="partner-hub__label" for="Partner-message">Additional details *</label>
               <textarea id="Partner-message" class="common-input px-16" rows="5" name="contact[body]" placeholder="Example: Need weekly delivery to Cairo, mixed flavors, private label option." required></textarea>
             </div>
+            <div class="col-12 partner-hub__field partner-hub__field--inline">
+              <label class="partner-hub__checkline" for="Partner-trade-terms">
+                <input id="Partner-trade-terms" type="checkbox" name="contact[note][Trade terms acceptance]" value="Accepted" required>
+                <span>I confirm these details are for wholesale purchasing and accept commercial discussion based on MOQ, payment terms, and destination.</span>
+              </label>
+            </div>
           </div>
 
           <div class="partner-hub__summary mt-20" id="PartnerSummary">
-            <h6>Request summary</h6>
+            <h6>RFQ summary</h6>
             <p class="mb-0">Your selected information will appear here before sending.</p>
+          </div>
+
+          <div class="partner-hub__next-steps mt-16">
+            <h6>What happens next</h6>
+            <ol>
+              <li>Within 24 hours, the wholesale desk reviews your company profile.</li>
+              <li>Within 48 hours, you receive a tailored quote with terms and lead time.</li>
+              <li>After your confirmation, procurement and logistics are scheduled.</li>
+            </ol>
           </div>
 
           <p class="partner-hub__step-error mt-14" id="PartnerStepError" hidden></p>
 
           <div class="partner-hub__actions mt-24">
             <button type="button" class="partner-hub__btn partner-hub__btn--ghost" data-step-prev>Back</button>
-            <button type="submit" class="partner-hub__btn partner-hub__btn--primary">Send Request</button>
+            <button type="submit" class="partner-hub__btn partner-hub__btn--primary">Open Email Draft</button>
           </div>
-          <p class="partner-hub__mail-hint mt-12 mb-0">Click Send Request to open your email app with all details pre-filled.</p>
+          <p class="partner-hub__mail-hint mt-12 mb-0">Click Open Email Draft to open your mail app with a complete RFQ ready to send.</p>
         </div>
           </div>
         </div>
@@ -405,11 +530,71 @@
   font-size: 11px;
 }
 
+.partner-hub__trust-note {
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 12px;
+  background: rgba(7, 49, 67, 0.24);
+  padding: 8px 10px;
+  font-size: 12px;
+  color: rgba(236, 252, 255, 0.94);
+}
+
 .partner-hub__form-main {
   border: 1px solid #e4edf6;
   border-radius: 20px;
   background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
   padding: clamp(14px, 2vw, 22px);
+}
+
+.partner-hub__trade-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.partner-hub__trade-strip article {
+  border: 1px solid #d9e7f3;
+  border-radius: 12px;
+  background: #f6fbff;
+  padding: 10px;
+  display: grid;
+  gap: 4px;
+}
+
+.partner-hub__trade-strip strong {
+  color: #1e4258;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.partner-hub__trade-strip span {
+  color: #355d75;
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.partner-hub__quick-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.partner-hub__quick-actions .partner-hub__btn {
+  text-decoration: none;
+  min-height: 40px;
+  padding: 8px 14px;
+}
+
+.partner-hub__quote-note {
+  margin: 0;
+  border: 1px solid #f4ddb8;
+  border-radius: 10px;
+  background: #fff8eb;
+  color: #865c20;
+  font-size: 12px;
+  line-height: 1.5;
+  padding: 8px 10px;
 }
 
 .partner-hub__progress {
@@ -517,6 +702,10 @@
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
+.partner-hub__field--inline {
+  padding: 12px;
+}
+
 .partner-hub__field:focus-within {
   border-color: #118ab2;
   box-shadow: 0 0 0 4px rgba(17, 138, 178, 0.12);
@@ -547,6 +736,24 @@
 .partner-hub .common-input:focus {
   border-color: #118ab2;
   box-shadow: 0 0 0 3px rgba(17, 138, 178, 0.12);
+}
+
+.partner-hub__checkline {
+  margin: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13px;
+  color: #274d62;
+  line-height: 1.45;
+  cursor: pointer;
+}
+
+.partner-hub__checkline input {
+  width: 18px;
+  height: 18px;
+  margin-top: 1px;
+  accent-color: #118ab2;
 }
 
 .partner-hub textarea.common-input {
@@ -628,9 +835,9 @@
 }
 
 .partner-product__controls {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: auto minmax(88px, 1fr) minmax(68px, auto);
+  align-items: end;
   gap: 8px;
 }
 
@@ -650,16 +857,38 @@
 }
 
 .partner-product__qty-wrap {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
+  display: grid;
+  gap: 4px;
 }
 
-.partner-product__qty-wrap label {
+.partner-product__unit-wrap {
+  display: grid;
+  gap: 4px;
+}
+
+.partner-product__qty-wrap label,
+.partner-product__unit-wrap label {
   margin: 0;
-  font-size: 12px;
+  font-size: 11px;
   color: #4a6478;
   font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.35px;
+}
+
+.partner-product-unit {
+  min-height: 34px;
+  border: 1px solid #d2e0ed;
+  border-radius: 9px;
+  text-align: center;
+  font-weight: 700;
+  color: #18364d;
+  background: #f6fbff;
+}
+
+.partner-product-unit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .partner-product-qty {
@@ -696,6 +925,29 @@
   color: #456178;
   white-space: pre-line;
   line-height: 1.6;
+}
+
+.partner-hub__next-steps {
+  border: 1px solid #d9e7f2;
+  border-radius: 14px;
+  background: #f9fcff;
+  padding: 12px 14px;
+}
+
+.partner-hub__next-steps h6 {
+  margin: 0 0 8px;
+  color: #1e4156;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.partner-hub__next-steps ol {
+  margin: 0;
+  padding-inline-start: 18px;
+  display: grid;
+  gap: 6px;
+  color: #385c73;
+  font-size: 13px;
 }
 
 .partner-hub__actions {
@@ -780,6 +1032,10 @@
   .partner-hub__aside-stats {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .partner-hub__trade-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 767px) {
@@ -795,6 +1051,22 @@
 
   .partner-hub__stepper {
     grid-template-columns: 1fr;
+  }
+
+  .partner-hub__trade-strip {
+    grid-template-columns: 1fr;
+  }
+
+  .partner-hub__quick-actions {
+    flex-direction: column;
+  }
+
+  .partner-product__controls {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .partner-product__check {
+    grid-column: 1 / -1;
   }
 
   .partner-hub__actions {
@@ -827,6 +1099,7 @@
     const mailtoSubjectField = form.querySelector('#PartnerMailtoSubject');
     const summaryBox = form.querySelector('#PartnerSummary p');
     const checkboxes = Array.from(form.querySelectorAll('.partner-product-check'));
+    const unitSelects = Array.from(form.querySelectorAll('.partner-product-unit'));
 
     const getStepByNumber = (stepNumber) => steps.find((step) => Number(step.dataset.stepPanel) === stepNumber);
     const getCurrentStepNumber = () => Number(form.dataset.currentStep || 1);
@@ -866,11 +1139,15 @@
 
     const syncProductCardState = (checkbox) => {
       const qtyInput = form.querySelector(`.partner-product-qty[data-qty-for="${checkbox.value}"]`);
+      const unitInput = form.querySelector(`.partner-product-unit[data-unit-for="${checkbox.value}"]`);
       if (qtyInput) {
         qtyInput.disabled = !checkbox.checked;
         if (checkbox.checked && Number(qtyInput.value) < 1) {
           qtyInput.value = '1';
         }
+      }
+      if (unitInput) {
+        unitInput.disabled = !checkbox.checked;
       }
 
       const card = checkbox.closest('[data-product-card]');
@@ -882,6 +1159,11 @@
     const validateRequiredFields = (stepElement) => {
       const requiredFields = Array.from(stepElement.querySelectorAll('[required]'));
       for (const field of requiredFields) {
+        if ((field.type === 'checkbox' || field.type === 'radio') && !field.checked) {
+          field.reportValidity();
+          return false;
+        }
+
         if (typeof field.value === 'string' && field.value.trim() === '') {
           field.reportValidity();
           return false;
@@ -897,8 +1179,11 @@
         const productId = checkbox.value;
         const productTitle = checkbox.dataset.productTitle || 'Product';
         const qtyInput = form.querySelector(`.partner-product-qty[data-qty-for="${productId}"]`);
+        const unitInput = form.querySelector(`.partner-product-unit[data-unit-for="${productId}"]`);
         const qty = Math.max(Number(qtyInput ? qtyInput.value : 1) || 1, 1);
-        selected.push(`${productTitle} x${qty}`);
+        const unit = (unitInput && unitInput.value) || 'Case';
+        const unitLabel = qty > 1 ? `${unit}s` : unit;
+        selected.push(`${productTitle} - ${qty} ${unitLabel}`);
       });
 
       const customProducts = (form.querySelector('#Partner-custom-products')?.value || '').trim();
@@ -920,7 +1205,7 @@
     const validateProductsStep = () => {
       const selected = getSelectedProductsList();
       if (selected.length === 0) {
-        setError('Select at least one product or add custom product notes before continuing.');
+        setError('Select at least one wholesale product line or add custom product notes before continuing.');
         return false;
       }
       return true;
@@ -954,25 +1239,45 @@
         return '';
       }
 
-      const subject = ((mailtoSubjectField && mailtoSubjectField.value) || 'Partner request from storefront').trim();
+      const baseSubject = ((mailtoSubjectField && mailtoSubjectField.value) || 'Partner request from storefront').trim();
+      const legalName = getFieldValue('#Partner-company-legal');
+      const subject = legalName ? `${baseSubject} - ${legalName}` : baseSubject;
       const selectedProducts = getSelectedProductsList();
+      const tradeTermsAccepted = form.querySelector('#Partner-trade-terms')?.checked ? 'Accepted' : 'Not accepted';
 
       const mailLines = [
-        'Partner Hub Request',
+        'B2B Wholesale RFQ',
         '',
-        `Full name: ${getFieldValue('#Partner-name') || '-'}`,
-        `Email: ${getFieldValue('#Partner-email') || '-'}`,
+        '=== Company Profile ===',
+        `Contact person: ${getFieldValue('#Partner-name') || '-'}`,
+        `Business email: ${getFieldValue('#Partner-email') || '-'}`,
         `Phone: ${getFieldValue('#Partner-phone') || '-'}`,
-        `Company / Team: ${getFieldValue('#Partner-company') || '-'}`,
+        `Buyer role: ${getFieldValue('#Partner-role') || '-'}`,
+        `Company legal name: ${getFieldValue('#Partner-company-legal') || '-'}`,
+        `Trading name: ${getFieldValue('#Partner-company') || '-'}`,
+        `VAT / Tax ID: ${getFieldValue('#Partner-vat') || '-'}`,
+        `Commercial registration: ${getFieldValue('#Partner-registration') || '-'}`,
         `Country: ${getFieldValue('#Partner-country') || '-'}`,
+        `Delivery countries: ${getFieldValue('#Partner-delivery-countries') || '-'}`,
         `Website / Social: ${getFieldValue('#Partner-website') || '-'}`,
+        '',
+        '=== RFQ Product Mix ===',
         `Business type: ${getFieldValue('#Partner-business-type') || '-'}`,
+        `Expected monthly spend: ${getFieldValue('#Partner-monthly-spend') || '-'}`,
         `Monthly volume: ${getFieldValue('#Partner-volume') || '-'}`,
         `Selected products: ${selectedProducts.length ? selectedProducts.join(', ') : '-'}`,
-        `Budget range: ${getFieldValue('#Partner-budget') || '-'}`,
-        `Preferred timeframe: ${getFieldValue('#Partner-timeframe') || '-'}`,
+        `Custom product notes: ${getFieldValue('#Partner-custom-products') || '-'}`,
         '',
-        'Additional details:',
+        '=== Commercial & Logistics ===',
+        `Payment terms: ${getFieldValue('#Partner-payment-terms') || '-'}`,
+        `Payment method: ${getFieldValue('#Partner-payment-method') || '-'}`,
+        `Shipping terms: ${getFieldValue('#Partner-shipping-terms') || '-'}`,
+        `Delivery city / port: ${getFieldValue('#Partner-destination') || '-'}`,
+        `Target PO value: ${getFieldValue('#Partner-budget') || '-'}`,
+        `Preferred timeframe: ${getFieldValue('#Partner-timeframe') || '-'}`,
+        `Trade terms acceptance: ${tradeTermsAccepted}`,
+        '',
+        '=== Additional Details ===',
         getFieldValue('#Partner-message') || '-',
         '',
         `Page URL: ${window.location.href}`,
@@ -988,12 +1293,17 @@
       const selectedProducts = syncSelectedProducts();
 
       const summary = [
-        `Name: ${form.querySelector('#Partner-name')?.value || '-'}`,
-        `Email: ${form.querySelector('#Partner-email')?.value || '-'}`,
-        `Company: ${form.querySelector('#Partner-company')?.value || '-'}`,
+        `Contact: ${form.querySelector('#Partner-name')?.value || '-'}`,
+        `Business email: ${form.querySelector('#Partner-email')?.value || '-'}`,
+        `Legal name: ${form.querySelector('#Partner-company-legal')?.value || '-'}`,
+        `Buyer role: ${form.querySelector('#Partner-role')?.value || '-'}`,
+        `VAT / Tax ID: ${form.querySelector('#Partner-vat')?.value || '-'}`,
         `Country: ${form.querySelector('#Partner-country')?.value || '-'}`,
+        `Delivery countries: ${form.querySelector('#Partner-delivery-countries')?.value || '-'}`,
         `Business type: ${form.querySelector('#Partner-business-type')?.value || '-'}`,
-        `Monthly volume: ${form.querySelector('#Partner-volume')?.value || '-'}`,
+        `Monthly spend: ${form.querySelector('#Partner-monthly-spend')?.value || '-'}`,
+        `Payment terms: ${form.querySelector('#Partner-payment-terms')?.value || '-'}`,
+        `Shipping terms: ${form.querySelector('#Partner-shipping-terms')?.value || '-'}`,
         `Selected products: ${selectedProducts.length ? selectedProducts.join(', ') : '-'}`,
       ];
 
@@ -1016,7 +1326,35 @@
       });
     });
 
-    const summaryFields = ['#Partner-name', '#Partner-email', '#Partner-company', '#Partner-country', '#Partner-business-type', '#Partner-volume', '#Partner-custom-products'];
+    unitSelects.forEach((unitSelect) => {
+      unitSelect.addEventListener('change', updateSummary);
+    });
+
+    const summaryFields = [
+      '#Partner-name',
+      '#Partner-email',
+      '#Partner-phone',
+      '#Partner-role',
+      '#Partner-company-legal',
+      '#Partner-company',
+      '#Partner-vat',
+      '#Partner-registration',
+      '#Partner-country',
+      '#Partner-delivery-countries',
+      '#Partner-website',
+      '#Partner-business-type',
+      '#Partner-monthly-spend',
+      '#Partner-payment-terms',
+      '#Partner-payment-method',
+      '#Partner-shipping-terms',
+      '#Partner-destination',
+      '#Partner-volume',
+      '#Partner-custom-products',
+      '#Partner-budget',
+      '#Partner-timeframe',
+      '#Partner-message',
+      '#Partner-trade-terms'
+    ];
     summaryFields.forEach((selector) => {
       const field = form.querySelector(selector);
       if (field) {
@@ -1084,13 +1422,43 @@
       "type": "text",
       "id": "page_title",
       "label": "Page title",
-      "default": "Priority Partner Requests"
+      "default": "Wholesale RFQ and Distributor Program"
     },
     {
       "type": "textarea",
       "id": "page_subtitle",
       "label": "Page subtitle",
-      "default": "Share your preferred products and quantities, then send your request in a few guided steps."
+      "default": "Submit your business profile and required product mix to receive a wholesale quotation."
+    },
+    {
+      "type": "text",
+      "id": "moq_text",
+      "label": "MOQ text",
+      "default": "From 20 cases per order"
+    },
+    {
+      "type": "text",
+      "id": "lead_time_text",
+      "label": "Lead time text",
+      "default": "3-7 business days"
+    },
+    {
+      "type": "text",
+      "id": "payment_terms_text",
+      "label": "Payment terms text",
+      "default": "Prepaid, Net 15, Net 30"
+    },
+    {
+      "type": "text",
+      "id": "response_sla_text",
+      "label": "Response SLA text",
+      "default": "Within 24 hours"
+    },
+    {
+      "type": "textarea",
+      "id": "quote_note",
+      "label": "Quote note",
+      "default": "Catalog prices are reference only. Final B2B quotation depends on volume, payment terms, and destination."
     },
     {
       "type": "collection",
@@ -1110,7 +1478,7 @@
       "type": "text",
       "id": "email_subject",
       "label": "Email subject",
-      "default": "Partner request from storefront"
+      "default": "B2B Wholesale RFQ from storefront"
     },
     {
       "type": "text",
