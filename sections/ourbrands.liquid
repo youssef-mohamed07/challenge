@@ -14,89 +14,122 @@
     {% endif %}
 
     <div class="row g-24 our-brands-page__grid">
-      {% if section.blocks.size > 0 %}
-        {% for block in section.blocks %}
-          {% case block.type %}
-            {% when 'brand' %}
-              {% assign fallback_index = forloop.index0 | modulo: fallback_brand_assets.size %}
-              {% assign fallback_asset = fallback_brand_assets[fallback_index] | strip %}
-              <div class="col-lg-{{ section.settings.columns_desktop }} col-md-6 mb-24" {{ block.shopify_attributes }}>
-                <div class="vendors-two-item rounded-12 overflow-hidden bg-color-three border border-neutral-50 hover-border-main-two-600 transition-2">
-                  <div class="vendors-two-item__top bg-overlay style-two position-relative">
-                    <div class="vendors-two-item__thumbs h-210">
-                      {% if block.settings.brand_image != blank %}
-                        {{ block.settings.brand_image | image_url: width: 400, height: 210 | image_tag: alt: block.settings.brand_name, class: 'cover-img', width: '400', height: '210' }}
+      {% assign vendor_names = collections.all.products | map: 'vendor' | uniq %}
+      {% assign rendered_brand_cards = 0 %}
+      {% assign target_cards = section.settings.auto_fill_cards | default: 9 %}
+
+      {% for block in section.blocks %}
+        {% case block.type %}
+          {% when 'brand' %}
+            {% assign fallback_index = rendered_brand_cards | modulo: fallback_brand_assets.size %}
+            {% assign fallback_asset = fallback_brand_assets[fallback_index] | strip %}
+            {% assign block_brand_name = block.settings.brand_name | strip %}
+            {% if block_brand_name == blank %}
+              {% assign block_brand_name = vendor_names[rendered_brand_cards] | strip %}
+            {% endif %}
+            {% if block_brand_name == blank %}
+              {% assign block_brand_number = rendered_brand_cards | plus: 1 %}
+              {% assign block_brand_name = 'Brand ' | append: block_brand_number %}
+            {% endif %}
+
+            <div class="col-lg-{{ section.settings.columns_desktop }} col-md-6 mb-24" {{ block.shopify_attributes }}>
+              <div class="vendors-two-item rounded-12 overflow-hidden bg-color-three border border-neutral-50 hover-border-main-two-600 transition-2">
+                <div class="vendors-two-item__top bg-overlay style-two position-relative">
+                  <div class="vendors-two-item__thumbs h-210">
+                    {% if block.settings.brand_image != blank %}
+                      {{ block.settings.brand_image | image_url: width: 400, height: 210 | image_tag: alt: block_brand_name, class: 'cover-img', width: '400', height: '210' }}
+                    {% elsif fallback_asset != blank %}
+                      <img src="{{ fallback_asset | asset_url }}" alt="{{ block_brand_name | escape }}" class="cover-img" width="400" height="210" loading="lazy">
+                    {% else %}
+                      <img src="{{ 'placeholder.svg' | asset_url }}" alt="{{ block_brand_name | escape }}" class="cover-img" width="400" height="210" loading="lazy">
+                    {% endif %}
+                  </div>
+                  <div class="position-absolute top-0 inset-inline-start-0 w-100 h-100 p-24 z-1 d-flex flex-column justify-content-end">
+                    <div class="d-flex align-items-center justify-content-start gap-16">
+                      {% if block.settings.brand_logo != blank %}
+                        <span class="w-80 h-80 flex-center bg-white rounded-circle flex-shrink-0">
+                          {{ block.settings.brand_logo | image_url: width: 60, height: 60 | image_tag: alt: block_brand_name, width: '60', height: '60' }}
+                        </span>
                       {% elsif fallback_asset != blank %}
-                        {{ fallback_asset | asset_url | image_tag: alt: block.settings.brand_name, class: 'cover-img', width: '400', height: '210', loading: 'lazy' }}
-                      {% else %}
-                        {{ 'placeholder.svg' | asset_url | image_tag: alt: block.settings.brand_name, class: 'cover-img', width: '400', height: '210' }}
+                        <span class="w-80 h-80 flex-center bg-white rounded-circle flex-shrink-0">
+                          <img src="{{ fallback_asset | asset_url }}" alt="{{ block_brand_name | escape }}" width="60" height="60" loading="lazy">
+                        </span>
                       {% endif %}
-                    </div>
-                    <div class="position-absolute top-0 inset-inline-start-0 w-100 h-100 p-24 z-1 d-flex flex-column justify-content-end">
-                      <div class="d-flex align-items-center justify-content-start gap-16">
-                        {% if block.settings.brand_logo != blank %}
-                          <span class="w-80 h-80 flex-center bg-white rounded-circle flex-shrink-0">
-                            {{ block.settings.brand_logo | image_url: width: 60, height: 60 | image_tag: alt: block.settings.brand_name, width: '60', height: '60' }}
-                          </span>
-                        {% elsif fallback_asset != blank %}
-                          <span class="w-80 h-80 flex-center bg-white rounded-circle flex-shrink-0">
-                            {{ fallback_asset | asset_url | image_tag: alt: block.settings.brand_name, width: '60', height: '60', loading: 'lazy' }}
-                          </span>
-                        {% endif %}
-                        <div>
-                          <h6 class="text-white fw-semibold mb-4">
-                            {% if block.settings.brand_url != blank %}
-                              <a href="{{ block.settings.brand_url }}" class="text-white hover-text-main-two-600">{{ block.settings.brand_name }}</a>
-                            {% else %}
-                              {{ block.settings.brand_name }}
-                            {% endif %}
-                          </h6>
-                          {% if block.settings.brand_address != blank %}
-                            <div class="flex-align gap-8">
-                              <span class="flex-center text-main-two-600 text-lg flex-shrink-0">
-                                <i class="ph ph-map-pin-line"></i>
-                              </span>
-                              <p class="text-sm text-white">{{ block.settings.brand_address }}</p>
-                            </div>
+                      <div>
+                        <h6 class="text-white fw-semibold mb-4">
+                          {% if block.settings.brand_url != blank %}
+                            <a href="{{ block.settings.brand_url }}" class="text-white hover-text-main-two-600">{{ block_brand_name }}</a>
+                          {% else %}
+                            {{ block_brand_name }}
                           {% endif %}
-                        </div>
+                        </h6>
+                        {% if block.settings.brand_address != blank %}
+                          <div class="flex-align gap-8">
+                            <span class="flex-center text-main-two-600 text-lg flex-shrink-0">
+                              <i class="ph ph-map-pin-line"></i>
+                            </span>
+                            <p class="text-sm text-white">{{ block.settings.brand_address }}</p>
+                          </div>
+                        {% endif %}
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-          {% endcase %}
-        {% endfor %}
-      {% else %}
-        {% assign vendor_names = collections.all.products | map: 'vendor' | uniq %}
-        {% assign vendors_rendered = 0 %}
-        {% for vendor in vendor_names limit: 8 %}
-          {% assign vendor_name = vendor | strip %}
-          {% if vendor_name != blank %}
-            {% assign vendors_rendered = vendors_rendered | plus: 1 %}
-            {% assign fallback_index = forloop.index0 | modulo: fallback_brand_assets.size %}
-            {% assign fallback_asset = fallback_brand_assets[fallback_index] | strip %}
-            <div class="col-lg-3 col-md-6 mb-24">
-              <div class="our-brands-page__vendor-fallback rounded-12 border border-neutral-50 p-24 h-100 text-center">
-                {% if fallback_asset != blank %}
-                  <span class="our-brands-page__vendor-media">
-                    <img src="{{ fallback_asset | asset_url }}" alt="{{ vendor_name }}" loading="lazy" width="84" height="84">
-                  </span>
-                {% endif %}
-                <span class="our-brands-page__vendor-badge">Brand</span>
-                <h6 class="mt-16 mb-0 text-heading">{{ vendor_name }}</h6>
+            </div>
+            {% assign rendered_brand_cards = rendered_brand_cards | plus: 1 %}
+        {% endcase %}
+      {% endfor %}
+
+      {% if rendered_brand_cards < target_cards %}
+        {% for slot in (0..20) %}
+          {% if rendered_brand_cards >= target_cards %}
+            {% break %}
+          {% endif %}
+
+          {% assign fallback_index = rendered_brand_cards | modulo: fallback_brand_assets.size %}
+          {% assign fallback_asset = fallback_brand_assets[fallback_index] | strip %}
+          {% assign fallback_vendor_name = vendor_names[rendered_brand_cards] | strip %}
+          {% if fallback_vendor_name == blank %}
+            {% assign fallback_brand_number = rendered_brand_cards | plus: 1 %}
+            {% assign fallback_vendor_name = 'Brand ' | append: fallback_brand_number %}
+          {% endif %}
+
+          <div class="col-lg-{{ section.settings.columns_desktop }} col-md-6 mb-24">
+            <div class="vendors-two-item rounded-12 overflow-hidden bg-color-three border border-neutral-50 hover-border-main-two-600 transition-2">
+              <div class="vendors-two-item__top bg-overlay style-two position-relative">
+                <div class="vendors-two-item__thumbs h-210">
+                  {% if fallback_asset != blank %}
+                    <img src="{{ fallback_asset | asset_url }}" alt="{{ fallback_vendor_name | escape }}" class="cover-img" width="400" height="210" loading="lazy">
+                  {% else %}
+                    <img src="{{ 'placeholder.svg' | asset_url }}" alt="{{ fallback_vendor_name | escape }}" class="cover-img" width="400" height="210" loading="lazy">
+                  {% endif %}
+                </div>
+                <div class="position-absolute top-0 inset-inline-start-0 w-100 h-100 p-24 z-1 d-flex flex-column justify-content-end">
+                  <div class="d-flex align-items-center justify-content-start gap-16">
+                    {% if fallback_asset != blank %}
+                      <span class="w-80 h-80 flex-center bg-white rounded-circle flex-shrink-0">
+                        <img src="{{ fallback_asset | asset_url }}" alt="{{ fallback_vendor_name | escape }}" width="60" height="60" loading="lazy">
+                      </span>
+                    {% endif %}
+                    <div>
+                      <h6 class="text-white fw-semibold mb-4">{{ fallback_vendor_name }}</h6>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
-          {% endif %}
-        {% endfor %}
-
-        {% if vendors_rendered == 0 %}
-          <div class="col-12">
-            <div class="our-brands-page__vendor-fallback rounded-12 border border-neutral-50 p-24 text-center">
-              <h6 class="mb-0 text-heading">Add brands from theme editor</h6>
-            </div>
           </div>
-        {% endif %}
+          {% assign rendered_brand_cards = rendered_brand_cards | plus: 1 %}
+        {% endfor %}
+      {% endif %}
+
+      {% if rendered_brand_cards == 0 %}
+        <div class="col-12">
+          <div class="our-brands-page__vendor-fallback rounded-12 border border-neutral-50 p-24 text-center">
+            <h6 class="mb-0 text-heading">Add brands from theme editor</h6>
+          </div>
+        </div>
       {% endif %}
     </div>
   </div>
@@ -192,6 +225,15 @@
       ],
       "default": "4",
       "label": "Columns"
+    },
+    {
+      "type": "range",
+      "id": "auto_fill_cards",
+      "label": "Auto-fill cards count",
+      "min": 4,
+      "max": 12,
+      "step": 1,
+      "default": 9
     }
   ],
   "blocks": [

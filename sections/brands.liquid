@@ -30,7 +30,9 @@
 
             <div class="top-brand__slider">
               {% assign fallback_brand_assets = '1.webp,2.avif,3.webp,4.webp,5.webp,6.webp,7.webp,8.webp,9.webp' | split: ',' %}
+              {% assign vendor_names = collections.all.products | map: 'vendor' | uniq %}
               {% assign rendered_brands = 0 %}
+              {% assign target_items = section.settings.auto_fill_items | default: 9 %}
 
               {% for block in section.blocks %}
                 {% assign brand_image = block.settings.brand_image %}
@@ -74,33 +76,43 @@
                 {% endif %}
               {% endfor %}
 
-              {% if rendered_brands == 0 %}
-                {% assign rendered_fallback_assets = 0 %}
-                {% for fallback_asset in fallback_brand_assets limit: 9 %}
-                  {% assign fallback_asset_name = fallback_asset | strip %}
+              {% if rendered_brands < target_items %}
+                {% for slot in (0..20) %}
+                  {% if rendered_brands >= target_items %}
+                    {% break %}
+                  {% endif %}
+
+                  {% assign fallback_index = rendered_brands | modulo: fallback_brand_assets.size %}
+                  {% assign fallback_asset_name = fallback_brand_assets[fallback_index] | strip %}
+                  {% assign fallback_vendor_name = vendor_names[rendered_brands] | strip %}
+                  {% if fallback_vendor_name == blank %}
+                    {% assign fallback_brand_number = rendered_brands | plus: 1 %}
+                    {% assign fallback_vendor_name = 'Brand ' | append: fallback_brand_number %}
+                  {% endif %}
+
                   {% if fallback_asset_name != blank %}
-                    {% assign rendered_fallback_assets = rendered_fallback_assets | plus: 1 %}
                     <div class="wow bounceIn">
                       <div class="top-brand__item flex-center rounded-8 my-4 hover-border-main-600 transition-1 px-8 box-shadow-7xl bg-white">
                         <img
                           src="{{ fallback_asset_name | asset_url }}"
-                          alt="Brand logo {{ forloop.index }}"
+                          alt="{{ fallback_vendor_name }}"
                           loading="lazy"
                           width="180"
                           height="80"
                         />
                       </div>
                     </div>
+                    {% assign rendered_brands = rendered_brands | plus: 1 %}
                   {% endif %}
                 {% endfor %}
+              {% endif %}
 
-                {% if rendered_fallback_assets == 0 %}
-                  <div class="wow bounceIn">
-                    <div class="top-brand__item flex-center rounded-8 my-4 px-8 box-shadow-7xl bg-white border border-gray-100">
-                      <span class="text-gray-500 text-center">Add brand logos from theme editor</span>
-                    </div>
+              {% if rendered_brands == 0 %}
+                <div class="wow bounceIn">
+                  <div class="top-brand__item flex-center rounded-8 my-4 px-8 box-shadow-7xl bg-white border border-gray-100">
+                    <span class="text-gray-500 text-center">Add brand logos from theme editor</span>
                   </div>
-                {% endif %}
+                </div>
               {% endif %}
             </div>
         </div>
@@ -128,6 +140,15 @@
       "id": "show_navigation",
       "label": "Show navigation arrows",
       "default": true
+    },
+    {
+      "type": "range",
+      "id": "auto_fill_items",
+      "label": "Auto-fill items count",
+      "min": 4,
+      "max": 12,
+      "step": 1,
+      "default": 9
     }
   ],
   "blocks": [
