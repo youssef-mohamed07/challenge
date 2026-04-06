@@ -16,10 +16,25 @@
     "contact_us": {
       "type": "contact-us",
       "settings": {}
+    },
+    "hot_deals": {
+      "type": "hot-deals",
+      "settings": {}
+    },
+    "our_brands": {
+      "type": "ourbrands",
+      "settings": {}
+    },
+    "partner_hub": {
+      "type": "partner-hub",
+      "settings": {}
     }
   },
   "order": [
     "main",
-    "contact_us"
+    "contact_us",
+    "hot_deals",
+    "our_brands",
+    "partner_hub"
   ]
 }

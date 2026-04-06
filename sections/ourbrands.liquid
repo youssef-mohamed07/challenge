@@ -1,5 +1,7 @@
+{% assign current_page_handle = page.handle | default: '' %}
+{% if current_page_handle == 'our-brands' %}
 {% comment %} Our Brands Section {% endcomment %}
-<section class="brands py-80">
+<section class="brands py-80 our-brands-page">
   <div class="container container-lg">
     {% if section.settings.heading != blank %}
       <div class="section-heading text-center mb-48">
@@ -10,54 +12,109 @@
       </div>
     {% endif %}
 
-    <div class="row g-24">
-      {% for block in section.blocks %}
-        {% case block.type %}
-          {% when 'brand' %}
-            <div class="col-lg-{{ section.settings.columns_desktop }} col-md-6 mb-24">
-              <div class="vendors-two-item rounded-12 overflow-hidden bg-color-three border border-neutral-50 hover-border-main-two-600 transition-2">
-                <div class="vendors-two-item__top bg-overlay style-two position-relative">
-                  <div class="vendors-two-item__thumbs h-210">
-                    {% if block.settings.brand_image != blank %}
-                      {{ block.settings.brand_image | image_url: width: 400, height: 210 | image_tag: alt: block.settings.brand_name, class: 'cover-img', width: '400', height: '210' }}
-                    {% else %}
-                      {{ 'placeholder.svg' | asset_url | image_tag: alt: block.settings.brand_name, class: 'cover-img', width: '400', height: '210' }}
-                    {% endif %}
-                  </div>
-                  <div class="position-absolute top-0 inset-inline-start-0 w-100 h-100 p-24 z-1 d-flex flex-column justify-content-end">
-                    <div class="d-flex align-items-center justify-content-start gap-16">
-                      {% if block.settings.brand_logo != blank %}
-                        <span class="w-80 h-80 flex-center bg-white rounded-circle flex-shrink-0">
-                          {{ block.settings.brand_logo | image_url: width: 60, height: 60 | image_tag: alt: block.settings.brand_name, width: '60', height: '60' }}
-                        </span>
+    <div class="row g-24 our-brands-page__grid">
+      {% if section.blocks.size > 0 %}
+        {% for block in section.blocks %}
+          {% case block.type %}
+            {% when 'brand' %}
+              <div class="col-lg-{{ section.settings.columns_desktop }} col-md-6 mb-24" {{ block.shopify_attributes }}>
+                <div class="vendors-two-item rounded-12 overflow-hidden bg-color-three border border-neutral-50 hover-border-main-two-600 transition-2">
+                  <div class="vendors-two-item__top bg-overlay style-two position-relative">
+                    <div class="vendors-two-item__thumbs h-210">
+                      {% if block.settings.brand_image != blank %}
+                        {{ block.settings.brand_image | image_url: width: 400, height: 210 | image_tag: alt: block.settings.brand_name, class: 'cover-img', width: '400', height: '210' }}
+                      {% else %}
+                        {{ 'placeholder.svg' | asset_url | image_tag: alt: block.settings.brand_name, class: 'cover-img', width: '400', height: '210' }}
                       {% endif %}
-                      <div>
-                        <h6 class="text-white fw-semibold mb-4">
-                          {% if block.settings.brand_url != blank %}
-                            <a href="{{ block.settings.brand_url }}" class="text-white hover-text-main-two-600">{{ block.settings.brand_name }}</a>
-                          {% else %}
-                            {{ block.settings.brand_name }}
-                          {% endif %}
-                        </h6>
-                        {% if block.settings.brand_address != blank %}
-                          <div class="flex-align gap-8">
-                            <span class="flex-center text-main-two-600 text-lg flex-shrink-0">
-                              <i class="ph ph-map-pin-line"></i>
-                            </span>
-                            <p class="text-sm text-white">{{ block.settings.brand_address }}</p>
-                          </div>
+                    </div>
+                    <div class="position-absolute top-0 inset-inline-start-0 w-100 h-100 p-24 z-1 d-flex flex-column justify-content-end">
+                      <div class="d-flex align-items-center justify-content-start gap-16">
+                        {% if block.settings.brand_logo != blank %}
+                          <span class="w-80 h-80 flex-center bg-white rounded-circle flex-shrink-0">
+                            {{ block.settings.brand_logo | image_url: width: 60, height: 60 | image_tag: alt: block.settings.brand_name, width: '60', height: '60' }}
+                          </span>
                         {% endif %}
+                        <div>
+                          <h6 class="text-white fw-semibold mb-4">
+                            {% if block.settings.brand_url != blank %}
+                              <a href="{{ block.settings.brand_url }}" class="text-white hover-text-main-two-600">{{ block.settings.brand_name }}</a>
+                            {% else %}
+                              {{ block.settings.brand_name }}
+                            {% endif %}
+                          </h6>
+                          {% if block.settings.brand_address != blank %}
+                            <div class="flex-align gap-8">
+                              <span class="flex-center text-main-two-600 text-lg flex-shrink-0">
+                                <i class="ph ph-map-pin-line"></i>
+                              </span>
+                              <p class="text-sm text-white">{{ block.settings.brand_address }}</p>
+                            </div>
+                          {% endif %}
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
+          {% endcase %}
+        {% endfor %}
+      {% else %}
+        {% assign vendor_names = collections.all.products | map: 'vendor' | uniq %}
+        {% assign vendors_rendered = 0 %}
+        {% for vendor in vendor_names limit: 8 %}
+          {% assign vendor_name = vendor | strip %}
+          {% if vendor_name != blank %}
+            {% assign vendors_rendered = vendors_rendered | plus: 1 %}
+            <div class="col-lg-3 col-md-6 mb-24">
+              <div class="our-brands-page__vendor-fallback rounded-12 border border-neutral-50 p-24 h-100 text-center">
+                <span class="our-brands-page__vendor-badge">Brand</span>
+                <h6 class="mt-16 mb-0 text-heading">{{ vendor_name }}</h6>
+              </div>
             </div>
-        {% endcase %}
-      {% endfor %}
+          {% endif %}
+        {% endfor %}
+
+        {% if vendors_rendered == 0 %}
+          <div class="col-12">
+            <div class="our-brands-page__vendor-fallback rounded-12 border border-neutral-50 p-24 text-center">
+              <h6 class="mb-0 text-heading">Add brands from theme editor</h6>
+            </div>
+          </div>
+        {% endif %}
+      {% endif %}
     </div>
   </div>
 </section>
+{% endif %}
+
+{% stylesheet %}
+.our-brands-page .vendors-two-item {
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.08);
+}
+
+.our-brands-page__vendor-fallback {
+  background: linear-gradient(180deg, #fbfdff 0%, #f4f8fc 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.our-brands-page__vendor-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 30px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: #1e89b2;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+}
+{% endstylesheet %}
 
 {% schema %}
 {

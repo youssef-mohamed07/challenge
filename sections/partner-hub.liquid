@@ -1,0 +1,790 @@
+{% assign current_page_handle = page.handle | default: '' %}
+{% assign source_collection_handle = section.settings.source_collection %}
+{% assign partner_products = '' | split: ',' %}
+
+{% if source_collection_handle != blank and collections[source_collection_handle] != blank %}
+  {% assign partner_products = collections[source_collection_handle].products %}
+{% endif %}
+
+{% if partner_products.size == 0 %}
+  {% assign hot_products = collections.all.products | where: 'tags', 'hot' %}
+  {% assign discounted_products = '' | split: ',' %}
+  {% for product in collections.all.products %}
+    {% if product.compare_at_price > product.price %}
+      {% assign discounted_products = discounted_products | concat: product %}
+    {% endif %}
+  {% endfor %}
+  {% assign partner_products = hot_products | concat: discounted_products | uniq %}
+{% endif %}
+
+{% if partner_products.size == 0 %}
+  {% assign partner_products = collections.all.products %}
+{% endif %}
+
+{% if current_page_handle == 'partner-hub' or current_page_handle == 'partner_hub' %}
+<section class="partner-hub py-80">
+  <div class="container container-lg">
+    <div class="partner-hub__intro text-center mb-40">
+      <span class="partner-hub__eyebrow">Priority Access</span>
+      <h1 class="partner-hub__title">{{ section.settings.page_title | escape }}</h1>
+      <p class="partner-hub__subtitle">{{ section.settings.page_subtitle | escape }}</p>
+    </div>
+
+    <div class="partner-hub__card">
+      {% form 'contact', id: 'PartnerHubContactForm', class: 'partner-hub__form' %}
+        <input type="hidden" name="contact[subject]" value="{{ section.settings.email_subject | escape }}">
+        <input type="hidden" name="contact[note][Request source]" value="Partner Hub Page">
+        <input type="hidden" name="contact[note][Requested products]" id="PartnerSelectedProducts" value="">
+
+        {%- if form.posted_successfully? -%}
+          <div class="partner-hub__alert partner-hub__alert--success mb-20">
+            Your request was sent successfully. We will contact you shortly.
+          </div>
+        {%- endif -%}
+
+        {%- if form.errors -%}
+          <div class="partner-hub__alert partner-hub__alert--error mb-20">
+            <strong>There is an issue with your submission:</strong>
+            <ul class="mb-0 mt-8">
+              {%- for field in form.errors -%}
+                <li>{{ field | capitalize }} {{ form.errors.messages[field] }}</li>
+              {%- endfor -%}
+            </ul>
+          </div>
+        {%- endif -%}
+
+        <div class="partner-hub__stepper mb-28" role="list" aria-label="Form Steps">
+          <div class="partner-hub__stepper-item is-active" data-step-indicator="1" role="listitem">
+            <span>1</span>
+            <strong>Profile</strong>
+          </div>
+          <div class="partner-hub__stepper-item" data-step-indicator="2" role="listitem">
+            <span>2</span>
+            <strong>Products</strong>
+          </div>
+          <div class="partner-hub__stepper-item" data-step-indicator="3" role="listitem">
+            <span>3</span>
+            <strong>Finalize</strong>
+          </div>
+        </div>
+
+        <div class="partner-hub__step is-active" data-step-panel="1">
+          <h6 class="partner-hub__section-title">Tell us about you</h6>
+          <div class="row gy-4">
+            <div class="col-md-6">
+              <label class="partner-hub__label" for="Partner-name">Full name *</label>
+              <input id="Partner-name" class="common-input px-16" type="text" name="contact[name]" value="{% if form.name %}{{ form.name }}{% elsif customer %}{{ customer.name }}{% endif %}" required>
+            </div>
+            <div class="col-md-6">
+              <label class="partner-hub__label" for="Partner-email">Email *</label>
+              <input id="Partner-email" class="common-input px-16" type="email" name="contact[email]" value="{% if form.email %}{{ form.email }}{% elsif customer %}{{ customer.email }}{% endif %}" required>
+            </div>
+            <div class="col-md-6">
+              <label class="partner-hub__label" for="Partner-phone">Phone *</label>
+              <input id="Partner-phone" class="common-input px-16" type="tel" name="contact[phone]" value="{% if form.phone %}{{ form.phone }}{% endif %}" required>
+            </div>
+            <div class="col-md-6">
+              <label class="partner-hub__label" for="Partner-company">Company / Team *</label>
+              <input id="Partner-company" class="common-input px-16" type="text" name="contact[note][Company]" required>
+            </div>
+            <div class="col-md-6">
+              <label class="partner-hub__label" for="Partner-country">Country *</label>
+              <input id="Partner-country" class="common-input px-16" type="text" name="contact[note][Country]" required>
+            </div>
+            <div class="col-md-6">
+              <label class="partner-hub__label" for="Partner-website">Website / Social</label>
+              <input id="Partner-website" class="common-input px-16" type="text" name="contact[note][Website]">
+            </div>
+          </div>
+          <div class="partner-hub__actions mt-24">
+            <button type="button" class="btn btn-main py-14 px-24 rounded-8" data-step-next>Continue</button>
+          </div>
+        </div>
+
+        <div class="partner-hub__step" data-step-panel="2">
+          <h6 class="partner-hub__section-title">Choose products you are interested in</h6>
+          <p class="partner-hub__section-subtitle">Pick one or more products and quantities. You can also add custom needs.</p>
+
+          <div class="partner-hub__products-grid mb-20">
+            {% for product in partner_products limit: section.settings.product_limit %}
+              <article class="partner-product" data-product-card>
+                <a href="{{ product.url }}" class="partner-product__thumb">
+                  {% if product.featured_image %}
+                    <img src="{{ product.featured_image | image_url: width: 380, height: 280 }}" alt="{{ product.title | escape }}" width="190" height="140" loading="lazy">
+                  {% else %}
+                    {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
+                  {% endif %}
+                </a>
+
+                <div class="partner-product__body">
+                  <h6 class="partner-product__title">
+                    <a href="{{ product.url }}">{{ product.title }}</a>
+                  </h6>
+                  <p class="partner-product__price">
+                    {{ product.price | money }}
+                    {% if product.compare_at_price > product.price %}
+                      <span>{{ product.compare_at_price | money }}</span>
+                    {% endif %}
+                  </p>
+
+                  <div class="partner-product__controls">
+                    <label class="partner-product__check" for="PartnerProduct-{{ forloop.index }}">
+                      <input id="PartnerProduct-{{ forloop.index }}" class="partner-product-check" type="checkbox" value="{{ product.id }}" data-product-title="{{ product.title | escape }}">
+                      <span>Select</span>
+                    </label>
+
+                    <div class="partner-product__qty-wrap">
+                      <label for="PartnerQty-{{ forloop.index }}">Qty</label>
+                      <input id="PartnerQty-{{ forloop.index }}" class="partner-product-qty" type="number" min="1" value="1" data-qty-for="{{ product.id }}" disabled>
+                    </div>
+                  </div>
+                </div>
+              </article>
+            {% endfor %}
+          </div>
+
+          <div class="row gy-4">
+            <div class="col-md-6">
+              <label class="partner-hub__label" for="Partner-business-type">Business type *</label>
+              <select id="Partner-business-type" class="common-input px-16" name="contact[note][Business type]" required>
+                <option value="">Select</option>
+                <option value="Gym">Gym</option>
+                <option value="Retail Store">Retail Store</option>
+                <option value="Coach / Trainer">Coach / Trainer</option>
+                <option value="Online Store">Online Store</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="partner-hub__label" for="Partner-volume">Expected monthly volume *</label>
+              <select id="Partner-volume" class="common-input px-16" name="contact[note][Monthly volume]" required>
+                <option value="">Select</option>
+                <option value="Small (1-20 units)">Small (1-20 units)</option>
+                <option value="Medium (21-100 units)">Medium (21-100 units)</option>
+                <option value="Large (100+ units)">Large (100+ units)</option>
+              </select>
+            </div>
+            <div class="col-12">
+              <label class="partner-hub__label" for="Partner-custom-products">Custom product notes</label>
+              <textarea id="Partner-custom-products" class="common-input px-16" rows="4" name="contact[note][Custom products]" placeholder="Write any specific products, flavors, or quantities you need"></textarea>
+            </div>
+          </div>
+
+          <div class="partner-hub__actions mt-24">
+            <button type="button" class="btn btn-outline-main border-main-600 text-main-600 py-14 px-24 rounded-8" data-step-prev>Back</button>
+            <button type="button" class="btn btn-main py-14 px-24 rounded-8" data-step-next>Continue</button>
+          </div>
+        </div>
+
+        <div class="partner-hub__step" data-step-panel="3">
+          <h6 class="partner-hub__section-title">Finalize your request</h6>
+          <div class="row gy-4">
+            <div class="col-md-6">
+              <label class="partner-hub__label" for="Partner-budget">Budget range</label>
+              <select id="Partner-budget" class="common-input px-16" name="contact[note][Budget range]">
+                <option value="Not specified">Not specified</option>
+                <option value="Under 500">Under 500</option>
+                <option value="500 - 2,000">500 - 2,000</option>
+                <option value="2,000 - 10,000">2,000 - 10,000</option>
+                <option value="10,000+">10,000+</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="partner-hub__label" for="Partner-timeframe">Preferred timeframe *</label>
+              <select id="Partner-timeframe" class="common-input px-16" name="contact[note][Timeframe]" required>
+                <option value="">Select</option>
+                <option value="ASAP">ASAP</option>
+                <option value="Within 2 weeks">Within 2 weeks</option>
+                <option value="Within 1 month">Within 1 month</option>
+                <option value="Flexible">Flexible</option>
+              </select>
+            </div>
+            <div class="col-12">
+              <label class="partner-hub__label" for="Partner-message">Additional details *</label>
+              <textarea id="Partner-message" class="common-input px-16" rows="5" name="contact[body]" placeholder="Add shipment notes, preferred brands, or any extra details" required></textarea>
+            </div>
+          </div>
+
+          <div class="partner-hub__summary mt-20" id="PartnerSummary">
+            <h6>Request summary</h6>
+            <p class="mb-0">Your selected information will appear here before sending.</p>
+          </div>
+
+          <p class="partner-hub__step-error mt-14" id="PartnerStepError" hidden></p>
+
+          <div class="partner-hub__actions mt-24">
+            <button type="button" class="btn btn-outline-main border-main-600 text-main-600 py-14 px-24 rounded-8" data-step-prev>Back</button>
+            <button type="submit" class="btn btn-main py-14 px-24 rounded-8">Send Request</button>
+          </div>
+        </div>
+      {% endform %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% stylesheet %}
+.partner-hub {
+  background:
+    radial-gradient(620px 280px at -8% -12%, rgba(35, 148, 190, 0.14), transparent 68%),
+    radial-gradient(540px 260px at 108% 2%, rgba(72, 127, 255, 0.12), transparent 64%),
+    linear-gradient(180deg, #f8fbff 0%, #eef6fb 46%, #f9fcff 100%);
+}
+
+.partner-hub__intro {
+  max-width: 860px;
+  margin-inline: auto;
+}
+
+.partner-hub__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 30px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(35, 148, 190, 0.14);
+  color: #1e89b2;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+}
+
+.partner-hub__title {
+  margin: 14px 0 10px;
+  font-family: var(--heading-font-two);
+  font-size: clamp(1.85rem, 3.4vw, 3rem);
+  font-weight: 800;
+  color: var(--neutral-600);
+}
+
+.partner-hub__subtitle {
+  margin: 0;
+  color: var(--gray-700);
+  font-size: 16px;
+  line-height: 1.65;
+}
+
+.partner-hub__card {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid #dbe8f4;
+  border-radius: 20px;
+  padding: clamp(18px, 3vw, 30px);
+  box-shadow: 0 20px 38px rgba(15, 23, 42, 0.1);
+}
+
+.partner-hub__stepper {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.partner-hub__stepper-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid #d7e4f0;
+  border-radius: 12px;
+  min-height: 48px;
+  padding: 10px 12px;
+  background: #f8fbff;
+}
+
+.partner-hub__stepper-item span {
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  background: #d8e9f5;
+  color: #1c5672;
+}
+
+.partner-hub__stepper-item strong {
+  font-size: 13px;
+  color: #16384d;
+  letter-spacing: 0.2px;
+}
+
+.partner-hub__stepper-item.is-active {
+  border-color: #1e89b2;
+  background: rgba(30, 137, 178, 0.08);
+}
+
+.partner-hub__stepper-item.is-active span {
+  background: #1e89b2;
+  color: #fff;
+}
+
+.partner-hub__step {
+  display: none;
+}
+
+.partner-hub__step.is-active {
+  display: block;
+}
+
+.partner-hub__section-title {
+  margin-bottom: 8px;
+  font-size: 1.25rem;
+  color: var(--neutral-600);
+  font-family: var(--heading-font-two);
+  font-weight: 800;
+}
+
+.partner-hub__section-subtitle {
+  margin-bottom: 18px;
+  color: var(--gray-700);
+}
+
+.partner-hub__label {
+  display: inline-flex;
+  margin-bottom: 8px;
+  color: var(--neutral-600);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.partner-hub .common-input {
+  min-height: 50px;
+  border: 1px solid #d2e0ed;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.partner-hub .common-input:focus {
+  border-color: #1e89b2;
+  box-shadow: 0 0 0 4px rgba(30, 137, 178, 0.14);
+}
+
+.partner-hub textarea.common-input {
+  min-height: 130px;
+  padding-top: 12px;
+}
+
+.partner-hub__products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 14px;
+}
+
+.partner-product {
+  border: 1px solid #d8e6f2;
+  border-radius: 14px;
+  background: #fff;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.partner-product__thumb {
+  min-height: 152px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f8fbff;
+  border-bottom: 1px solid #ecf2f8;
+}
+
+.partner-product__thumb img {
+  width: 100%;
+  height: 152px;
+  object-fit: contain;
+  padding: 10px;
+}
+
+.partner-product__body {
+  padding: 12px;
+  display: grid;
+  gap: 10px;
+}
+
+.partner-product__title {
+  font-size: 15px;
+  margin: 0;
+  min-height: 40px;
+}
+
+.partner-product__title a {
+  color: var(--neutral-600);
+}
+
+.partner-product__price {
+  margin: 0;
+  color: #1e89b2;
+  font-weight: 700;
+}
+
+.partner-product__price span {
+  color: #94a3b8;
+  font-weight: 600;
+  margin-inline-start: 8px;
+  text-decoration: line-through;
+  font-size: 12px;
+}
+
+.partner-product__controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.partner-product__check {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #12263a;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.partner-product__check input {
+  width: 16px;
+  height: 16px;
+}
+
+.partner-product__qty-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.partner-product__qty-wrap label {
+  margin: 0;
+  font-size: 12px;
+  color: #4b6479;
+  font-weight: 700;
+}
+
+.partner-product-qty {
+  width: 62px;
+  min-height: 34px;
+  border: 1px solid #d2e0ed;
+  border-radius: 10px;
+  text-align: center;
+  font-weight: 700;
+  color: #18364d;
+  background: #f8fbff;
+}
+
+.partner-product-qty:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.partner-hub__summary {
+  border: 1px solid #d8e6f2;
+  border-radius: 14px;
+  background: #f7fbff;
+  padding: 14px;
+}
+
+.partner-hub__summary h6 {
+  margin: 0 0 6px;
+  color: var(--neutral-600);
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.partner-hub__summary p {
+  color: #456178;
+  white-space: pre-line;
+}
+
+.partner-hub__actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.partner-hub__alert {
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 14px;
+}
+
+.partner-hub__alert--success {
+  background: #ecfdf5;
+  border: 1px solid #10b981;
+  color: #166534;
+}
+
+.partner-hub__alert--error {
+  background: #fef2f2;
+  border: 1px solid #ef4444;
+  color: #991b1b;
+}
+
+.partner-hub__step-error {
+  color: #dc2626;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+@media (max-width: 767px) {
+  .partner-hub__stepper {
+    grid-template-columns: 1fr;
+  }
+
+  .partner-hub__actions {
+    justify-content: stretch;
+  }
+
+  .partner-hub__actions .btn {
+    width: 100%;
+  }
+}
+{% endstylesheet %}
+
+{% javascript %}
+(() => {
+  document.addEventListener('DOMContentLoaded', () => {
+    const root = document.querySelector('.partner-hub');
+    if (!root) return;
+
+    const form = root.querySelector('#PartnerHubContactForm');
+    if (!form) return;
+
+    const steps = Array.from(form.querySelectorAll('[data-step-panel]'));
+    const indicators = Array.from(form.querySelectorAll('[data-step-indicator]'));
+    const nextButtons = Array.from(form.querySelectorAll('[data-step-next]'));
+    const prevButtons = Array.from(form.querySelectorAll('[data-step-prev]'));
+    const errorBox = form.querySelector('#PartnerStepError');
+    const selectedProductsField = form.querySelector('#PartnerSelectedProducts');
+    const summaryBox = form.querySelector('#PartnerSummary p');
+    const checkboxes = Array.from(form.querySelectorAll('.partner-product-check'));
+
+    const getStepByNumber = (stepNumber) => steps.find((step) => Number(step.dataset.stepPanel) === stepNumber);
+    const getCurrentStepNumber = () => Number(form.dataset.currentStep || 1);
+
+    const setError = (message = '') => {
+      if (!errorBox) return;
+      if (!message) {
+        errorBox.hidden = true;
+        errorBox.textContent = '';
+        return;
+      }
+      errorBox.hidden = false;
+      errorBox.textContent = message;
+    };
+
+    const setStep = (stepNumber) => {
+      form.dataset.currentStep = String(stepNumber);
+
+      steps.forEach((step) => {
+        step.classList.toggle('is-active', Number(step.dataset.stepPanel) === stepNumber);
+      });
+
+      indicators.forEach((indicator) => {
+        indicator.classList.toggle('is-active', Number(indicator.dataset.stepIndicator) === stepNumber);
+      });
+
+      setError('');
+      updateSummary();
+    };
+
+    const validateRequiredFields = (stepElement) => {
+      const requiredFields = Array.from(stepElement.querySelectorAll('[required]'));
+      for (const field of requiredFields) {
+        if (typeof field.value === 'string' && field.value.trim() === '') {
+          field.reportValidity();
+          return false;
+        }
+      }
+      return true;
+    };
+
+    const getSelectedProductsList = () => {
+      const selected = [];
+      checkboxes.forEach((checkbox) => {
+        if (!checkbox.checked) return;
+        const productId = checkbox.value;
+        const productTitle = checkbox.dataset.productTitle || 'Product';
+        const qtyInput = form.querySelector(`.partner-product-qty[data-qty-for="${productId}"]`);
+        const qty = Math.max(Number(qtyInput ? qtyInput.value : 1) || 1, 1);
+        selected.push(`${productTitle} x${qty}`);
+      });
+
+      const customProducts = (form.querySelector('#Partner-custom-products')?.value || '').trim();
+      if (customProducts) {
+        selected.push(`Custom notes: ${customProducts}`);
+      }
+
+      return selected;
+    };
+
+    const syncSelectedProducts = () => {
+      const selected = getSelectedProductsList();
+      if (selectedProductsField) {
+        selectedProductsField.value = selected.join(' | ');
+      }
+      return selected;
+    };
+
+    const validateProductsStep = () => {
+      const selected = getSelectedProductsList();
+      if (selected.length === 0) {
+        setError('Select at least one product or add custom product notes before continuing.');
+        return false;
+      }
+      return true;
+    };
+
+    const validateStep = (stepNumber) => {
+      const step = getStepByNumber(stepNumber);
+      if (!step) return false;
+
+      if (!validateRequiredFields(step)) {
+        return false;
+      }
+
+      if (stepNumber === 2 && !validateProductsStep()) {
+        return false;
+      }
+
+      setError('');
+      return true;
+    };
+
+    const updateSummary = () => {
+      if (!summaryBox) return;
+      const selectedProducts = syncSelectedProducts();
+
+      const summary = [
+        `Name: ${form.querySelector('#Partner-name')?.value || '-'}`,
+        `Email: ${form.querySelector('#Partner-email')?.value || '-'}`,
+        `Company: ${form.querySelector('#Partner-company')?.value || '-'}`,
+        `Country: ${form.querySelector('#Partner-country')?.value || '-'}`,
+        `Business type: ${form.querySelector('#Partner-business-type')?.value || '-'}`,
+        `Monthly volume: ${form.querySelector('#Partner-volume')?.value || '-'}`,
+        `Selected products: ${selectedProducts.length ? selectedProducts.join(', ') : '-'}`,
+      ];
+
+      summaryBox.textContent = summary.join('\n');
+    };
+
+    checkboxes.forEach((checkbox) => {
+      checkbox.addEventListener('change', () => {
+        const qtyInput = form.querySelector(`.partner-product-qty[data-qty-for="${checkbox.value}"]`);
+        if (qtyInput) {
+          qtyInput.disabled = !checkbox.checked;
+          if (checkbox.checked && Number(qtyInput.value) < 1) {
+            qtyInput.value = '1';
+          }
+        }
+        updateSummary();
+      });
+    });
+
+    Array.from(form.querySelectorAll('.partner-product-qty')).forEach((qtyInput) => {
+      qtyInput.addEventListener('input', () => {
+        const numericValue = Math.max(Number(qtyInput.value) || 1, 1);
+        qtyInput.value = String(numericValue);
+        updateSummary();
+      });
+    });
+
+    const summaryFields = ['#Partner-name', '#Partner-email', '#Partner-company', '#Partner-country', '#Partner-business-type', '#Partner-volume', '#Partner-custom-products'];
+    summaryFields.forEach((selector) => {
+      const field = form.querySelector(selector);
+      if (field) {
+        field.addEventListener('input', updateSummary);
+        field.addEventListener('change', updateSummary);
+      }
+    });
+
+    nextButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        const currentStepElement = button.closest('[data-step-panel]');
+        const currentStep = Number(currentStepElement?.dataset.stepPanel || getCurrentStepNumber());
+        if (!validateStep(currentStep)) return;
+        setStep(Math.min(currentStep + 1, steps.length));
+      });
+    });
+
+    prevButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        const currentStepElement = button.closest('[data-step-panel]');
+        const currentStep = Number(currentStepElement?.dataset.stepPanel || getCurrentStepNumber());
+        setStep(Math.max(currentStep - 1, 1));
+      });
+    });
+
+    form.addEventListener('submit', (event) => {
+      const currentStep = getCurrentStepNumber();
+      if (currentStep !== 3) {
+        event.preventDefault();
+        setStep(3);
+        return;
+      }
+
+      if (!validateStep(2)) {
+        event.preventDefault();
+        setStep(2);
+        return;
+      }
+
+      if (!validateStep(3)) {
+        event.preventDefault();
+        return;
+      }
+
+      syncSelectedProducts();
+      updateSummary();
+    });
+
+    setStep(1);
+  });
+})();
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "Partner Hub",
+  "settings": [
+    {
+      "type": "text",
+      "id": "page_title",
+      "label": "Page title",
+      "default": "Priority Partner Requests"
+    },
+    {
+      "type": "textarea",
+      "id": "page_subtitle",
+      "label": "Page subtitle",
+      "default": "Share your preferred products and quantities, then send your request in a few guided steps."
+    },
+    {
+      "type": "collection",
+      "id": "source_collection",
+      "label": "Source collection for product picks"
+    },
+    {
+      "type": "range",
+      "id": "product_limit",
+      "label": "Number of products to show",
+      "min": 4,
+      "max": 12,
+      "step": 1,
+      "default": 6
+    },
+    {
+      "type": "text",
+      "id": "email_subject",
+      "label": "Email subject",
+      "default": "Partner request from storefront"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Partner Hub"
+    }
+  ]
+}
+{% endschema %}

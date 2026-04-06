@@ -1,6 +1,24 @@
+{% assign current_page_handle = page.handle | default: '' %}
+{% if current_page_handle == 'hot-deals' %}
 <!-- ============================== Hot Deals Section Start =============================== -->
+{% assign tagged_hot_products = collections.all.products | where: 'tags', 'hot' %}
+{% assign discounted_products = '' | split: ',' %}
+{% for product in collections.all.products %}
+    {% if product.compare_at_price > product.price %}
+        {% assign discounted_products = discounted_products | concat: product %}
+    {% endif %}
+{% endfor %}
+{% assign hot_deal_products_all = tagged_hot_products | concat: discounted_products | uniq %}
+{% if hot_deal_products_all.size == 0 %}
+    {% assign hot_deal_products_all = collections.all.products %}
+{% endif %}
+
 <section class="vendor-two-details py-80">
     <div class="container container-lg">
+        <div class="section-heading text-center mb-32">
+            <h2 class="mb-12">{{ section.settings.section_title }}</h2>
+        </div>
+
         <div class="vendor-two-details-wrapper d-flex flex-wrap align-items-start gap-24">
 
             <div class="shop-sidebar">
@@ -17,54 +35,52 @@
                                     {{ 'general.all_products' | t }}
                                 </button>
                             </li>
-                            
-                            {% assign hot_deal_products = collections.all.products | where: 'tags', 'hot' %}
-                            {% assign sale_products = collections.all.products %}
-                            {% assign filtered_sale_products = '' | split: ',' %}
-                            {% for product in sale_products %}
-                                {% if product.compare_at_price > product.price %}
-                                    {% assign filtered_sale_products = filtered_sale_products | concat: product %}
-                                {% endif %}
-                            {% endfor %}
-                            {% assign all_hot_deal_products = hot_deal_products | concat: filtered_sale_products | uniq %}
-                            
-                            {% assign product_types = '' %}
-                            {% for product in all_hot_deal_products %}
-                                {% unless product_types contains product.type %}
-                                    {% if product_types == '' %}
-                                        {% assign product_types = product.type %}
-                                    {% else %}
-                                        {% assign product_types = product_types | append: ',' | append: product.type %}
+
+                            {% if section.settings.show_product_types %}
+                                {% assign product_types = '' %}
+                                {% for product in hot_deal_products_all %}
+                                    {% if product.type != blank %}
+                                        {% unless product_types contains product.type %}
+                                            {% if product_types == '' %}
+                                                {% assign product_types = product.type %}
+                                            {% else %}
+                                                {% assign product_types = product_types | append: ',' | append: product.type %}
+                                            {% endif %}
+                                        {% endunless %}
                                     {% endif %}
-                                {% endunless %}
-                            {% endfor %}
-                            {% assign product_types = product_types | split: ',' %}
-                            
-                            {% for product_type in product_types %}
-                                <li class="mb-24">
-                                    <button type="button" class="category-filter-btn text-gray-900 hover-text-main-600 border-0 bg-transparent p-0 text-start" data-filter="{{ product_type | handleize }}">
-                                        {{ product_type }}
-                                    </button>
-                                </li>
-                            {% endfor %}
-                            
-                            {% for collection in collections %}
-                                {% if collection.handle != 'all' and collection.products.size > 0 %}
-                                    {% assign collection_hot_count = 0 %}
-                                    {% for product in collection.products %}
-                                        {% if product.tags contains 'hot' or product.compare_at_price > product.price %}
-                                            {% assign collection_hot_count = collection_hot_count | plus: 1 %}
-                                        {% endif %}
-                                    {% endfor %}
-                                    {% if collection_hot_count > 0 %}
+                                {% endfor %}
+                                {% assign product_types = product_types | split: ',' %}
+
+                                {% for product_type in product_types %}
+                                    {% if product_type != blank %}
                                         <li class="mb-24">
-                                            <button type="button" class="category-filter-btn text-gray-900 hover-text-main-600 border-0 bg-transparent p-0 text-start" data-filter="collection-{{ collection.handle }}">
-                                                {{ collection.title }}
+                                            <button type="button" class="category-filter-btn text-gray-900 hover-text-main-600 border-0 bg-transparent p-0 text-start" data-filter="{{ product_type | handleize }}">
+                                                {{ product_type }}
                                             </button>
                                         </li>
                                     {% endif %}
-                                {% endif %}
-                            {% endfor %}
+                                {% endfor %}
+                            {% endif %}
+
+                            {% if section.settings.show_collections %}
+                                {% for collection in collections %}
+                                    {% if collection.handle != 'all' and collection.products.size > 0 %}
+                                        {% assign collection_hot_count = 0 %}
+                                        {% for product in collection.products %}
+                                            {% if product.tags contains 'hot' or product.compare_at_price > product.price %}
+                                                {% assign collection_hot_count = collection_hot_count | plus: 1 %}
+                                            {% endif %}
+                                        {% endfor %}
+                                        {% if collection_hot_count > 0 %}
+                                            <li class="mb-24">
+                                                <button type="button" class="category-filter-btn text-gray-900 hover-text-main-600 border-0 bg-transparent p-0 text-start" data-filter="collection-{{ collection.handle }}">
+                                                    {{ collection.title }}
+                                                </button>
+                                            </li>
+                                        {% endif %}
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
                         </ul>
                     </div>
 
@@ -101,15 +117,21 @@
             </div>
 
             <div class="vendor-two-details__contents">
-                <img style="height: auto;" class="inner-banner-two bg-img rounded-16 overflow-hidden" src="{{ 'banner trending.png' | asset_url }}" width="1200" height="270" alt="Hot Deals Banner" />
+                {% if section.settings.banner_image != blank %}
+                    <img style="height: auto;" class="inner-banner-two bg-img rounded-16 overflow-hidden" src="{{ section.settings.banner_image | image_url: width: 1400 }}" width="1200" height="270" alt="{{ section.settings.section_title }}" />
+                {% else %}
+                    <img style="height: auto;" class="inner-banner-two bg-img rounded-16 overflow-hidden" src="{{ 'banner trending.png' | asset_url }}" width="1200" height="270" alt="{{ section.settings.section_title }}" />
+                {% endif %}
 
                 <div class="d-flex align-items-center justify-content-between flex-wrap mt-40 mb-32 gap-16">
-                    <form class="input-group w-100 max-w-418" id="searchForm">
-                        <input type="text" class="form-control common-input rounded-start-3" placeholder="{{ 'general.search_placeholder' | t | default: 'Search products...' }}" id="searchInput">
-                        <button type="button" class="input-group-text border-0 bg-main-two-600 rounded-end-3 text-white text-2xl hover-bg-main-two-700 px-24" id="searchButton">
-                            <i class="ph ph-magnifying-glass"></i>
-                        </button>
-                    </form>
+                    {% if section.settings.show_search %}
+                        <form class="input-group w-100 max-w-418" id="searchForm">
+                            <input type="text" class="form-control common-input rounded-start-3" placeholder="{{ 'general.search_placeholder' | t | default: 'Search products...' }}" id="searchInput">
+                            <button type="button" class="input-group-text border-0 bg-main-two-600 rounded-end-3 text-white text-2xl hover-bg-main-two-700 px-24" id="searchButton">
+                                <i class="ph ph-magnifying-glass"></i>
+                            </button>
+                        </form>
+                    {% endif %}
 
                     <div class="d-flex align-items-center justify-content-between justify-content-sm-end gap-16 flex-grow-1">
                         <span class="text-gray-900" id="resultCount">{{ 'general.loading_results' | t | default: 'Loading results...' }}</span>
@@ -137,21 +159,19 @@
                 </div>
 
                 <div class="list-grid-wrapper grid-cols-4" id="productGrid">
-                    {% for product in collections.all.products %}
-                        {% if product.tags contains 'hot' or product.compare_at_price > product.price %}
-                            {% assign product_collections = '' %}
-                            {% for collection in product.collections %}
-                                {% assign product_collections = product_collections | append: 'collection-' | append: collection.handle | append: ' ' %}
-                            {% endfor %}
-                            <div class="product-item" 
-                                 data-product-type="{{ product.type | handleize }}"
-                                 data-product-collections="{{ product_collections | strip }}"
-                                 data-product-tags="{{ product.tags | join: ' ' | handleize }}"
-                                 data-product-title="{{ product.title | downcase }}"
-                                 data-product-vendor="{{ product.vendor | downcase }}">
-                                {% render 'product-card', product: product %}
-                            </div>
-                        {% endif %}
+                    {% for product in hot_deal_products_all %}
+                        {% assign product_collections = '' %}
+                        {% for collection in product.collections %}
+                            {% assign product_collections = product_collections | append: 'collection-' | append: collection.handle | append: ' ' %}
+                        {% endfor %}
+                        <div class="product-item" 
+                                data-product-type="{{ product.type | handleize }}"
+                                data-product-collections="{{ product_collections | strip }}"
+                                data-product-tags="{{ product.tags | join: ' ' | handleize }}"
+                                data-product-title="{{ product.title | downcase }}"
+                                data-product-vendor="{{ product.vendor | downcase }}">
+                            {% render 'product-card', product: product %}
+                        </div>
                     {% endfor %}
                 </div>
             </div>
@@ -160,6 +180,7 @@
     </div>
 </section>
 <!-- ============================== Hot Deals Section End =============================== -->
+{% endif %}
 
 {% stylesheet %}
 .category-filter-btn.active {
@@ -288,6 +309,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const searchButton = document.getElementById('searchButton');
     const searchForm = document.getElementById('searchForm');
     const resultCountSpan = document.getElementById('resultCount');
+
+    if (!productGrid) {
+        return;
+    }
     
     let currentCategoryFilter = 'all';
     let currentSearchQuery = '';
@@ -367,42 +392,48 @@ document.addEventListener('DOMContentLoaded', function() {
     
     function performSearch(searchQuery = '') {
         currentSearchQuery = searchQuery;
-        searchButton.classList.add('loading');
+        if (searchButton) {
+            searchButton.classList.add('loading');
+        }
         productGrid.classList.add('filter-loading');
         
         setTimeout(() => {
             const visibleCount = filterProducts(currentCategoryFilter, currentSearchQuery);
             updateResultCount(visibleCount);
             
-            searchButton.classList.remove('loading');
+            if (searchButton) {
+                searchButton.classList.remove('loading');
+            }
             productGrid.classList.remove('filter-loading');
         }, 300);
     }
-    
-    searchForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        performSearch(searchInput.value);
-    });
-    
-    searchButton.addEventListener('click', function(e) {
-        e.preventDefault();
-        performSearch(searchInput.value);
-    });
-    
-    let searchTimeout;
-    searchInput.addEventListener('input', function() {
-        clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(() => {
-            performSearch(this.value);
-        }, 300);
-    });
-    
-    searchInput.addEventListener('keyup', function(e) {
-        if (e.key === 'Escape' || this.value === '') {
-            this.value = '';
-            performSearch('');
-        }
-    });
+
+    if (searchForm && searchInput && searchButton) {
+        searchForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            performSearch(searchInput.value);
+        });
+
+        searchButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            performSearch(searchInput.value);
+        });
+
+        let searchTimeout;
+        searchInput.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                performSearch(this.value);
+            }, 300);
+        });
+
+        searchInput.addEventListener('keyup', function(e) {
+            if (e.key === 'Escape' || this.value === '') {
+                this.value = '';
+                performSearch('');
+            }
+        });
+    }
     
     categoryButtons.forEach(button => {
         button.addEventListener('click', function(e) {
@@ -432,8 +463,8 @@ document.addEventListener('DOMContentLoaded', function() {
     
     const initialCount = filterProducts('all', '');
     updateResultCount(initialCount);
-});
-{% endjavascript %}
+    });
+    {% endjavascript %}
 
 {% schema %}
 {

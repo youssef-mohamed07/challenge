@@ -1,0 +1,16 @@
+{
+  "sections": {
+    "main": {
+      "type": "page",
+      "settings": {}
+    },
+    "partner_hub": {
+      "type": "partner-hub",
+      "settings": {}
+    }
+  },
+  "order": [
+    "main",
+    "partner_hub"
+  ]
+}
