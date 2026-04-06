@@ -1,4 +1,5 @@
 {% assign current_page_handle = page.handle | default: '' %}
+{% assign fallback_brand_assets = '1.webp,2.avif,3.webp,4.webp,5.webp,6.webp,7.webp,8.webp,9.webp' | split: ',' %}
 {% if current_page_handle == 'our-brands' %}
 {% comment %} Our Brands Section {% endcomment %}
 <section class="brands py-80 our-brands-page">
@@ -17,12 +18,16 @@
         {% for block in section.blocks %}
           {% case block.type %}
             {% when 'brand' %}
+              {% assign fallback_index = forloop.index0 | modulo: fallback_brand_assets.size %}
+              {% assign fallback_asset = fallback_brand_assets[fallback_index] | strip %}
               <div class="col-lg-{{ section.settings.columns_desktop }} col-md-6 mb-24" {{ block.shopify_attributes }}>
                 <div class="vendors-two-item rounded-12 overflow-hidden bg-color-three border border-neutral-50 hover-border-main-two-600 transition-2">
                   <div class="vendors-two-item__top bg-overlay style-two position-relative">
                     <div class="vendors-two-item__thumbs h-210">
                       {% if block.settings.brand_image != blank %}
                         {{ block.settings.brand_image | image_url: width: 400, height: 210 | image_tag: alt: block.settings.brand_name, class: 'cover-img', width: '400', height: '210' }}
+                      {% elsif fallback_asset != blank %}
+                        {{ fallback_asset | asset_url | image_tag: alt: block.settings.brand_name, class: 'cover-img', width: '400', height: '210', loading: 'lazy' }}
                       {% else %}
                         {{ 'placeholder.svg' | asset_url | image_tag: alt: block.settings.brand_name, class: 'cover-img', width: '400', height: '210' }}
                       {% endif %}
@@ -32,6 +37,10 @@
                         {% if block.settings.brand_logo != blank %}
                           <span class="w-80 h-80 flex-center bg-white rounded-circle flex-shrink-0">
                             {{ block.settings.brand_logo | image_url: width: 60, height: 60 | image_tag: alt: block.settings.brand_name, width: '60', height: '60' }}
+                          </span>
+                        {% elsif fallback_asset != blank %}
+                          <span class="w-80 h-80 flex-center bg-white rounded-circle flex-shrink-0">
+                            {{ fallback_asset | asset_url | image_tag: alt: block.settings.brand_name, width: '60', height: '60', loading: 'lazy' }}
                           </span>
                         {% endif %}
                         <div>
@@ -65,8 +74,15 @@
           {% assign vendor_name = vendor | strip %}
           {% if vendor_name != blank %}
             {% assign vendors_rendered = vendors_rendered | plus: 1 %}
+            {% assign fallback_index = forloop.index0 | modulo: fallback_brand_assets.size %}
+            {% assign fallback_asset = fallback_brand_assets[fallback_index] | strip %}
             <div class="col-lg-3 col-md-6 mb-24">
               <div class="our-brands-page__vendor-fallback rounded-12 border border-neutral-50 p-24 h-100 text-center">
+                {% if fallback_asset != blank %}
+                  <span class="our-brands-page__vendor-media">
+                    <img src="{{ fallback_asset | asset_url }}" alt="{{ vendor_name }}" loading="lazy" width="84" height="84">
+                  </span>
+                {% endif %}
                 <span class="our-brands-page__vendor-badge">Brand</span>
                 <h6 class="mt-16 mb-0 text-heading">{{ vendor_name }}</h6>
               </div>
@@ -98,6 +114,26 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
+}
+
+.our-brands-page__vendor-media {
+  width: 84px;
+  height: 84px;
+  border-radius: 999px;
+  background: #fff;
+  border: 1px solid #d9e6f2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+
+.our-brands-page__vendor-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 8px;
 }
 
 .our-brands-page__vendor-badge {
