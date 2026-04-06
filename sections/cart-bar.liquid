@@ -1,0 +1,282 @@
+<aside class="cart-overlay" id="cartOverlay">
+  <div class="overlay-bg"></div>
+  
+  <div class="cart-drawer" id="cartDrawer">
+    <div class="cart-header">
+      <button class="close-btn" type="button" data-cart-close>
+        <svg viewBox="0 0 24 24" fill="none">
+          <path
+            fill-rule="evenodd"
+            clip-rule="evenodd"
+            d="M5.29289 5.29289C5.68342 4.90237 6.31658 4.90237 6.70711 5.29289L12 10.5858L17.2929 5.29289C17.6834 4.90237 18.3166 4.90237 18.7071 5.29289C19.0976 5.68342 19.0976 6.31658 18.7071 6.70711L13.4142 12L18.7071 17.2929C19.0976 17.6834 19.0976 18.3166 18.7071 18.7071C18.3166 19.0976 17.6834 19.0976 17.2929 18.7071L12 13.4142L6.70711 18.7071C6.31658 19.0976 5.68342 19.0976 5.29289 18.7071C4.90237 18.3166 4.90237 17.68342 5.29289 17.2929L10.5858 12L5.29289 6.70711C4.90237 6.31658 4.90237 5.68342 5.29289 5.29289Z"
+            fill="#fff"
+          />
+        </svg>
+      </button>
+      
+      <div class="cart-header__content">
+        <h3 class="cart-title">
+          {{ 'cart.title' | t }}
+        </h3>
+        {% if cart.item_count > 0 %}
+          <span class="cart-count-badge">{{ cart.item_count }}</span>
+        {% endif %}
+      </div>
+    </div>
+
+    <ul class="cart-items" id="cartDrawerBody">
+      {% if cart.item_count > 0 %}
+        {% for item in cart.items %}
+          <li class="cart-item" data-item-key="{{ item.key }}" data-item-quantity="{{ item.quantity }}">
+            <a href="{{ item.url }}" class="cart-item__thumb">
+              {% if item.image %}
+                <img
+                  src="{{ item.image | image_url: width: 80, height: 80 }}"
+                  alt="{{ item.image.alt | escape }}"
+                  loading="lazy"
+                  width="80"
+                  height="80"
+                />
+              {% else %}
+                {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
+              {% endif %}
+            </a>
+
+            <div class="item-info">
+              <a href="{{ item.url }}" class="item-name">{{ item.product.title }}</a>
+              {% if item.variant.title != 'Default Title' %}
+                <p class="item-variant">{{ item.variant.title }}</p>
+              {% endif %}
+
+              <p class="item-price">{{ item.final_price | money }}</p>
+
+              <div class="cart-item__controls">
+                <div class="drawer-qty" role="group" aria-label="{{ 'cart.quantity' | t }}">
+                  <button
+                    type="button"
+                    class="drawer-qty__btn"
+                    data-action="decrease"
+                    data-item-key="{{ item.key }}"
+                    aria-label="Decrease quantity"
+                  >
+                    <i class="ph ph-minus"></i>
+                  </button>
+                  <span class="drawer-qty__value">{{ item.quantity }}</span>
+                  <button
+                    type="button"
+                    class="drawer-qty__btn"
+                    data-action="increase"
+                    data-item-key="{{ item.key }}"
+                    aria-label="Increase quantity"
+                  >
+                    <i class="ph ph-plus"></i>
+                  </button>
+                </div>
+
+                <button type="button" class="drawer-remove-btn" data-item-key="{{ item.key }}" data-action="remove">
+                  {{ 'cart.remove' | t }}
+                </button>
+              </div>
+            </div>
+
+            <p class="item-line-price">{{ item.final_line_price | money }}</p>
+          </li>
+        {% endfor %}
+      {% else %}
+        <li class="cart-item empty-cart">
+          <div class="empty-cart__icon" aria-hidden="true">
+            <i class="ph-fill ph-shopping-cart"></i>
+          </div>
+          <div class="item-info">
+            <p class="item-name">{{ 'cart.empty_title' | t }}</p>
+            <p class="item-price">{{ 'cart.empty_message' | t }}</p>
+            <a href="{{ routes.all_products_collection_url }}" class="empty-cart__cta">
+              {{ 'cart.continue_shopping' | t }}
+            </a>
+          </div>
+        </li>
+      {% endif %}
+    </ul>
+
+    <div class="cart-footer">
+      <hr />
+      
+      <div class="total">
+        <p>{{ 'cart.total' | t }}:</p>
+        <p class="total-price">{{ cart.total_price | money }}</p>
+      </div>
+      <p class="cart-summary-note">Shipping and taxes calculated at checkout</p>
+      
+      <button class="view-cart-btn" onclick="window.location.href='{{ routes.cart_url }}'">
+        {{ 'cart.view_cart' | t }}
+      </button>
+      
+      <button class="checkout-btn" onclick="window.location.href='{{ routes.checkout_url }}'">
+        {{ 'cart.proceed_to_checkout' | t }}
+      </button>
+    </div>
+  </div>
+</aside>
+
+<script>
+  (() => {
+    const overlay = document.getElementById('cartOverlay');
+    const drawer = document.getElementById('cartDrawer');
+    const body = document.body;
+    let isChanging = false;
+
+    if (!overlay || !drawer) return;
+
+    const syncCountBadge = (tmp) => {
+      const headerContent = drawer.querySelector('.cart-header__content');
+      if (!headerContent) return;
+
+      const currentBadge = headerContent.querySelector('.cart-count-badge');
+      const freshBadge = tmp.querySelector('.cart-count-badge');
+
+      if (freshBadge && currentBadge) {
+        currentBadge.textContent = freshBadge.textContent;
+      } else if (freshBadge && !currentBadge) {
+        headerContent.appendChild(freshBadge.cloneNode(true));
+      } else if (!freshBadge && currentBadge) {
+        currentBadge.remove();
+      }
+    };
+
+    const updateCartContent = async () => {
+      try {
+        const url = new URL(window.location.href);
+        url.searchParams.set('section_id', 'cart-bar');
+        const res = await fetch(url.toString(), { credentials: 'same-origin' });
+        
+        if (res.ok) {
+          const html = await res.text();
+          const tmp = document.createElement('div');
+          tmp.innerHTML = html;
+          
+          const newBody = tmp.querySelector('#cartDrawerBody');
+          if (newBody) {
+            const currentBody = document.getElementById('cartDrawerBody');
+            if (currentBody) currentBody.replaceWith(newBody);
+          }
+          
+          const newTotal = tmp.querySelector('.total-price');
+          if (newTotal) {
+            const currentTotal = document.querySelector('.total-price');
+            if (currentTotal) currentTotal.textContent = newTotal.textContent;
+          }
+
+          syncCountBadge(tmp);
+        }
+      } catch (e) {
+        console.error('Error updating cart:', e);
+      }
+    };
+
+    const open = async () => {
+      await updateCartContent();
+      overlay.classList.add('active');
+      body.classList.add('overflow-hidden');
+      
+      if (window.innerWidth <= 768) {
+        body.style.position = 'fixed';
+        body.style.width = '100%';
+      }
+    };
+
+    const close = () => {
+      overlay.classList.remove('active');
+      body.classList.remove('overflow-hidden');
+      
+      if (window.innerWidth <= 768) {
+        body.style.position = '';
+        body.style.width = '';
+      }
+    };
+
+    const changeItemQuantity = async (itemKey, quantity) => {
+      if (!itemKey || isChanging) return;
+      isChanging = true;
+      drawer.classList.add('is-updating');
+
+      try {
+        const safeQuantity = Math.max(Number(quantity) || 0, 0);
+        const payload = { updates: {} };
+        payload.updates[itemKey] = safeQuantity;
+        
+        const response = await fetch('/cart/update.js', {
+          method: 'POST',
+          credentials: 'same-origin',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+          },
+          body: JSON.stringify(payload),
+        });
+        
+        if (response.ok) {
+          await updateCartContent();
+          if (safeQuantity <= 0) {
+            document.dispatchEvent(new CustomEvent('cart:item-removed'));
+          } else {
+            document.dispatchEvent(new CustomEvent('cart:item-changed'));
+          }
+        }
+      } catch (e) {
+        console.error('Error changing item quantity:', e);
+      } finally {
+        isChanging = false;
+        drawer.classList.remove('is-updating');
+      }
+    };
+
+    document.addEventListener('cart:updated', () => {
+      if (overlay.classList.contains('active')) {
+        updateCartContent();
+      }
+    });
+
+    window.openCartDrawer = open;
+    window.closeCartDrawer = close;
+    window.toggleCartDrawer = () => {
+      if (!overlay.classList.contains('active')) open();
+      else close();
+    };
+    window.updateCartContent = updateCartContent;
+
+    overlay.addEventListener('click', (e) => {
+      if (e.target.classList.contains('overlay-bg')) close();
+    });
+
+    drawer.addEventListener('click', (e) => {
+      if (e.target && e.target.closest('[data-cart-close]')) close();
+
+      const qtyBtn = e.target && e.target.closest('[data-action="increase"], [data-action="decrease"]');
+      if (qtyBtn) {
+        const action = qtyBtn.getAttribute('data-action');
+        const itemKey = qtyBtn.getAttribute('data-item-key');
+        const itemElement = qtyBtn.closest('.cart-item');
+        const qtyValueEl = itemElement ? itemElement.querySelector('.drawer-qty__value') : null;
+        const currentQty = Number(qtyValueEl ? qtyValueEl.textContent : itemElement ? itemElement.getAttribute('data-item-quantity') : 0) || 0;
+        const nextQty = action === 'increase' ? currentQty + 1 : Math.max(currentQty - 1, 0);
+
+        changeItemQuantity(itemKey, nextQty);
+        return;
+      }
+      
+      if (e.target && e.target.closest('[data-action="remove"]')) {
+        const removeBtn = e.target.closest('[data-action="remove"]');
+        const itemKey = removeBtn.getAttribute('data-item-key');
+        if (itemKey) {
+          changeItemQuantity(itemKey, 0);
+        }
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && overlay.classList.contains('active')) {
+        close();
+      }
+    });
+  })();
+</script>

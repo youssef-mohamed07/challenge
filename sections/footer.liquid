@@ -1,0 +1,249 @@
+<footer class="footer">
+    <div class="waves">
+        <div class="wave" id="wave1"></div>
+        <div class="wave" id="wave2"></div>
+        <div class="wave" id="wave3"></div>
+        <div class="wave" id="wave4"></div>
+    </div>
+    
+    <div class="footer-content">
+        <!-- Quick Links -->
+        <div class="footer-section">
+            <h4>{{ 'footer.quick_links.title' | t }}</h4>
+            <ul class="footer-links">
+                {% for link in linklists.main-menu.links %}
+                    <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+                {% endfor %}
+                {% if pages.our-brands %}
+                    <li><a href="{{ pages.our-brands.url }}">{{ 'general.all_brands' | t }}</a></li>
+                {% endif %}
+                {% if pages.hot-deals %}
+                    <li><a href="{{ pages.hot-deals.url }}">{{ 'sections.deal.title' | t }}</a></li>
+                {% endif %}
+            </ul>
+        </div>
+
+        <div class="footer-section">
+            <h4>{{ 'general.collections' | t }}</h4>
+            <ul class="footer-links">
+                <li><a href="{{ routes.collections_url }}">{{ 'general.all_collections' | t }}</a></li>
+                {% assign category_count = 0 %}
+                {% for collection in collections %}
+                    {% if collection.products_count > 0 and category_count < 6 %}
+                        <li><a href="{{ collection.url }}">{{ collection.title }}</a></li>
+                        {% assign category_count = category_count | plus: 1 %}
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
+
+        <!-- Customer Service -->
+        <div class="footer-section">
+            <h4>{{ 'footer.customer_service.title' | t }}</h4>
+            <ul class="footer-links">
+                <li><a href="{{ routes.cart_url }}">{{ 'header.cart' | t }}</a></li>
+                {% if section.settings.track_order_url != blank %}
+                    <li><a href="{{ section.settings.track_order_url }}" target="_blank">{{ 'footer.customer_service.track_order' | t }}</a></li>
+                {% endif %}
+                {% if section.settings.support_url != blank %}
+                    <li><a href="{{ section.settings.support_url }}" target="_blank">{{ 'footer.customer_service.support' | t }}</a></li>
+                {% endif %}
+                {% if section.settings.shipping_info_url != blank %}
+                    <li><a href="{{ section.settings.shipping_info_url }}" target="_blank">{{ 'footer.customer_service.shipping_info' | t }}</a></li>
+                {% endif %}
+                {% if section.settings.returns_url != blank %}
+                    <li><a href="{{ section.settings.returns_url }}" target="_blank">{{ 'footer.customer_service.returns' | t }}</a></li>
+                {% endif %}
+                {% if section.settings.faq_url != blank %}
+                    <li><a href="{{ section.settings.faq_url }}" target="_blank">{{ 'footer.customer_service.faq' | t }}</a></li>
+                {% endif %}
+            </ul>
+        </div>
+
+        <!-- Contact Information -->
+        <div class="footer-section">
+            <h4>{{ 'footer.contact.title' | t }}</h4>
+            <div class="contact-info">
+                {% if section.settings.phone_number != blank %}
+                    <p><i class="ph ph-phone"></i> <a href="tel:{{ section.settings.phone_number }}">{{ section.settings.phone_number }}</a></p>
+                {% endif %}
+                {% if section.settings.email != blank %}
+                    <p><i class="ph ph-envelope"></i> <a href="mailto:{{ section.settings.email }}">{{ section.settings.email }}</a></p>
+                {% endif %}
+                {% if section.settings.address != blank %}
+                    <p><i class="ph ph-map-pin"></i> {{ section.settings.address }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Social Media Icons -->
+    <ul class="social-icons">
+            <li>
+                <a href="{{ section.settings.facebook_url }}" target="_blank" rel="noopener" aria-label="Facebook">
+                    <svg class="social-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                        <path d="M480,257.35c0-123.7-100.3-224-224-224s-224,100.3-224,224c0,111.8,81.9,204.47,189,221.29V322.12H164.11V257.35H221V208c0-56.13,33.45-87.16,84.61-87.16,24.51,0,50.15,4.38,50.15,4.38v55.13H327.5c-27.81,0-36.51,17.26-36.51,35v42h62.12l-9.92,64.77H291V478.66C398.1,461.85,480,369.18,480,257.35Z" fill="white"/>
+                    </svg>
+                </a>
+            </li>
+        
+            <li>
+                <a href="{{ section.settings.twitter_url }}" target="_blank" rel="noopener" aria-label="Twitter">
+                    <svg class="social-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+                        <path d="M9.33349 6.92867L14.5459 1H13.3109L8.78291 6.14671L5.16908 1H1L6.46604 8.78342L1 15H2.235L7.01369 9.56363L10.8309 15H15L9.33349 6.92867ZM7.64142 8.85175L7.08675 8.07621L2.68037 1.91103H4.57759L8.13472 6.88838L8.68705 7.66391L13.3103 14.1334H11.4131L7.64142 8.85175Z" fill="white"/>
+                    </svg>
+                </a>
+            </li>
+        
+            <li>
+                <a href="{{ section.settings.whatsapp_url }}" target="_blank" rel="noopener" aria-label="WhatsApp">
+                    <svg class="social-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                        <path d="M414.73,97.1A222.14,222.14,0,0,0,256.94,32C134,32,33.92,131.58,33.87,254A220.61,220.61,0,0,0,63.65,365L32,480l118.25-30.87a223.63,223.63,0,0,0,106.6,27h.09c122.93,0,223-99.59,223.06-222A220.18,220.18,0,0,0,414.73,97.1ZM256.94,438.66h-.08a185.75,185.75,0,0,1-94.36-25.72l-6.77-4L85.56,427.26l18.73-68.09-4.41-7A183.46,183.46,0,0,1,71.53,254c0-101.73,83.21-184.5,185.48-184.5A185,185,0,0,1,442.34,254.14C442.3,355.88,359.13,438.66,256.94,438.66ZM358.63,300.47c-5.57-2.78-33-16.2-38.08-18.05s-8.83-2.78-12.54,2.78-14.4,18-17.65,21.75-6.5,4.16-12.07,1.38-23.54-8.63-44.83-27.53c-16.57-14.71-27.75-32.87-31-38.42s-.35-8.56,2.44-11.32c2.51-2.49,5.57-6.48,8.36-9.72s3.72-5.56,5.57-9.26.93-6.94-.46-9.71-12.54-30.08-17.18-41.19c-4.53-10.82-9.12-9.35-12.54-9.52-3.25-.16-7-.2-10.69-.2a20.53,20.53,0,0,0-14.86,6.94c-5.11,5.56-19.51,19-19.51,46.28s20,53.68,22.76,57.38,39.3,59.73,95.21,83.76a323.11,323.11,0,0,0,31.78,11.68c13.35,4.22,25.5,3.63,35.1,2.2,10.71-1.59,33-13.42,37.63-26.38s4.64-24.06,3.25-26.37S364.21,303.24,358.63,300.47Z" fill="white"/>
+                    </svg>
+                </a>
+            </li>
+        
+            <li>
+                <a href="{{ section.settings.instagram_url }}" target="_blank" rel="noopener" aria-label="Instagram">
+                    <svg class="social-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                        <path d="M349.33,69.33a93.62,93.62,0,0,1,93.34,93.34V349.33a93.62,93.62,0,0,1-93.34,93.34H162.67a93.62,93.62,0,0,1-93.34-93.34V162.67a93.62,93.62,0,0,1,93.34-93.34H349.33m0-37.33H162.67C90.8,32,32,90.8,32,162.67V349.33C32,421.2,90.8,480,162.67,480H349.33C421.2,480,480,421.2,480,349.33V162.67C480,90.8,421.2,32,349.33,32Z" fill="white"/>
+                        <path d="M377.33,162.67a28,28,0,1,1,28-28A27.94,27.94,0,0,1,377.33,162.67Z" fill="white"/>
+                        <path d="M256,181.33A74.67,74.67,0,1,1,181.33,256,74.75,74.75,0,0,1,256,181.33M256,144A112,112,0,1,0,368,256,112,112,0,0,0,256,144Z" fill="white"/>
+                    </svg>
+                </a>
+            </li>
+        
+    </ul>
+
+    <!-- Legal Links -->
+    <div class="footer-legal">
+        <ul class="legal-links">
+            {% if section.settings.privacy_policy_url != blank %}
+                <li><a href="{{ section.settings.privacy_policy_url }}">{{ 'footer.legal.privacy_policy' | t }}</a></li>
+            {% endif %}
+            {% if section.settings.terms_of_service_url != blank %}
+                <li><a href="{{ section.settings.terms_of_service_url }}">{{ 'footer.legal.terms_of_service' | t }}</a></li>
+            {% endif %}
+            {% if section.settings.cookie_policy_url != blank %}
+                <li><a href="{{ section.settings.cookie_policy_url }}">{{ 'footer.legal.cookie_policy' | t }}</a></li>
+            {% endif %}
+            {% if section.settings.accessibility_url != blank %}
+                <li><a href="{{ section.settings.accessibility_url }}">{{ 'footer.legal.accessibility' | t }}</a></li>
+            {% endif %}
+        </ul>
+    </div>
+
+    <p class="copyright">©{{ 'now' | date: '%Y' }} {{ shop.name }} | {{ 'footer.copyright.all_rights_reserved' | t }}</p>
+</footer>
+
+{% schema %}
+{
+  "name": "Footer",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Contact Information"
+    },
+    {
+      "type": "text",
+      "id": "phone_number",
+      "label": "Phone Number",
+      "default": "+1-202-555-0148"
+    },
+    {
+      "type": "text",
+      "id": "email",
+      "label": "Email Address",
+      "default": "info@example.com"
+    },
+    {
+      "type": "textarea",
+      "id": "address",
+      "label": "Address",
+      "default": "123 Main Street, City, State 12345"
+    },
+    {
+      "type": "header",
+      "content": "Social Media Links"
+    },
+    {
+      "type": "url",
+      "id": "facebook_url",
+      "label": "Facebook URL"
+    },
+    {
+      "type": "url",
+      "id": "twitter_url",
+      "label": "Twitter URL"
+    },
+    {
+      "type": "url",
+      "id": "instagram_url",
+      "label": "Instagram URL"
+    },
+    {
+      "type": "url",
+      "id": "whatsapp_url",
+      "label": "WhatsApp URL"
+    },
+    {
+      "type": "header",
+      "content": "Customer Service Links"
+    },
+    {
+      "type": "url",
+      "id": "track_order_url",
+      "label": "Track Order URL"
+    },
+    {
+      "type": "url",
+      "id": "support_url",
+      "label": "Support Center URL"
+    },
+    {
+      "type": "url",
+      "id": "shipping_info_url",
+      "label": "Shipping Information URL"
+    },
+    {
+      "type": "url",
+      "id": "returns_url",
+      "label": "Returns & Exchanges URL"
+    },
+    {
+      "type": "url",
+      "id": "faq_url",
+      "label": "FAQ URL"
+    },
+    {
+      "type": "header",
+      "content": "Legal Links"
+    },
+    {
+      "type": "url",
+      "id": "privacy_policy_url",
+      "label": "Privacy Policy URL"
+    },
+    {
+      "type": "url",
+      "id": "terms_of_service_url",
+      "label": "Terms of Service URL"
+    },
+    {
+      "type": "url",
+      "id": "cookie_policy_url",
+      "label": "Cookie Policy URL"
+    },
+    {
+      "type": "url",
+      "id": "accessibility_url",
+      "label": "Accessibility URL"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Footer"
+    }
+  ]
+}
+{% endschema %}

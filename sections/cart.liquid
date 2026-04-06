@@ -1,0 +1,362 @@
+<div class="mb-0 py-26 bg-main-two-50">
+    <div class="container container-lg">
+        <div class="flex-between flex-wrap gap-16">
+            <h6 class="mb-0">{{ 'cart.title' | t }}</h6>
+            <ul class="flex-align gap-8 flex-wrap">
+                <li class="text-sm">
+                    <a href="{{ routes.root_url }}" class="text-gray-900 flex-align gap-8 hover-text-main-600">
+                        <i class="ph ph-house"></i>
+                        {{ 'general.home' | t }}
+                    </a>
+                </li>
+                <li class="flex-align">
+                    <i class="ph ph-caret-right"></i>
+                </li>
+                <li class="text-sm text-main-600">{{ 'cart.title' | t }}</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<section class="py-80">
+    <div class="container container-lg">
+        {% if cart.item_count > 0 %}
+            <div class="row gy-4">
+                <div class="col-xl-9 col-lg-8">
+                    <div class="border border-gray-100 rounded-8 px-40 py-48">
+                        <div class="overflow-x-auto">
+                            <form action="{{ routes.cart_url }}" method="post" id="cart-form">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th class="h6 mb-0 text-lg fw-bold">{{ 'cart.remove' | t }}</th>
+                                            <th class="h6 mb-0 text-lg fw-bold">{{ 'cart.product_name' | t }}</th>
+                                            <th class="h6 mb-0 text-lg fw-bold">{{ 'cart.price' | t }}</th>
+                                            <th class="h6 mb-0 text-lg fw-bold">{{ 'cart.quantity' | t }}</th>
+                                            <th class="h6 mb-0 text-lg fw-bold">{{ 'cart.subtotal' | t }}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for item in cart.items %}
+                                            <tr>
+                                                <td>
+                                                    <a href="{{ item.url_to_remove }}" class="flex-align gap-12 hover-text-danger-600">
+                                                        <i class="ph ph-x-circle text-2xl d-flex"></i>
+                                                        {{ 'cart.remove' | t }}
+                                                    </a>
+                                                </td>
+                                                <td>
+                                                    <div class="d-flex align-items-center gap-24">
+                                                        <a href="{{ item.url }}" class="border border-gray-100 rounded-8 flex-center">
+                                                            {% if item.image %}
+                                                                <img src="{{ item.image | image_url: width: 80, height: 80 }}" alt="{{ item.image.alt | escape }}" loading="lazy" width="80" height="80">
+                                                            {% else %}
+                                                                {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
+                                                            {% endif %}
+                                                        </a>
+                                                        <div class="text-start">
+                                                            <h6 class="text-lg fw-semibold mb-8">
+                                                                <a href="{{ item.url }}" class="text-line-2" tabindex="0">{{ item.product.title }}</a>
+                                                            </h6>
+                                                            
+                                                            {% if item.product.vendor %}
+                                                                <div class="flex-align gap-16 mb-16">
+                                                                    <span class="text-neutral-600 text-sm">{{ item.product.vendor }}</span>
+                                                                </div>
+                                                            {% endif %}
+
+                                                            {% if item.variant.title != 'Default Title' %}
+                                                                <div class="flex-align gap-16">
+                                                                    <span class="btn bg-gray-50 text-heading text-sm py-7 px-8 rounded-8 flex-center gap-8 fw-medium">
+                                                                        {{ item.variant.title }}
+                                                                    </span>
+                                                                </div>
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <span class="text-lg h6 mb-0 fw-semibold">
+                                                        {% if item.original_price != item.final_price %}
+                                                            <span class="text-gray-400 text-decoration-line-through">{{ item.original_price | money }}</span>
+                                                        {% endif %}
+                                                        {{ item.final_price | money }}
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <div class="d-flex rounded-4 overflow-hidden">
+                                                        <button type="button" class="quantity__minus border border-end border-gray-100 flex-shrink-0 h-48 w-48 text-neutral-600 flex-center hover-bg-main-600 hover-text-white" data-action="decrease" data-item-key="{{ item.key }}" aria-label="Decrease quantity">
+                                                            <i class="ph ph-minus"></i>
+                                                        </button>
+                                                        <input type="number" 
+                                                               name="updates[]" 
+                                                               class="quantity__input flex-grow-1 border border-gray-100 border-start-0 border-end-0 text-center w-32 px-4" 
+                                                               value="{{ item.quantity }}" 
+                                                               min="1" 
+                                                               step="1"
+                                                               data-item-key="{{ item.key }}"
+                                                               aria-label="{{ 'cart.quantity' | t }} for {{ item.product.title }}">
+                                                        <button type="button" class="quantity__plus border border-end border-gray-100 flex-shrink-0 h-48 w-48 text-neutral-600 flex-center hover-bg-main-600 hover-text-white" data-action="increase" data-item-key="{{ item.key }}" aria-label="Increase quantity">
+                                                            <i class="ph ph-plus"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <span class="text-lg h6 mb-0 fw-semibold">
+                                                        {% if item.original_line_price != item.final_line_price %}
+                                                            <span class="text-gray-400 text-decoration-line-through">{{ item.original_line_price | money }}</span>
+                                                        {% endif %}
+                                                        {{ item.final_line_price | money }}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-lg-4">
+                    <div class="border border-gray-100 rounded-8 px-24 py-40">
+                        <h6 class="text-xl mb-32">{{ 'cart.cart_totals' | t }}</h6>
+                        <div class="bg-color-three rounded-8 p-24">
+                            <div class="mb-32 flex-between gap-8">
+                                <span class="text-gray-900 font-heading-two">{{ 'cart.subtotal' | t }}</span>
+                                <span class="text-gray-900 fw-semibold">{{ cart.total_price | money }}</span>
+                            </div>
+                            <div class="mb-0 flex-between gap-8">
+                                <span class="text-gray-900 font-heading-two">{{ 'cart.estimated_tax' | t }}</span>
+                                <span class="text-gray-900 fw-semibold">{{ 0 | times: 0.04 | money }}</span>
+                            </div>
+                        </div>  
+                        <div class="bg-color-three rounded-8 p-24 mt-24">
+                            <div class="flex-between gap-8">
+                                <span class="text-gray-900 text-xl fw-semibold">{{ 'cart.total' | t }}</span>
+                                <span class="text-gray-900 text-xl fw-semibold">{{ cart.total_price | money }}</span>
+                            </div>
+                        </div>  
+                        <button type="submit" name="checkout" form="cart-form" class="btn btn-main mt-40 py-18 w-100 rounded-8">{{ 'cart.proceed_to_checkout' | t }}</button>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="text-center py-80">
+                <div class="mb-32">
+                    <i class="ph ph-shopping-cart text-6xl text-gray-300"></i>
+                </div>
+                <h2 class="mb-16">{{ 'cart.empty_title' | t }}</h2>
+                <p class="text-gray-600 mb-32">{{ 'cart.empty_message' | t }}</p>
+                <a href="{{ routes.all_products_collection_url }}" class="btn btn-main py-18 px-32 rounded-8">
+                    {{ 'cart.continue_shopping' | t }}
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</section>
+
+{% stylesheet %}
+.quantity__input {
+    background: transparent;
+    border: none;
+    outline: none;
+    font-weight: 500;
+}
+
+.quantity__input:focus {
+    box-shadow: none;
+}
+
+.quantity__minus,
+.quantity__plus {
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.2s ease;
+}
+
+.quantity__minus:hover,
+.quantity__plus:hover {
+    transform: scale(1.05);
+}
+
+.quantity__minus i,
+.quantity__plus i {
+    pointer-events: none;
+}
+
+@media (max-width: 767px) {
+    .quantity__input {
+        width: 50px;
+    }
+    
+    .quantity__minus,
+    .quantity__plus {
+        width: 40px;
+        height: 40px;
+    }
+}
+{% endstylesheet %}
+
+{% javascript %}
+(function() {
+    'use strict';
+    
+    let isUpdating = false;
+    let eventsBound = false;
+    
+    function getElement(selector) {
+        return document.querySelector(selector);
+    }
+    
+    function getAllElements(selector) {
+        return document.querySelectorAll(selector);
+    }
+    
+    function addEvent(element, event, handler) {
+        if (element) {
+            element.addEventListener(event, handler);
+        }
+    }
+    
+    function addEventDelegation(parent, selector, event, handler) {
+        if (parent) {
+            parent.addEventListener(event, function(e) {
+                let target = e.target;
+                
+                if (target.matches && target.matches(selector)) {
+                    handler.call(target, e);
+                    return;
+                }
+                
+                target = e.target.closest(selector);
+                if (target) {
+                    handler.call(target, e);
+                }
+            });
+        }
+    }
+    
+    function handleQuantityChange(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        let button = e.target;
+        if (!button.hasAttribute('data-action')) {
+            button = e.target.closest('.quantity__minus, .quantity__plus');
+        }
+        
+        if (!button) return;
+        
+        const action = button.getAttribute('data-action');
+        const itemKey = button.getAttribute('data-item-key');
+        const input = getElement('input[data-item-key="' + itemKey + '"]');
+        
+        if (!input) return;
+        
+        if (button.disabled) return;
+        button.disabled = true;
+        
+        let currentValue = parseInt(input.value) || 1;
+        let newValue = currentValue;
+        
+        if (action === 'increase') {
+            newValue = currentValue + 1;
+        } else if (action === 'decrease' && currentValue > 1) {
+            newValue = currentValue - 1;
+        }
+        
+        input.value = newValue;
+        
+        setTimeout(function() {
+            button.disabled = false;
+        }, 300);
+        
+        updateCart();
+    }
+    
+    function handleQuantityInput(e) {
+        const input = e.currentTarget;
+        const value = parseInt(input.value) || 1;
+        
+        if (value < 1) {
+            input.value = 1;
+        } else {
+            input.value = value;
+        }
+        
+        if (e.type === 'blur') {
+            updateCart();
+        }
+    }
+    
+    function updateCart() {
+        if (isUpdating) return;
+        isUpdating = true;
+        
+        const form = getElement('#cart-form');
+        if (form) {
+            setTimeout(function() {
+                const inputs = getAllElements('input[name="updates[]"]');
+                for (let i = 0; i < inputs.length; i++) {
+                    const input = inputs[i];
+                    const value = parseInt(input.value);
+                    if (isNaN(value) || value < 1) {
+                        input.value = 1;
+                    }
+                }
+                form.submit();
+                
+                setTimeout(function() {
+                    isUpdating = false;
+                }, 1000);
+            }, 300);
+        } else {
+            isUpdating = false;
+        }
+    }
+    
+    function initCart() {
+        if (eventsBound) return;
+        
+        addEventDelegation(document, '.quantity__minus, .quantity__plus', 'click', handleQuantityChange);
+        
+        const quantityButtons = getAllElements('.quantity__minus, .quantity__plus');
+        for (let i = 0; i < quantityButtons.length; i++) {
+            const button = quantityButtons[i];
+            addEvent(button, 'click', handleQuantityChange);
+        }
+        
+        const quantityInputs = getAllElements('.quantity__input');
+        for (let i = 0; i < quantityInputs.length; i++) {
+            const input = quantityInputs[i];
+            addEvent(input, 'change', handleQuantityInput);
+            addEvent(input, 'blur', handleQuantityInput);
+        }
+        
+        eventsBound = true;
+    }
+    
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initCart);
+    } else {
+        initCart();
+    }
+})();
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "t:general.cart",
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:general.cart_settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_shipping_section",
+      "label": "t:general.show_shipping_section",
+      "default": true
+    }
+  ]
+}
+{% endschema %}

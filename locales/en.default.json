@@ -1,0 +1,558 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin language editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+    "404": {
+        "title": "Page Not Found",
+        "not_found": "Sorry, we can't find the page you're looking for.",
+        "back_to_shopping": "Back to Shopping",
+        "back_to_home": "Back to Home",
+        "search_help": "Try searching for what you need:",
+        "search_placeholder": "Search products..."
+    },
+    "blog": {
+        "article_comments": "Comments",
+        "article_metadata_html": "{{ date }} by {{ author }}",
+        "comment_form_body": "Comment",
+        "comment_form_email": "Email",
+        "comment_form_name": "Name",
+        "comment_form_submit": "Post",
+        "comment_form_title": "Add a comment"
+    },
+    "cart": {
+        "checkout": "Checkout",
+        "title": "Your Cart",
+        "update": "Update Cart",
+        "remove": "Remove",
+        "product": "Product",
+        "product_name": "Product Name",
+        "price": "Price",
+        "quantity": "Quantity",
+        "subtotal": "Subtotal",
+        "cart_totals": "Cart Totals",
+        "delivery_charge": "Delivery Charge",
+        "discount": "Discount",
+        "estimated_delivery": "Estimated Delivery",
+        "estimated_tax": "Estimated Tax",
+        "total": "Total",
+        "proceed_to_checkout": "Proceed to checkout",
+        "view_cart": "View Cart",
+        "coupon_code": "Coupon Code",
+        "apply_coupon": "Apply Coupon",
+        "free": "Free",
+        "empty_title": "Your cart is empty",
+        "empty_message": "Your Cart is Currently Empty",
+        "empty_alt": "Empty cart illustration",
+        "return_to_shop": "Return To Shop",
+        "continue_shopping": "Continue Shopping",
+        "update_cart": "Update Cart"
+    },
+    "customers": {
+        "login": {
+            "email": "Email",
+            "password": "Password",
+            "submit": "Sign in",
+            "title": "Login"
+        }
+    },
+    "collections": {
+        "title": "Collections",
+        "subtitle": "Discover our carefully curated product collections designed to meet your nutrition and wellness needs.",
+        "no_collections": "No collections available",
+        "empty_message": "Check back soon for new collections and categories.",
+        "general": {
+            "product": "Product",
+            "products": "Products",
+            "no_collections": "No collections available"
+        }
+    },
+    "gift_card": {
+        "add_to_apple_wallet": "Add to Apple Wallet",
+        "card": "Gift card",
+        "expired": "This gift card has expired",
+        "expires_on": "Expires on {{ expires_on }}",
+        "use_at_checkout": "Use this gift card at checkout"
+    },
+    "password": {
+        "title": "This shop is private",
+        "password": "Password",
+        "enter": "Enter"
+    },
+    "search": {
+        "title": "Search",
+        "placeholder": "Search articles, pages, or products",
+        "submit": "Search",
+        "no_results_title": "No Results Found",
+        "no_results_html": "No results found for {{ terms }}",
+        "results_for_html": "{{ count }} results found for {{ terms }}",
+        "results_title": "Search Results"
+    },
+    "header": {
+        "search_placeholder": "Search for a product or brand",
+        "sale_text": "Until the end of the sale:",
+        "sale_short": "Sale end:",
+        "days": "Days",
+        "hours": "Hours",
+        "minutes": "Minutes",
+        "seconds": "Sec.",
+        "promo_text": "Buy one get one free on first order",
+        "track_order": "Track Your Order",
+        "order_tracking": "Order Tracking",
+        "about_us": "About Us",
+        "all_categories": "All categories",
+        "profile": "Profile",
+        "wishlist": "Wishlist",
+        "cart": "Cart",
+        "browse_categories": "Browse Categories",
+        "view_all_collections": "View All Collections",
+        "need_help": "Need any Help! call Us",
+        "products": "products",
+        "free_shipping": "Free Shipping",
+        "free_shipping_text": "Free shipping all over the US",
+        "satisfaction": "100% Satisfaction",
+        "satisfaction_text": "100% satisfaction guaranteed",
+        "secure_payments": "Secure Payments",
+        "secure_payments_text": "Secure payment processing",
+        "support": "24/7 Support",
+        "support_text": "24/7 customer support available",
+        "close_categories": "Close Categories"
+    },
+    "general": {
+        "collection": "Category",
+        "collections": "Categories",
+        "products": "Products",
+        "filter_by_price": "Filter by Price",
+        "filter_by_rating": "Filter by Rating",
+        "filter_by_color": "Filter by Color",
+        "filter_by_brand": "Filter by Brand",
+        "search_brands": "Search brands...",
+        "selected_brands": "Selected brands",
+        "no_brands_found": "No brands found in this collection",
+        "brands": "Brands",
+        "all_brands": "All Brands",
+        "all_collections": "All Categories",
+        "explore": "Explore",
+        "clear_filters": "Clear Filters",
+        "no_products_found_brands": "No products found for selected brands",
+        "price": "Price",
+        "filter": "Filter",
+        "sort_by": "Sort by",
+        "featured": "Featured",
+        "best_selling": "Best Selling",
+        "alphabetically_a_z": "Alphabetically, A-Z",
+        "alphabetically_z_a": "Alphabetically, Z-A",
+        "price_low_to_high": "Price, low to high",
+        "price_high_to_low": "Price, high to low",
+        "date_old_to_new": "Date, old to new",
+        "date_new_to_old": "Date, new to old",
+        "showing_results": "Showing {{ start }}-{{ end }} of {{ total }} results",
+        "sale": "Sale",
+        "new": "New",
+        "best_sale": "Best Sale",
+        "sold": "Sold",
+        "qty": "Qty",
+        "add_to_cart": "Add to Cart",
+        "advertisement": "Advertisement",
+        "products_per_page": "Products per page",
+        "show_collections_filter": "Show collections filter",
+        "show_price_filter": "Show price filter",
+        "show_rating_filter": "Show rating filter",
+        "show_color_filter": "Show color filter",
+        "show_brand_filter": "Show brand filter",
+        "home": "Home",
+        "cart_settings": "Cart Settings",
+        "show_shipping_section": "Show shipping section",
+        "show_coupon_field": "Show coupon field",
+        "show_breadcrumbs": "Show breadcrumbs",
+        "show_related_products": "Show related products",
+        "layout": "Layout",
+        "breadcrumb": {
+            "home": "Home",
+            "shop": "Shop"
+        },
+        "page": "Page",
+        "article": "Article",
+        "read_more": "Read More",
+        "continue_shopping": "Continue Shopping",
+        "item": "Item",
+        "items": "Items",
+        "collection_placeholder": "Collection {{ count }}",
+        "all_products": "All Products",
+        "no_products_found": "No products found",
+        "no_products_message": "Try selecting a different category or check back later.",
+        "product_category": "Product Category",
+        "search_placeholder": "Search products...",
+        "loading_results": "Loading results..."
+    },
+    "products": {
+        "product": {
+            "shop_details": "Shop Details",
+            "star_rating": "4.7 Star Rating",
+            "sku": "SKU",
+            "quantity": "Quantity",
+            "order_whatsapp": "Order on What'sApp",
+            "whatsapp_message": "Hi, I'm interested in {{ product }}. Can you tell me more about it? {{ url }}",
+            "special_offer": "Special Offer",
+            "countdown_text": "Remains until the end of the offer",
+            "almost_sold_out": "Products are almost sold out",
+            "available_only": "Available only: {{ quantity }}",
+            "add_to_cart": "Add To Cart",
+            "adding_to_cart": "Adding to Cart...",
+            "sold_out": "Sold Out",
+            "buy_one_get_one": "Buy 1, Get 1 FREE",
+            "by": "by",
+            "view_store": "View Store",
+            "fast_delivery": "Fast Delivery",
+            "fast_delivery_desc": "Lightning-fast shipping, guaranteed.",
+            "free_returns": "Free 90-day returns",
+            "free_returns_desc": "Shop risk-free with easy returns.",
+            "pickup_available": "Pickup available at Shop location",
+            "pickup_desc": "Usually ready in 24 hours",
+            "payment": "Payment",
+            "payment_desc": "Payment upon receipt of goods, Payment by card in the department, Google Pay, Online card.",
+            "warranty": "Warranty",
+            "warranty_desc": "The Consumer Protection Act does not provide for the return of this product of proper quality.",
+            "packaging": "Packaging",
+            "packaging_desc": "Research & development value proposition graphical user interface investor.",
+            "description": "Description",
+            "reviews": "Reviews",
+            "product_description": "Product Description",
+            "product_specifications": "Product Specifications",
+            "select_options": "Select Options",
+            "brand": "Brand",
+            "product_type": "Product Type",
+            "weight": "Weight",
+            "product_reviews": "Product Reviews",
+            "no_reviews_yet": "No reviews yet. Be the first to review this product!",
+            "customer_feedback": "Customer Feedback",
+            "average_rating": "Average Product Rating",
+            "satisfaction_guaranteed": "100% Satisfaction Guaranteed",
+            "you_might_also_like": "You Might Also Like",
+            "all_products": "All Products",
+            "qty": "Qty",
+            "view_details": "View Details",
+            "sale": "Sale",
+            "save": "Save"
+        }
+    },
+    "contact": {
+        "form": {
+            "title": "Contact us",
+            "name": "Full Name",
+            "name_placeholder": "Full name",
+            "email": "Email Address",
+            "email_placeholder": "Email address",
+            "phone": "Phone Number",
+            "phone_placeholder": "Phone Number*",
+            "subject": "Subject",
+            "subject_placeholder": "Subject",
+            "message": "Message",
+            "message_placeholder": "Type your message",
+            "send": "Send",
+            "post_success": "Thanks for contacting us. We'll get back to you as soon as possible.",
+            "error_heading": "Please correct the following errors:"
+        },
+        "info": {
+            "title": "Get In Touch",
+            "phone": "+00 123 456 789",
+            "email": "support24@chalange.com",
+            "address": "789 Inner Lane, California, USA",
+            "support": "Get Support On Call",
+            "directions": "Get Direction"
+        }
+    },
+    "sections": {
+        "deal": {
+            "badge_text": "Only For Today",
+            "title": "Deal of The Day",
+            "description": "Deal of the day for deals on consumer fashion cloths for many other great daily offers",
+            "days": "Days",
+            "hours": "Hours",
+            "minutes": "Min",
+            "seconds": "Sec",
+            "no_product_selected": "No product selected",
+            "settings": {
+                "header": {
+                    "content": "Deal Settings"
+                },
+                "show_section": {
+                    "label": "Show deal section"
+                },
+                "badge_text": {
+                    "label": "Badge text"
+                },
+                "title": {
+                    "label": "Section title"
+                },
+                "description": {
+                    "label": "Section description"
+                },
+                "deal_product": {
+                    "label": "Deal product"
+                },
+                "background_image": {
+                    "label": "Background pattern image"
+                },
+                "deal_image": {
+                    "label": "Deal image"
+                },
+                "countdown_settings": {
+                    "content": "Countdown Settings"
+                },
+                "show_countdown": {
+                    "label": "Show countdown timer"
+                },
+                "countdown_end_date": {
+                    "label": "Countdown end date"
+                },
+                "countdown_end_time": {
+                    "label": "Countdown end time"
+                },
+                "layout_settings": {
+                    "content": "Layout Settings"
+                },
+                "section_margin_top": {
+                    "label": "Section margin top (px)"
+                },
+                "show_product_card": {
+                    "label": "Show floating product card"
+                },
+                "links_header": {
+                    "content": "Product Links"
+                },
+                "product_link_1": {
+                    "label": "Product link 1"
+                },
+                "product_link_2": {
+                    "label": "Product link 2"
+                },
+                "product_link_3": {
+                    "label": "Product link 3"
+                },
+                "product_link_4": {
+                    "label": "Product link 4"
+                }
+            },
+            "name": "Deal of the Day",
+            "presets": {
+                "name": "Deal of the Day"
+            }
+        },
+        "cart": {
+            "settings": {
+                "header": {
+                    "content": "Cart Settings"
+                },
+                "show_ratings": {
+                    "label": "Show product ratings"
+                },
+                "show_product_tags": {
+                    "label": "Show product tags"
+                }
+            }
+        },
+        "category": {
+            "items": "Items",
+            "sample_category": "Sample Category"
+        },
+        "product": {
+            "settings": {
+                "product_information": {
+                    "content": "Product Information"
+                },
+                "show_whatsapp_button": {
+                    "label": "Show WhatsApp button"
+                },
+                "whatsapp_number": {
+                    "label": "WhatsApp number"
+                },
+                "show_countdown": {
+                    "label": "Show countdown timer"
+                },
+                "low_stock_threshold": {
+                    "label": "Low stock threshold"
+                },
+                "show_coupon": {
+                    "label": "Show coupon section"
+                },
+                "coupon_text": {
+                    "label": "Coupon text"
+                },
+                "sidebar_information": {
+                    "content": "Sidebar Information"
+                },
+                "show_shipping_info": {
+                    "label": "Show shipping information"
+                },
+                "show_returns_info": {
+                    "label": "Show returns information"
+                },
+                "show_pickup_info": {
+                    "label": "Show pickup information"
+                },
+                "show_payment_info": {
+                    "label": "Show payment information"
+                },
+                "show_warranty_info": {
+                    "label": "Show warranty information"
+                },
+                "show_packaging_info": {
+                    "label": "Show packaging information"
+                },
+                "product_details": {
+                    "content": "Product Details"
+                },
+                "show_reviews": {
+                    "label": "Show reviews tab"
+                },
+                "show_satisfaction_guarantee": {
+                    "label": "Show satisfaction guarantee"
+                },
+                "satisfaction_icon": {
+                    "label": "Satisfaction guarantee icon"
+                },
+                "related_products": {
+                    "content": "Related Products"
+                },
+                "show_related_products": {
+                    "label": "Show related products"
+                }
+            }
+        },
+        "contact": {
+            "name": "Contact",
+            "settings": {
+                "form_header": {
+                    "content": "Contact Form Settings"
+                },
+                "form_title": {
+                    "label": "Form title"
+                },
+                "submit_button_text": {
+                    "label": "Submit button text"
+                },
+                "contact_info_header": {
+                    "content": "Contact Information"
+                },
+                "contact_info_title": {
+                    "label": "Contact info title"
+                },
+                "phone": {
+                    "label": "Phone number"
+                },
+                "email": {
+                    "label": "Email address"
+                },
+                "address": {
+                    "label": "Address"
+                },
+                "action_buttons_header": {
+                    "content": "Action Buttons"
+                },
+                "support_link": {
+                    "label": "Support link"
+                },
+                "support_text": {
+                    "label": "Support button text"
+                },
+                "direction_link": {
+                    "label": "Direction link"
+                },
+                "direction_text": {
+                    "label": "Direction button text"
+                }
+            },
+            "presets": {
+                "name": "Contact"
+            }
+        }
+    },
+    "ourbrands": {
+        "title": "Our Brands",
+        "description": "Discover our carefully curated selection of premium nutrition brands that share our commitment to quality and wellness.",
+        "page_title": "Our Brands",
+        "page_description": "Explore the trusted brands we partner with to bring you the best nutrition products.",
+        "learn_more": "Learn More",
+        "no_brands_title": "No Brands Available",
+        "no_brands_description": "We're currently updating our brand showcase. Please check back soon!"
+    },
+    "carousel": {
+        "category_title": "GYM SUPPLEMENTS",
+        "see_more": "SEE MORE",
+        "specifications": {
+            "weight": "Weight",
+            "price": "Price",
+            "category": "Category",
+            "no_category": "No Category"
+        },
+        "add_to_cart": "ADD TO CART",
+        "back": "Back",
+        "see_all": "See All"
+    },
+    "footer": {
+        "about": {
+            "title": "About Us",
+            "description": "We are dedicated to providing high-quality nutrition products to help you live a healthier life. Our mission is to make wellness accessible to everyone."
+        },
+        "quick_links": {
+            "title": "Quick Links",
+            "about_us": "About Us",
+            "contact_us": "Contact Us",
+            "blog": "Blog",
+            "home": "Home",
+            "shop": "Shop",
+            "all_products": "All Products"
+        },
+        "customer_service": {
+            "title": "Customer Service",
+            "shipping_info": "Shipping Information",
+            "returns": "Returns & Exchanges",
+            "size_guide": "Size Guide",
+            "track_order": "Track Your Order",
+            "faq": "FAQ",
+            "support": "Support Center",
+            "my_account": "My Account",
+            "order_history": "Order History",
+            "wishlist": "Wishlist"
+        },
+        "contact": {
+            "title": "Contact Information",
+            "phone": "Phone",
+            "email": "Email",
+            "address": "Address"
+        },
+        "newsletter": {
+            "title": "Stay Updated",
+            "description": "Subscribe to our newsletter for the latest offers and health tips.",
+            "email_placeholder": "Enter your email address",
+            "subscribe": "Subscribe"
+        },
+        "payment": {
+            "title": "We Accept",
+            "description": "All major credit cards, PayPal, and secure payment methods accepted."
+        },
+        "legal": {
+            "privacy_policy": "Privacy Policy",
+            "terms_of_service": "Terms of Service",
+            "cookie_policy": "Cookie Policy",
+            "accessibility": "Accessibility",
+            "sitemap": "Sitemap"
+        },
+        "social": {
+            "title": "Follow Us",
+            "facebook": "Facebook",
+            "twitter": "Twitter",
+            "instagram": "Instagram",
+            "whatsapp": "WhatsApp"
+        },
+        "copyright": {
+            "all_rights_reserved": "All rights reserved."
+        }
+    }
+}

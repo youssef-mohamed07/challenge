@@ -1,0 +1,99 @@
+{% comment %}
+  Cart Product Item Component
+  Renders individual cart line items matching the Angular template design
+{% endcomment %}
+
+<div class="cart-product-item flex items-center justify-between py-4 border-b border-gray-100 last:border-b-0">
+  <!-- Product Info -->
+  <div class="flex items-center gap-4 flex-1">
+    <div class="w-16 h-16 flex-shrink-0">
+      {% if item.image %}
+        <img src="{{ item.image | image_url: width: 64, height: 64 }}" 
+             alt="{{ item.image.alt | escape }}" 
+             class="w-full h-full object-cover rounded-lg"
+             loading="lazy" 
+             width="64" 
+             height="64">
+      {% else %}
+        {{ 'product-1' | placeholder_svg_tag: 'w-full h-full object-cover rounded-lg' }}
+      {% endif %}
+    </div>
+    
+    <div class="flex-1 min-w-0">
+      <h6 class="text-sm font-medium text-zinc-800 truncate">
+        <a href="{{ item.url }}" class="hover:text-green-600">{{ item.product.title }}</a>
+      </h6>
+      
+      {% if item.variant.title != 'Default Title' %}
+        <p class="text-xs text-zinc-500 mt-1">{{ item.variant.title }}</p>
+      {% endif %}
+      
+      {% if item.product.vendor %}
+        <p class="text-xs text-zinc-400 mt-1">{{ item.product.vendor }}</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Price -->
+  <div class="text-center min-w-[80px] max-sm:min-w-[60px]">
+    <span class="text-sm font-medium text-zinc-800">
+      {% if item.original_price != item.final_price %}
+        <span class="text-zinc-400 line-through text-xs block">{{ item.original_price | money }}</span>
+      {% endif %}
+      {{ item.final_price | money }}
+    </span>
+  </div>
+
+  <!-- Quantity Controls -->
+  <div class="flex items-center gap-2 min-w-[100px] max-sm:min-w-[80px] justify-center">
+    <button type="button" 
+            class="quantity__minus w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-full text-zinc-600 transition-colors" 
+            data-action="decrease" 
+            data-item-key="{{ item.key }}" 
+            aria-label="Decrease quantity">
+      <svg width="12" height="2" viewBox="0 0 12 2" fill="none">
+        <path d="M1 1H11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+    </button>
+    
+    <input type="number" 
+           name="updates[]" 
+           class="quantity__input w-12 h-8 text-center text-sm font-medium bg-transparent border border-gray-200 rounded" 
+           value="{{ item.quantity }}" 
+           min="1" 
+           step="1"
+           data-item-key="{{ item.key }}"
+           aria-label="Quantity for {{ item.product.title }}">
+    
+    <button type="button" 
+            class="quantity__plus w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-full text-zinc-600 transition-colors" 
+            data-action="increase" 
+            data-item-key="{{ item.key }}" 
+            aria-label="Increase quantity">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+        <path d="M6 1V11M1 6H11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Total Price -->
+  <div class="text-center min-w-[80px] max-sm:min-w-[60px]">
+    <span class="text-sm font-semibold text-zinc-800">
+      {% if item.original_line_price != item.final_line_price %}
+        <span class="text-zinc-400 line-through text-xs block">{{ item.original_line_price | money }}</span>
+      {% endif %}
+      {{ item.final_line_price | money }}
+    </span>
+  </div>
+
+  <!-- Remove Button -->
+  <div class="ml-4">
+    <a href="{{ item.url_to_remove }}" 
+       class="w-6 h-6 flex items-center justify-center text-zinc-400 hover:text-red-500 transition-colors"
+       aria-label="Remove {{ item.product.title }} from cart">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M12 4L4 12M4 4L12 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </a>
+  </div>
+</div>

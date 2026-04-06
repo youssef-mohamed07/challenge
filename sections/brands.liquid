@@ -1,0 +1,151 @@
+<!-- ============================== Top Brand Section Start ==================================== -->
+<div class="top-brand mb-80">
+    <div class="container container-lg">
+        <div class="border border-gray-50 p-24 rounded-16">
+            {% if section.settings.show_heading %}
+                <div class="section-heading mb-24">
+                    <div class="flex-between flex-wrap gap-8">
+                        <h6 class="mb-0">{{ section.settings.heading }}</h6>
+                        {% if section.settings.show_navigation %}
+                            <div class="flex-align gap-8">
+                                <button
+                                    type="button"
+                                    id="topBrand-prev"
+                                    class="slick-prev slick-arrow flex-center rounded-circle border border-gray-100 hover-border-main-two-600 text-xl hover-bg-main-two-600 hover-text-white transition-1"
+                                >
+                                    <i class="ph ph-caret-left"></i>
+                                </button>
+                                <button
+                                    type="button"
+                                    id="topBrand-next"
+                                    class="slick-next slick-arrow flex-center rounded-circle border border-gray-100 hover-border-main-two-600 text-xl hover-bg-main-two-600 hover-text-white transition-1"
+                                >
+                                    <i class="ph ph-caret-right"></i>
+                                </button>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+
+            <div class="top-brand__slider">
+              {% assign rendered_brands = 0 %}
+
+              {% for block in section.blocks %}
+                {% assign brand_image = block.settings.brand_image %}
+                {% assign brand_label = block.settings.brand_alt | strip %}
+
+                {% if brand_image %}
+                  {% assign rendered_brands = rendered_brands | plus: 1 %}
+                  <div class="wow bounceIn" {{ block.shopify_attributes }}>
+                    <div class="top-brand__item flex-center rounded-8 my-4 hover-border-main-600 transition-1 px-8 box-shadow-7xl">
+                      <img
+                        src="{{ brand_image | image_url: width: 200 }}"
+                        alt="{{ brand_label | default: 'Brand logo' }}"
+                        loading="lazy"
+                        width="{{ brand_image.width }}"
+                        height="{{ brand_image.height }}"
+                      />
+                    </div>
+                  </div>
+                {% elsif brand_label != blank %}
+                  {% assign rendered_brands = rendered_brands | plus: 1 %}
+                  <div class="wow bounceIn" {{ block.shopify_attributes }}>
+                    <div class="top-brand__item flex-center rounded-8 my-4 hover-border-main-600 transition-1 px-8 box-shadow-7xl bg-white">
+                      <span class="text-gray-900 fw-500 text-center">{{ brand_label }}</span>
+                    </div>
+                  </div>
+                {% endif %}
+              {% endfor %}
+
+              {% if rendered_brands == 0 %}
+                {% assign vendor_names = collections.all.products | map: 'vendor' | uniq %}
+                {% assign rendered_vendors = 0 %}
+
+                {% for vendor in vendor_names limit: 10 %}
+                  {% assign vendor_name = vendor | strip %}
+                  {% if vendor_name != blank %}
+                    {% assign rendered_vendors = rendered_vendors | plus: 1 %}
+                    <div class="wow bounceIn">
+                      <div class="top-brand__item flex-center rounded-8 my-4 hover-border-main-600 transition-1 px-8 box-shadow-7xl bg-white">
+                        <span class="text-gray-900 fw-500 text-center">{{ vendor_name }}</span>
+                      </div>
+                    </div>
+                  {% endif %}
+                {% endfor %}
+
+                {% if rendered_vendors == 0 %}
+                  <div class="wow bounceIn">
+                    <div class="top-brand__item flex-center rounded-8 my-4 px-8 box-shadow-7xl bg-white border border-gray-100">
+                      <span class="text-gray-500 text-center">Add brand logos from theme editor</span>
+                    </div>
+                  </div>
+                {% endif %}
+              {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% schema %}
+{
+  "name": "Brands",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_heading",
+      "label": "Show heading",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Top Brands"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_navigation",
+      "label": "Show navigation arrows",
+      "default": true
+    }
+  ],
+  "blocks": [
+    {
+      "type": "brand",
+      "name": "Brand",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "brand_image",
+          "label": "Brand image"
+        },
+        {
+          "type": "text",
+          "id": "brand_alt",
+          "label": "Image alt text"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Brands",
+      "blocks": [
+        {
+          "type": "brand"
+        },
+        {
+          "type": "brand"
+        },
+        {
+          "type": "brand"
+        },
+        {
+          "type": "brand"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

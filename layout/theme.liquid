@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="{{ request.locale.iso_code }}">
+  <head>
+    {% # Inlined CSS Variables %}
+    {% render 'css-variables' %}
+
+    {% # Load and preload the critical CSS %}
+    {{ 'critical.css' | asset_url | stylesheet_tag: preload: true }}
+
+    {% # Social, title, etc. %}
+    {% render 'meta-tags' %}
+
+    {{ content_for_header }}
+    {{ 'tailwind.output.css' | asset_url | stylesheet_tag }}
+    {{ 'bootstrap.min.css' | asset_url | stylesheet_tag }}
+    {{ 'select2.min.css' | asset_url | stylesheet_tag }}
+    {{ 'slick.css' | asset_url | stylesheet_tag }}
+    {{ 'jquery-ui.css' | asset_url | stylesheet_tag }}
+    {{ 'animate.css' | asset_url | stylesheet_tag }}
+    {{ 'aos.css' | asset_url | stylesheet_tag }}
+    {{ 'main.css' | asset_url | stylesheet_tag }}
+    {{ 'carousel.css' | asset_url | stylesheet_tag }}
+    {{ 'footer.css' | asset_url | stylesheet_tag }}
+    {{ 'cartbar.css' | asset_url | stylesheet_tag }}
+  </head>
+
+
+  <body>
+    {% sections 'header-group' %}
+
+    {{ content_for_layout }}
+
+    {% sections 'footer-group' %}
+    {% section 'cart-bar' %}
+    <script src="{{ 'jquery-3.7.1.min.js' | asset_url }}" defer></script>
+    <script src="{{ 'boostrap.bundle.min.js' | asset_url }}" defer></script>
+    <script src="{{ 'phosphor-icon.js' | asset_url }}" defer></script>
+    <script src="{{ 'select2.min.js' | asset_url }}" defer></script>
+    <script src="{{ 'slick.min.js' | asset_url }}" defer></script>
+    <script src="{{ 'count-down.js' | asset_url }}" defer></script>
+    <script src="{{ 'jquery-ui.js' | asset_url }}" defer></script>
+    <script src="{{ 'wow.min.js' | asset_url }}" defer></script>
+    <script src="{{ 'aos.js' | asset_url }}" defer></script>
+    <script src="{{ 'marque.min.js' | asset_url }}" defer></script>
+    <script src="{{ 'vanilla-tilt.min.js' | asset_url }}" defer></script>
+    <script src="{{ 'counter.min.js' | asset_url }}" defer></script>
+    <script src="{{ 'main.js' | asset_url }}" defer></script>
+    <script src="{{ 'carousel.js' | asset_url }}" defer></script>
+    
+    <div id="loader">
+      <img src="{{ 'loader2.gif' | asset_url }}" alt="loader" width="100" height="100">
+    </div>
+    
+    <script>
+      window.addEventListener("load", function(){
+        const loader = document.getElementById("loader");
+        loader.classList.add("fade-out");
+        loader.addEventListener("transitionend", function(){
+          loader.style.display = "none";
+        });
+      });
+    </script> 
+  </body>
+</html>

@@ -1,0 +1,486 @@
+<!-- ============================== Hot Deals Section Start =============================== -->
+<section class="vendor-two-details py-80">
+    <div class="container container-lg">
+        <div class="vendor-two-details-wrapper d-flex flex-wrap align-items-start gap-24">
+
+            <div class="shop-sidebar">
+                <button type="button" class="shop-sidebar__close d-lg-none d-flex w-32 h-32 flex-center border border-gray-100 rounded-circle hover-bg-main-600 bg-main-600 position-absolute inset-inline-end-0 me-10 mt-8 text-white border-main-600">
+                    <i class="ph ph-x"></i>
+                </button>
+
+                <div class="d-flex flex-column gap-12 px-lg-0 px-3 py-lg-0 py-4">
+                    <div class="border border-gray-50 rounded-8 p-24">
+                        <h6 class="text-xl border-bottom border-gray-100 pb-24 mb-24">{{ 'general.product_category' | t }}</h6>
+                        <ul class="max-h-540 overflow-y-auto scroll-sm" id="categoryFilter">
+                            <li class="mb-24">
+                                <button type="button" class="category-filter-btn text-gray-900 hover-text-main-600 border-0 bg-transparent p-0 text-start active" data-filter="all">
+                                    {{ 'general.all_products' | t }}
+                                </button>
+                            </li>
+                            
+                            {% assign hot_deal_products = collections.all.products | where: 'tags', 'hot' %}
+                            {% assign sale_products = collections.all.products %}
+                            {% assign filtered_sale_products = '' | split: ',' %}
+                            {% for product in sale_products %}
+                                {% if product.compare_at_price > product.price %}
+                                    {% assign filtered_sale_products = filtered_sale_products | concat: product %}
+                                {% endif %}
+                            {% endfor %}
+                            {% assign all_hot_deal_products = hot_deal_products | concat: filtered_sale_products | uniq %}
+                            
+                            {% assign product_types = '' %}
+                            {% for product in all_hot_deal_products %}
+                                {% unless product_types contains product.type %}
+                                    {% if product_types == '' %}
+                                        {% assign product_types = product.type %}
+                                    {% else %}
+                                        {% assign product_types = product_types | append: ',' | append: product.type %}
+                                    {% endif %}
+                                {% endunless %}
+                            {% endfor %}
+                            {% assign product_types = product_types | split: ',' %}
+                            
+                            {% for product_type in product_types %}
+                                <li class="mb-24">
+                                    <button type="button" class="category-filter-btn text-gray-900 hover-text-main-600 border-0 bg-transparent p-0 text-start" data-filter="{{ product_type | handleize }}">
+                                        {{ product_type }}
+                                    </button>
+                                </li>
+                            {% endfor %}
+                            
+                            {% for collection in collections %}
+                                {% if collection.handle != 'all' and collection.products.size > 0 %}
+                                    {% assign collection_hot_count = 0 %}
+                                    {% for product in collection.products %}
+                                        {% if product.tags contains 'hot' or product.compare_at_price > product.price %}
+                                            {% assign collection_hot_count = collection_hot_count | plus: 1 %}
+                                        {% endif %}
+                                    {% endfor %}
+                                    {% if collection_hot_count > 0 %}
+                                        <li class="mb-24">
+                                            <button type="button" class="category-filter-btn text-gray-900 hover-text-main-600 border-0 bg-transparent p-0 text-start" data-filter="collection-{{ collection.handle }}">
+                                                {{ collection.title }}
+                                            </button>
+                                        </li>
+                                    {% endif %}
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+
+                    <div class="blog-sidebar border border-gray-100 rounded-8 p-32 mb-40">
+                        <h6 class="text-xl mb-32 pb-32 border-bottom border-gray-100">Best Sell Products</h6>
+                        <div class="d-flex flex-column gap-24">
+                            {% for product in collections.all.products %}
+                                {% if product.tags contains 'best-seller' %}
+                                    <div class="d-flex align-items-center flex-sm-nowrap flex-wrap gap-16">
+                                        <a href="{{ product.url }}" class="rounded-4 overflow-hidden w-76 h-76 flex-shrink-0 bg-color-three flex-center">
+                                            <img src="{{ product.featured_image | image_url: width: 76, height: 76 }}" alt="{{ product.title }}" width="76" height="76">
+                                        </a>
+                                        <div class="flex-grow-1">
+                                            <h6 class="text-lg mb-8 fw-medium">
+                                                <a href="{{ product.url }}" class="text-line-3">{{ product.title }}</a>
+                                            </h6>
+                                            <div class="flex-align gap-6">
+                                                <div class="flex-align gap-4">
+                                                    {% for i in (1..5) %}
+                                                        <span class="text-xs fw-medium text-warning-600 d-flex"><i class="ph-fill ph-star"></i></span>
+                                                    {% endfor %}
+                                                </div>
+                                                <span class="text-xs fw-medium text-neutral-500">{{ product.metafields.reviews.rating | default: '4.8' }}</span>
+                                                <span class="text-xs fw-medium text-neutral-500">(12K)</span>
+                                            </div>
+                                            <h6 class="text-md mb-0 mt-4">{{ product.price | money }}</h6>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="vendor-two-details__contents">
+                <img style="height: auto;" class="inner-banner-two bg-img rounded-16 overflow-hidden" src="{{ 'banner trending.png' | asset_url }}" width="1200" height="270" alt="Hot Deals Banner" />
+
+                <div class="d-flex align-items-center justify-content-between flex-wrap mt-40 mb-32 gap-16">
+                    <form class="input-group w-100 max-w-418" id="searchForm">
+                        <input type="text" class="form-control common-input rounded-start-3" placeholder="{{ 'general.search_placeholder' | t | default: 'Search products...' }}" id="searchInput">
+                        <button type="button" class="input-group-text border-0 bg-main-two-600 rounded-end-3 text-white text-2xl hover-bg-main-two-700 px-24" id="searchButton">
+                            <i class="ph ph-magnifying-glass"></i>
+                        </button>
+                    </form>
+
+                    <div class="d-flex align-items-center justify-content-between justify-content-sm-end gap-16 flex-grow-1">
+                        <span class="text-gray-900" id="resultCount">{{ 'general.loading_results' | t | default: 'Loading results...' }}</span>
+                        <div class="d-flex align-items-center gap-8 d-sm-flex d-none">
+                            <button type="button" class="grid-btn text-2xl d-flex w-48 h-48 border border-neutral-100 rounded-8 justify-content-center align-items-center border-main-600 text-white bg-main-600">
+                                <i class="ph ph-squares-four"></i>
+                            </button>
+                            <button type="button" class="list-btn text-2xl d-flex w-48 h-48 border border-neutral-100 rounded-8 justify-content-center align-items-center">
+                                <i class="ph ph-list-bullets"></i>
+                            </button>
+                        </div>
+
+                        <div class="flex-align gap-8">
+                            <span class="text-gray-900 flex-shrink-0 d-sm-block d-none">Sort by:</span>
+                            <select class="common-input form-select rounded-pill border border-gray-100 d-inline-block ps-20 pe-36 h-48 py-0 fw-medium">
+                                <option value="1">Latest</option>
+                                <option value="1">Old</option>
+                            </select>
+                        </div>
+
+                        <button type="button" class="w-48 h-48 d-lg-none d-flex flex-center border border-gray-100 rounded-6 text-2xl sidebar-btn">
+                            <i class="ph-bold ph-funnel"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="list-grid-wrapper grid-cols-4" id="productGrid">
+                    {% for product in collections.all.products %}
+                        {% if product.tags contains 'hot' or product.compare_at_price > product.price %}
+                            {% assign product_collections = '' %}
+                            {% for collection in product.collections %}
+                                {% assign product_collections = product_collections | append: 'collection-' | append: collection.handle | append: ' ' %}
+                            {% endfor %}
+                            <div class="product-item" 
+                                 data-product-type="{{ product.type | handleize }}"
+                                 data-product-collections="{{ product_collections | strip }}"
+                                 data-product-tags="{{ product.tags | join: ' ' | handleize }}"
+                                 data-product-title="{{ product.title | downcase }}"
+                                 data-product-vendor="{{ product.vendor | downcase }}">
+                                {% render 'product-card', product: product %}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+<!-- ============================== Hot Deals Section End =============================== -->
+
+{% stylesheet %}
+.category-filter-btn.active {
+    color: var(--main-600, #1976d2) !important;
+    font-weight: 600;
+}
+
+.product-item {
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.product-item.hidden {
+    display: none;
+}
+
+.category-filter-btn:hover {
+    color: var(--main-600, #1976d2);
+}
+
+.filter-loading {
+    opacity: 0.6;
+    pointer-events: none;
+    position: relative;
+}
+
+.filter-loading::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 40px;
+    height: 40px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid var(--main-600, #1976d2);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    z-index: 10;
+    background: white;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+@keyframes spin {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+.category-filter-btn {
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.category-filter-btn.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.category-filter-btn.loading::after {
+    content: '';
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 16px;
+    height: 16px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid var(--main-600, #1976d2);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+#searchButton.loading {
+    opacity: 0.6;
+    pointer-events: none;
+    position: relative;
+}
+
+#searchButton.loading .ph-magnifying-glass {
+    opacity: 0;
+}
+
+#searchButton.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top: 2px solid white;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+.no-results {
+    text-align: center;
+    padding: 60px 20px;
+    color: #666;
+}
+
+.no-results h3 {
+    margin-bottom: 10px;
+    color: #333;
+}
+
+#searchInput:focus {
+    border-color: var(--main-600, #1976d2);
+    box-shadow: 0 0 0 0.2rem rgba(25, 118, 210, 0.25);
+}
+{% endstylesheet %}
+
+<script>
+window.hotDealsTranslations = {
+    noProductsFound: '{{ 'general.no_products_found' | t | escape }}',
+    noProductsMessage: '{{ 'general.no_products_message' | t | escape }}'
+};
+</script>
+
+{% javascript %}
+document.addEventListener('DOMContentLoaded', function() {
+    const categoryButtons = document.querySelectorAll('.category-filter-btn');
+    const productGrid = document.getElementById('productGrid');
+    const productItems = document.querySelectorAll('.product-item');
+    const searchInput = document.getElementById('searchInput');
+    const searchButton = document.getElementById('searchButton');
+    const searchForm = document.getElementById('searchForm');
+    const resultCountSpan = document.getElementById('resultCount');
+    
+    let currentCategoryFilter = 'all';
+    let currentSearchQuery = '';
+    
+    const noResultsDiv = document.createElement('div');
+    noResultsDiv.className = 'no-results hidden col-12';
+    noResultsDiv.innerHTML = `
+        <h3>${window.hotDealsTranslations.noProductsFound}</h3>
+        <p>${window.hotDealsTranslations.noProductsMessage}</p>
+    `;
+    productGrid.appendChild(noResultsDiv);
+    
+    function filterProducts(categoryFilter = currentCategoryFilter, searchQuery = currentSearchQuery) {
+        let visibleCount = 0;
+        const normalizedSearchQuery = searchQuery.toLowerCase().trim();
+        
+        productItems.forEach(item => {
+            const productType = item.dataset.productType;
+            const productCollections = item.dataset.productCollections;
+            const productTags = item.dataset.productTags;
+            const productTitle = item.dataset.productTitle;
+            const productVendor = item.dataset.productVendor;
+            
+            let shouldShowByCategory = false;
+            let shouldShowBySearch = false;
+            
+            if (categoryFilter === 'all') {
+                shouldShowByCategory = true;
+            } else if (categoryFilter.startsWith('collection-')) {
+                shouldShowByCategory = productCollections && productCollections.includes(categoryFilter);
+            } else {
+                shouldShowByCategory = productType === categoryFilter;
+            }
+            
+            if (normalizedSearchQuery === '') {
+                shouldShowBySearch = true;
+            } else {
+                shouldShowBySearch = (
+                    productTitle.includes(normalizedSearchQuery) ||
+                    productVendor.includes(normalizedSearchQuery) ||
+                    productType.includes(normalizedSearchQuery) ||
+                    productTags.includes(normalizedSearchQuery)
+                );
+            }
+            
+            if (shouldShowByCategory && shouldShowBySearch) {
+                item.classList.remove('hidden');
+                visibleCount++;
+            } else {
+                item.classList.add('hidden');
+            }
+        });
+        
+        if (visibleCount === 0) {
+            noResultsDiv.classList.remove('hidden');
+        } else {
+            noResultsDiv.classList.add('hidden');
+        }
+        
+        return visibleCount;
+    }
+    
+    function updateActiveButton(activeButton) {
+        categoryButtons.forEach(btn => btn.classList.remove('active'));
+        activeButton.classList.add('active');
+    }
+    
+    function updateResultCount(count) {
+        if (resultCountSpan) {
+            if (count === 0) {
+                resultCountSpan.textContent = 'No results found';
+            } else {
+                resultCountSpan.textContent = `Showing 1-${count} of ${count} result${count !== 1 ? 's' : ''}`;
+            }
+        }
+    }
+    
+    function performSearch(searchQuery = '') {
+        currentSearchQuery = searchQuery;
+        searchButton.classList.add('loading');
+        productGrid.classList.add('filter-loading');
+        
+        setTimeout(() => {
+            const visibleCount = filterProducts(currentCategoryFilter, currentSearchQuery);
+            updateResultCount(visibleCount);
+            
+            searchButton.classList.remove('loading');
+            productGrid.classList.remove('filter-loading');
+        }, 300);
+    }
+    
+    searchForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        performSearch(searchInput.value);
+    });
+    
+    searchButton.addEventListener('click', function(e) {
+        e.preventDefault();
+        performSearch(searchInput.value);
+    });
+    
+    let searchTimeout;
+    searchInput.addEventListener('input', function() {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            performSearch(this.value);
+        }, 300);
+    });
+    
+    searchInput.addEventListener('keyup', function(e) {
+        if (e.key === 'Escape' || this.value === '') {
+            this.value = '';
+            performSearch('');
+        }
+    });
+    
+    categoryButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            const filterValue = this.dataset.filter;
+            const clickedButton = this;
+            currentCategoryFilter = filterValue;
+            
+            clickedButton.classList.add('loading');
+            productGrid.classList.add('filter-loading');
+            
+            categoryButtons.forEach(btn => btn.style.pointerEvents = 'none');
+            
+            setTimeout(() => {
+                const visibleCount = filterProducts(currentCategoryFilter, currentSearchQuery);
+                updateActiveButton(clickedButton);
+                updateResultCount(visibleCount);
+                
+                clickedButton.classList.remove('loading');
+                productGrid.classList.remove('filter-loading');
+                
+                categoryButtons.forEach(btn => btn.style.pointerEvents = 'auto');
+            }, 300);
+        });
+    });
+    
+    const initialCount = filterProducts('all', '');
+    updateResultCount(initialCount);
+});
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "Hot Deals",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section Settings"
+    },
+    {
+      "type": "text",
+      "id": "section_title",
+      "label": "Section Title",
+      "default": "Hot Deals"
+    },
+    {
+      "type": "image_picker",
+      "id": "banner_image",
+      "label": "Banner Image"
+    },
+    {
+      "type": "header",
+      "content": "Filter Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_product_types",
+      "label": "Show product type filters",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_collections",
+      "label": "Show collection filters",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_search",
+      "label": "Show search bar",
+      "default": true
+    }
+  ],
+  "presets": [
+    {
+      "name": "Hot Deals"
+    }
+  ]
+}
+{% endschema %}

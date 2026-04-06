@@ -1,0 +1,582 @@
+{% style %}
+.header .nav-menu .nav-menu__item.activePage > a,
+.header .nav-menu .nav-menu__item.activePage > .nav-menu__link,
+.header .nav-menu .nav-menu__item.activePage a.nav-menu__link,
+.header-menu .nav-menu .nav-menu__item.activePage > a,
+.header-menu .nav-menu .nav-menu__item.activePage > .nav-menu__link,
+.header-menu .nav-menu .nav-menu__item.activePage a.nav-menu__link,
+.nav-menu__item[data-force-active="true"] > a,
+.nav-menu__item[data-force-active="true"] > .nav-menu__link,
+.nav-menu__item[data-force-active="true"] a.nav-menu__link {
+    color: #2394be !important;
+    font-weight: 700 !important;
+    position: relative !important;
+}
+
+.mobile-menu .nav-menu--mobile .nav-menu__item.activePage > a,
+.mobile-menu .nav-menu--mobile .nav-menu__item.activePage > .nav-menu__link,
+.mobile-menu .nav-menu--mobile .nav-menu__item.activePage a.nav-menu__link,
+.mobile-menu .nav-menu--mobile .nav-menu__item[data-force-active="true"] > a,
+.mobile-menu .nav-menu--mobile .nav-menu__item[data-force-active="true"] > .nav-menu__link,
+.mobile-menu .nav-menu--mobile .nav-menu__item[data-force-active="true"] a.nav-menu__link {
+    color: #2394be !important;
+    font-weight: 700 !important;
+    background-color: rgba(35, 148, 190, 0.1) !important;
+    border-radius: 6px !important;
+    padding-inline-start: 16px !important;
+    border-left: 4px solid #2394be !important;
+    margin: 2px 0 !important;
+}
+
+.mobile-menu .nav-menu--mobile .nav-submenu__item.activePage > a,
+.mobile-menu .nav-menu--mobile .nav-submenu__item.activePage > .nav-submenu__link,
+.mobile-menu .nav-menu--mobile .nav-submenu__item.activePage a.nav-submenu__link,
+.mobile-menu .nav-menu--mobile .nav-submenu__item[data-force-active="true"] > a,
+.mobile-menu .nav-menu--mobile .nav-submenu__item[data-force-active="true"] > .nav-submenu__link,
+.mobile-menu .nav-menu--mobile .nav-submenu__item[data-force-active="true"] a.nav-submenu__link {
+    color: #2394be !important;
+    font-weight: 700 !important;
+    background-color: rgba(35, 148, 190, 0.1) !important;
+    border-radius: 6px !important;
+    padding-inline-start: 20px !important;
+    border-left: 3px solid #2394be !important;
+    margin: 2px 0 !important;
+}
+
+body .header .nav-menu .nav-menu__item.activePage > a,
+body .header-menu .nav-menu .nav-menu__item.activePage > a,
+body .nav-menu__item[data-force-active="true"] > a {
+    color: #2394be !important;
+    font-weight: 700 !important;
+}
+
+.browseCat.category-dropdown .d-grid,
+.category-dropdown .d-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 16px !important;
+}
+
+.d-grid.grid-cols-3-repeat,
+.d-grid[class*="grid-cols"] {
+    grid-template-columns: repeat(3, 1fr) !important;
+}
+
+@media (min-width: 992px) {
+    .category-dropdown {
+        max-width: 600px !important;
+        width: 600px !important;
+    }
+    
+    .browseCat.category-dropdown .d-grid,
+    .category-dropdown .d-grid,
+    .d-grid.grid-cols-3-repeat,
+    .d-grid[class*="grid-cols"] {
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 16px !important;
+    }
+    
+    .category-dropdown a.py-16.px-8 {
+        padding: 16px 8px !important;
+        min-height: 120px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+}
+
+@media (max-width: 991.98px) {
+    .category-dropdown {
+        position: fixed !important;
+        top: 50% !important;
+        left: 50% !important;
+        transform: translate(-50%, -50%) !important;
+        width: 90vw !important;
+        max-width: 350px !important;
+        max-height: 70vh !important;
+        overflow-y: auto !important;
+        z-index: 9999 !important;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3) !important;
+        border-radius: 12px !important;
+        animation: categoryFadeIn 0.3s ease-out;
+        display: none;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+    }
+    
+    @keyframes categoryFadeIn {
+        from {
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0.9);
+        }
+        to {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+    }
+    
+    .category-dropdown .d-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        max-height: calc(70vh - 100px) !important;
+        overflow-y: auto !important;
+        scrollbar-width: thin !important;
+        scrollbar-color: #2394be #f1f1f1 !important;
+    }
+    
+    .category-dropdown .d-grid::-webkit-scrollbar {
+        width: 6px !important;
+    }
+    
+    .category-dropdown .d-grid::-webkit-scrollbar-track {
+        background: #f1f1f1 !important;
+        border-radius: 3px !important;
+    }
+    
+    .category-dropdown .d-grid::-webkit-scrollbar-thumb {
+        background: #2394be !important;
+        border-radius: 3px !important;
+    }
+    
+    .category-dropdown .d-grid::-webkit-scrollbar-thumb:hover {
+        background: #1e7a9e !important;
+    }
+    
+    .category-dropdown .py-16 {
+        padding-top: 12px !important;
+        padding-bottom: 12px !important;
+    }
+    
+    .category-dropdown .px-8 {
+        padding-left: 6px !important;
+        padding-right: 6px !important;
+    }
+    
+    .category-dropdown .w-40 {
+        width: 30px !important;
+        height: 30px !important;
+    }
+    
+    .category-dropdown .text-sm {
+        font-size: 0.75rem !important;
+    }
+    
+    .category-dropdown .mt-16 {
+        margin-top: 8px !important;
+    }
+    
+    .category-overlay.active {
+        display: block;
+    }
+    
+    .category-dropdown.show {
+        display: block !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .category-dropdown {
+        width: 95vw !important;
+        max-height: 80vh !important;
+    }
+    
+    .category-dropdown .d-grid {
+        grid-template-columns: repeat(1, 1fr) !important;
+        gap: 8px !important;
+    }
+}
+
+.category-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 9998;
+}
+{% endstyle %}
+
+<div class="overlay"></div>
+
+<div class="side-overlay"></div>
+
+<div class="category-overlay"></div>
+
+<div class="progress-wrap">
+    <svg class="progress-circle svg-content" width="100%" height="100%" viewBox="-1 -1 102 102">
+        <path d="M50,1 a49,49 0 0,1 0,98 a49,49 0 0,1 0,-98" />
+    </svg>
+</div>
+
+<form action="{{ routes.search_url }}" method="get" class="search-box" role="search">
+    <button type="button" class="search-box__close position-absolute inset-block-start-0 inset-inline-end-0 m-16 w-48 h-48 border border-gray-100 rounded-circle flex-center text-white hover-text-gray-800 hover-bg-white text-2xl transition-1">
+        <i class="ph ph-x"></i>
+    </button>
+    <div class="container">
+        <div class="position-relative">
+            <input type="search" name="q" class="form-control py-16 px-24 text-xl rounded-pill pe-64" placeholder="{{ 'header.search_placeholder' | t }}" />
+            <button type="submit" class="w-48 h-48 bg-main-600 rounded-circle flex-center text-xl text-white position-absolute top-50 translate-middle-y inset-inline-end-0 me-8">
+                <i class="ph ph-magnifying-glass"></i>
+            </button>
+        </div>
+    </div>
+</form>
+
+{% assign site_logo_asset = 'logo.webp' | asset_url %}
+
+<div class="mobile-menu scroll-sm d-lg-none d-block">
+    <button type="button" class="close-button"><i class="ph ph-x"></i></button>
+    <div class="mobile-menu__inner">
+        <a href="{{ routes.root_url }}" class="mobile-menu__logo">
+            <img src="{{ site_logo_asset }}" alt="{{ shop.name }}" width="300" height="120" />
+        </a>
+        <div class="mobile-menu__menu">
+            <ul class="nav-menu flex-align nav-menu--mobile">
+                {% for link in linklists.main-menu.links %}
+                    <li class="on-hover-item nav-menu__item{% if link.links.size > 0 %} has-submenu{% endif %}{% if link.active %} activePage{% endif %}">
+                        <a href="{{ link.url }}" class="nav-menu__link text-heading-two">{{ link.title }}</a>
+                        {% if link.links.size > 0 %}
+                        <ul class="on-hover-dropdown common-dropdown nav-submenu scroll-sm">
+                            {% for sublink in link.links %}
+                                <li class="common-dropdown__item nav-submenu__item{% if sublink.active %} activePage{% endif %}">
+                                    <a href="{{ sublink.url }}" class="common-dropdown__link nav-submenu__link text-heading-two hover-bg-neutral-100">{{ sublink.title }}</a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+
+<header class="header-middle border-bottom border-gray-100 z-50">
+    <div class="container container-lg">
+        <nav class="header-inner flex-between gap-8">
+            <div class="logo">
+                <a href="{{ routes.root_url }}" class="link">
+                    <img src="{{ site_logo_asset }}" alt="{{ shop.name }}" width="300" height="120" />
+                </a>
+            </div>
+            
+            <form action="{{ routes.search_url }}" method="get" class="flex-align max-w-2xl flex-wrap form-location-wrapper w-100" role="search">
+                <div class="search-form__wrapper position-relative w-100">
+                    <input type="search" name="q" class="common-input border border-neutral-40 py-18 ps-16 pe-44 placeholder-italic placeholder-text-sm w-100" placeholder="{{ 'header.search_placeholder' | t }}" />
+                    <button type="submit" class="w-64 h-44 bg-main-600 hover-bg-main-800 rounded-4 flex-center text-xl text-white position-absolute top-50 translate-middle-y inset-inline-end-0 me-6">
+                        <i class="ph ph-magnifying-glass"></i>
+                    </button>
+                </div>
+            </form>
+            
+            <div class="header-right flex-align flex-shrink-0">
+                <div class="flex-align gap-20">
+                    <button type="button" class="search-icon flex-align d-lg-none d-flex gap-4 item-hover">
+                        <span class="text-2xl text-gray-700 d-flex position-relative item-hover__text">
+                            <i class="ph ph-magnifying-glass"></i>
+                        </span>
+                    </button>
+                    <button type="button" onclick="window.toggleCartDrawer()" class="flex-align gap-4 item-hover border-0 bg-transparent cursor-pointer">
+                        <span class="text-xl text-gray-700 d-flex position-relative me-6 mt-6 item-hover__text">
+                            <i class="ph ph-shopping-cart-simple"></i>
+                            <span class="w-16 h-16 flex-center rounded-circle bg-main-600 text-white text-xs position-absolute top-n6 end-n4" data-cart-count>{{ cart.item_count }}</span>
+                        </span>
+                        <span class="text-md text-heading-three item-hover__text d-none d-lg-flex">{{ 'header.cart' | t }}</span>
+                    </button>
+                </div>
+            </div>
+        </nav>
+    </div>
+</header>
+
+<header style="z-index: 9999 !important;" class="header bg-white border-bottom-0 box-shadow-3xl py-10 z-50">
+    <div class="container container-lg">
+        <nav  class="header-inner d-flex justify-content-between gap-8">
+            <div class="flex-align menu-category-wrapper position-relative">
+                <div>
+                    <button style="background-color: #2394BE;" type="button" class="category-button d-flex align-items-center gap-12 text-white px-20 py-16 rounded-6 transition-2">
+                        <span class="text-xl line-height-1"><i class="ph ph-squares-four"></i></span>
+                        <span>{{ 'header.browse_categories' | t }}</span>
+                        <span class="line-height-1 icon transition-2"><i class="ph-bold ph-caret-down"></i></span>
+                    </button>
+                    <div class="browseCat category-dropdown border border-success-200 shadow bg-white p-16 rounded-16 w-100 max-w-600 position-absolute inset-block-start-100 inset-inline-start-0 z-99 transition-2">
+                        <button type="button" class="category-close-btn d-lg-none position-absolute top-0 end-0 m-8 w-32 h-32 border-0 bg-gray-100 rounded-circle flex-center text-gray-600 hover-text-gray-800 hover-bg-gray-200 transition-2" style="z-index: 1;" title="{{ 'header.close_categories' | t }}">
+                            <i class="ph ph-x text-lg"></i>
+                        </button>
+                        <div class="d-grid gap-4 max-h-350">
+                            {% assign category_count = 0 %}
+                            {% for collection in collections %}
+                                {% if collection.products_count > 0 and category_count < 9 %}
+                                    {% assign collection_url = routes.all_products_collection_url %}
+                                    {% if collection.handle != 'all' %}
+                                        {% assign collection_url = routes.all_products_collection_url | append: '?collection=' | append: collection.handle %}
+                                    {% endif %}
+                                    <a href="{{ collection_url }}" class="py-16 px-8 rounded-8 hover-bg-main-50 d-flex flex-column align-items-center text-center border border-white hover-border-main-100">
+                                        <span>
+                                            {% if collection.featured_image != blank %}
+                                                <img src="{{ collection.featured_image | image_url: width: 80, height: 80 }}" alt="{{ collection.title | escape }}" width="40" height="40" class="w-40" />
+                                            {% else %}
+                                                {{ 'image' | placeholder_svg_tag: 'placeholder-svg w-40 h-40' }}
+                                            {% endif %}
+                                        </span>
+                                        <span class="fw-semibold text-heading mt-16 text-sm">{{ collection.title | escape }}</span>
+                                    </a>
+                                    {% assign category_count = category_count | plus: 1 %}
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        <div class="mt-16 text-center">
+                            <a href="{{ routes.all_products_collection_url }}" class="text-sm text-decoration-underline mt-24">
+                                {{ 'header.view_all_collections' | t }}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="header-menu d-lg-block d-none">
+                    <ul class="nav-menu flex-align">
+                        {% for link in linklists.main-menu.links %}
+                            <li class="on-hover-item nav-menu__item{% if link.links.size > 0 %} has-submenu{% endif %}{% if link.active %} activePage{% endif %}">
+                                <a href="{{ link.url }}" class="nav-menu__link text-heading-two">{{ link.title }}</a>
+                                {% if link.links.size > 0 %}
+                                <ul class="on-hover-dropdown common-dropdown nav-submenu scroll-sm">
+                                    {% for sublink in link.links %}
+                                        <li class="common-dropdown__item nav-submenu__item{% if sublink.active %} activePage{% endif %}">
+                                            <a href="{{ sublink.url }}" class="common-dropdown__link nav-submenu__link text-heading-two hover-bg-neutral-100">{{ sublink.title }}</a>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            <div class="header-right flex-align gap-20">
+                <a href="tel:{{ section.settings.phone_number }}" class="d-sm-flex align-items-center gap-16 d-none">
+                    <span class="d-flex text-20">
+                        {% if section.settings.phone_icon != blank %}
+                            <img src="{{ section.settings.phone_icon | image_url: width: 20, height: 20 }}" alt="Phone Icon" width="20" height="20" />
+                        {% endif %}
+                    </span>
+                    <span>
+                        <span class="d-block text-heading fw-medium">{{ 'header.need_help' | t }}</span>
+                        <span class="d-block fw-bold text-main-600 hover-text-decoration-underline">{{ section.settings.phone_number }}</span>
+                    </span>
+                </a>
+                <button type="button" class="toggle-mobileMenu d-lg-none ms-3n text-gray-800 text-4xl d-flex">
+                    <i class="ph ph-list"></i>
+                </button>
+            </div>
+        </nav>
+    </div>
+</header>
+
+{% schema %}
+{
+  "name": "Header Section",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Header Logo"
+    },
+    {
+      "type": "image_picker",
+      "id": "phone_icon",
+      "label": "Phone Icon (Need Help)"
+    },
+    {
+      "type": "text",
+      "id": "phone_number",
+      "label": "Phone Number",
+      "default": "+1-202-555-0148"
+    }
+  ],
+  "blocks": [],
+  "presets": [
+    {
+      "name": "Header"
+    }
+  ]
+}
+{% endschema %}
+
+<script>
+(function() {
+    'use strict';
+    
+    let activeElement = null;
+    const currentPath = window.location.pathname.toLowerCase();
+    
+    function forceActiveNavbar() {
+        if (activeElement) {
+            activeElement.classList.remove('activePage');
+        }
+        
+        document.querySelectorAll('.nav-menu__item').forEach(item => {
+            const link = item.querySelector('a');
+            if (link) {
+                const href = link.getAttribute('href');
+                if (href) {
+                    const normalizedHref = href.toLowerCase().replace(/\/$/, '') || '/';
+                    const normalizedCurrent = currentPath.replace(/\/$/, '') || '/';
+                    
+                    if (normalizedHref === normalizedCurrent) {
+                        activeElement = item;
+                        item.classList.add('activePage');
+                        item.setAttribute('data-force-active', 'true');
+                    } else if (currentPath.startsWith('/collections/') && 
+                             (normalizedHref === '/collections/all' || normalizedHref === '/collections')) {
+                        activeElement = item;
+                        item.classList.add('activePage');
+                        item.setAttribute('data-force-active', 'true');
+                    } else if (currentPath.startsWith('/products/') && 
+                             (normalizedHref === '/collections/all' || normalizedHref === '/collections')) {
+                        activeElement = item;
+                        item.classList.add('activePage');
+                        item.setAttribute('data-force-active', 'true');
+                    }
+                }
+            }
+        });
+    }
+    
+    const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                const target = mutation.target;
+                if (target.hasAttribute('data-force-active') && !target.classList.contains('activePage')) {
+                    target.classList.add('activePage');
+                }
+            }
+        });
+    });
+    
+    function startObserver() {
+        document.querySelectorAll('.nav-menu__item').forEach(item => {
+            observer.observe(item, { attributes: true, attributeFilter: ['class'] });
+        });
+    }
+    
+    forceActiveNavbar();
+    startObserver();
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        forceActiveNavbar();
+        startObserver();
+    });
+    
+    window.addEventListener('load', function() {
+        forceActiveNavbar();
+        startObserver();
+    });
+    
+    let persistentCheckCount = 0;
+    const persistentInterval = setInterval(function() {
+        if (persistentCheckCount < 50) {
+            if (activeElement && !activeElement.classList.contains('activePage')) {
+                activeElement.classList.add('activePage');
+            }
+            persistentCheckCount++;
+        } else {
+            clearInterval(persistentInterval);
+        }
+    }, 100);
+})();
+
+(function() {
+    'use strict';
+    
+    const categoryButton = document.querySelector('.category-button');
+    const categoryDropdown = document.querySelector('.category-dropdown');
+    const categoryOverlay = document.querySelector('.category-overlay');
+    const categoryCloseBtn = document.querySelector('.category-close-btn');
+    
+    if (!categoryButton || !categoryDropdown || !categoryOverlay) return;
+    
+    let isOpen = false;
+    
+    function toggleCategoryDropdown() {
+        isOpen = !isOpen;
+        
+        if (isOpen) {
+            categoryDropdown.classList.add('show');
+            categoryOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        } else {
+            categoryDropdown.classList.remove('show');
+            categoryOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    }
+    
+    function closeCategoryDropdown() {
+        if (isOpen) {
+            isOpen = false;
+            categoryDropdown.classList.remove('show');
+            categoryOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    }
+    
+    categoryButton.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        toggleCategoryDropdown();
+    });
+    
+    categoryOverlay.addEventListener('click', closeCategoryDropdown);
+    
+    if (categoryCloseBtn) {
+        categoryCloseBtn.addEventListener('click', closeCategoryDropdown);
+    }
+    
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && isOpen) {
+            closeCategoryDropdown();
+        }
+    });
+    
+    document.addEventListener('click', function(e) {
+        if (window.innerWidth > 991 && isOpen && !categoryDropdown.contains(e.target) && !categoryButton.contains(e.target)) {
+            closeCategoryDropdown();
+        }
+    });
+    
+    window.addEventListener('resize', function() {
+        if (window.innerWidth > 991 && isOpen) {
+            closeCategoryDropdown();
+        }
+    });
+})();
+
+(function() {
+    'use strict';
+    
+    const updateCartCount = async () => {
+        try {
+            const response = await fetch('/cart.js');
+            const cart = await response.json();
+            const cartCountElements = document.querySelectorAll('.cart-count, [data-cart-count]');
+            
+            cartCountElements.forEach(element => {
+                element.textContent = cart.item_count;
+            });
+        } catch (error) {
+            console.error('Error updating cart count:', error);
+        }
+    };
+    
+    document.addEventListener('cart:updated', updateCartCount);
+    document.addEventListener('cart:item-added', updateCartCount);
+    document.addEventListener('cart:item-removed', updateCartCount);
+    document.addEventListener('cart:item-changed', updateCartCount);
+    
+    window.updateCartCount = updateCartCount;
+})();
+</script>

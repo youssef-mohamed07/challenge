@@ -1,0 +1,204 @@
+<style>
+  .feature-item {
+    margin-top: 0 !important;
+  }
+
+  .collection-3d-img {
+    max-width: 75%;
+    max-height: 75%;
+    object-fit: contain;
+    border-radius: 0;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    filter: drop-shadow(0px 12px 24px rgba(0, 0, 0, 0.15));
+    transform: perspective(700px) rotateX(5deg) rotateY(5deg) scale(1);
+  }
+
+  .collection-3d-img:hover {
+    transform: perspective(700px) rotateX(0deg) rotateY(0deg) scale(1.08);
+    filter: drop-shadow(0px 20px 40px rgba(0, 0, 0, 0.25));
+  }
+
+  .feature-item__thumb {
+    position: relative;
+    overflow: hidden;
+    border: 3px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+    transition: all 0.4s ease;
+    border-radius: 50%;
+  }
+
+  .feature-item__thumb:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+    border-color: var(--main-600, #3b82f6);
+  }
+
+  .feature-item__thumb::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(147, 51, 234, 0.1) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    border-radius: inherit;
+  }
+
+  .feature-item__thumb:hover::before {
+    opacity: 1;
+  }
+
+  .feature-item__content h6 a {
+    position: relative;
+    transition: color 0.3s ease;
+    font-weight: 600;
+  }
+
+  .feature-item__content h6 a:hover {
+    color: var(--main-600, #3b82f6);
+  }
+
+  .feature-item__content h6 a::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background: var(--main-600, #3b82f6);
+    transition: all 0.3s ease;
+    transform: translateX(-50%);
+  }
+
+  .feature-item__content h6 a:hover::after {
+    width: 100%;
+  }
+
+  .slick-arrow {
+    border: 2px solid rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+  }
+
+  .slick-arrow:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  }
+
+  @media (max-width: 768px) {
+    .feature-item__thumb {
+      width: 150px !important;
+      height: 150px !important;
+      max-width: unset;
+      max-height: unset;
+      border-radius: 50% !important;
+    }
+
+    .collection-3d-img {
+      width: 100% !important;
+      height: 100% !important;
+      border-radius: 0 !important;
+      object-fit: contain !important;
+    }
+  }
+
+  @media (min-width: 769px) and (max-width: 1024px) {
+    .feature-item__thumb {
+      width: 200px !important;
+      height: 200px !important;
+      border-radius: 50% !important;
+    }
+
+    .collection-3d-img {
+      width: 100% !important;
+      height: 100% !important;
+      border-radius: 0 !important;
+      object-fit: contain !important;
+    }
+  }
+</style>
+
+<div class="feature feature-three my-80 overflow-hidden" id="featureSection">
+  <div class="container container-lg m-auto">
+    <div class="section-heading text-center">
+      <h5 style="font-family: 'Poppins', sans-serif;" class="mb-0 text-uppercase fw-bold">Popular Categories</h5>
+      <p class="text-muted mt-12">Discover our most loved product collections</p>
+    </div>
+
+    <div class="position-relative arrow-center">
+      <div class="flex-align">
+        <button type="button" id="feature-item-wrapper-prev" class="slick-prev slick-arrow flex-center rounded-circle bg-white text-xl hover-bg-main-600 hover-text-white transition-1">
+          <i class="ph ph-caret-left"></i>
+        </button>
+        <button type="button" id="feature-item-wrapper-next" class="slick-next slick-arrow flex-center rounded-circle bg-white text-xl hover-bg-main-600 hover-text-white transition-1">
+          <i class="ph ph-caret-right"></i>
+        </button>
+      </div>
+
+      <div class="feature-three-item-wrapper">
+        {% for collection in collections %}
+          <div class="feature-item text-center" data-aos="zoom-in" data-aos-duration="800" data-aos-delay="{{ forloop.index | times: 100 }}">
+            <div class="feature-item__thumb bg-blue-light max-w-260 max-h-260 rounded-circle w-100 h-100 mx-auto">
+              {% assign collection_url = routes.all_products_collection_url %}
+              {% if collection.handle != 'all' %}
+                {% assign collection_url = routes.all_products_collection_url | append: '?collection=' | append: collection.handle %}
+              {% endif %}
+              <a href="{{ collection_url }}" class="w-100 h-100 flex-center text-decoration-none" title="{{ collection.title }}">
+                {% if collection.featured_image %}
+                  <img 
+                    src="{{ collection.featured_image | image_url: width: 400 }}" 
+                    alt="{{ collection.title | escape }}" 
+                    width="400" height="400" 
+                    class="collection-3d-img"
+                    loading="lazy"
+                  >
+                {% else %}
+                  <img 
+                    src="{{ 'placeholder.svg' | asset_url }}" 
+                    alt="{{ collection.title | escape }}" 
+                    width="400" height="400" 
+                    class="collection-3d-img"
+                    loading="lazy"
+                  >
+                {% endif %}
+              </a>
+            </div>
+            <div class="feature-item__content mt-24">
+              <h6 class="text-lg mb-8 fw-semibold">
+                <a href="{{ collection_url }}" class="text-inherit text-decoration-none">{{ collection.title }}</a>
+              </h6>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Categories",
+  "settings": [
+    {
+      "type": "text",
+      "id": "section_title",
+      "label": "Section Title",
+      "default": "Popular Categories"
+    },
+    {
+      "type": "text",
+      "id": "section_subtitle",
+      "label": "Section Subtitle",
+      "default": "Discover our most loved product collections"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Popular Categories"
+    }
+  ]
+}
+{% endschema %}

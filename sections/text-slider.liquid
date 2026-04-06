@@ -1,0 +1,96 @@
+{% stylesheet %}
+.text-slider-section {
+  overflow: hidden;
+  background-color: #121535;
+  padding: 30px 0;
+  position: relative;
+}
+
+.text-slider-track {
+  display: flex;
+  width: max-content;
+  animation: scroll-left 10s linear infinite;
+}
+
+.text-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  color: white;
+  font-weight: bold;
+  font-size: 32px;
+  flex-shrink: 0;
+  white-space: nowrap;
+  margin-right: 80px;
+}
+
+.text-item img {
+  width: 24px;
+  height: 24px;
+}
+
+@keyframes scroll-left {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+{% endstylesheet %}
+
+<div class="text-slider-section mb-80">
+  <div class="text-slider-track">
+    <div class="text-item">
+      <img src="{{ 'star-color.png' | asset_url }}" alt="★" width="24" height="24" />
+      <span>Special Offer</span>
+    </div>
+    <div class="text-item">
+      <img src="{{ 'star-color.png' | asset_url }}" alt="★" width="24" height="24" />
+      <span>Best Selling Offer</span>
+    </div>
+    <div class="text-item">
+      <img src="{{ 'star-color.png' | asset_url }}" alt="★" width="24" height="24" />
+      <span>Limited Offer Sales</span>
+    </div>
+    <div class="text-item">
+      <img src="{{ 'star-color.png' | asset_url }}" alt="★" width="24" height="24" />
+      <span>Spring Collection</span>
+    </div>
+    <div class="text-item">
+      <img src="{{ 'star-color.png' | asset_url }}" alt="★" width="24" height="24" />
+      <span>Hot Deal Products</span>
+    </div>
+
+    <div class="text-item">
+      <img src="{{ 'star-color.png' | asset_url }}" alt="★" width="24" height="24" />
+      <span>Special Offer</span>
+    </div>
+    <div class="text-item">
+      <img src="{{ 'star-color.png' | asset_url }}" alt="★" width="24" height="24" />
+      <span>Best Selling Offer</span>
+    </div>
+    <div class="text-item">
+      <img src="{{ 'star-color.png' | asset_url }}" alt="★" width="24" height="24" />
+      <span>Limited Offer Sales</span>
+    </div>
+    <div class="text-item">
+      <img src="{{ 'star-color.png' | asset_url }}" alt="★" width="24" height="24" />
+      <span>Spring Collection</span>
+    </div>
+    <div class="text-item">
+      <img src="{{ 'star-color.png' | asset_url }}" alt="★" width="24" height="24" />
+      <span>Hot Deal Products</span>
+    </div>
+  </div>
+</div>
+
+{% javascript %}
+const track = document.querySelector('.text-slider-track');
+track.addEventListener('mouseover', () => {
+  track.style.animationPlayState = 'paused';
+});
+track.addEventListener('mouseout', () => {
+  track.style.animationPlayState = 'running';
+});
+{% endjavascript %}

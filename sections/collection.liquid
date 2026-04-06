@@ -1,0 +1,607 @@
+<section class="shop py-80">
+    <div class="container container-lg">
+        <div class="row">
+            <div class="col-lg-3">
+                <div class="shop-sidebar">
+                    <button type="button" class="shop-sidebar__close d-lg-none d-flex w-32 h-32 flex-center border border-gray-100 rounded-circle hover-bg-main-600 position-absolute inset-inline-end-0 me-10 mt-8 hover-text-white hover-border-main-600">
+                        <i class="ph ph-x"></i>
+                    </button>
+                    
+                    <div class="shop-sidebar__box border border-gray-100 rounded-8 p-32 mb-32">
+                        <h6 class="text-xl border-bottom border-gray-100 pb-24 mb-24">{{ 'general.collections' | t }}</h6>
+                        
+                        <div class="max-h-540 scroll-sm" id="collectionFilter">
+                            <div class="mb-16">
+                                <label class="flex-align gap-8 cursor-pointer">
+                                    <input type="checkbox" class="collection-filter-checkbox" data-collection="all" checked>
+                                    <span class="text-gray-900">{{ 'general.all_collections' | t }}</span>
+                                </label>
+                            </div>
+                            
+                            {% for collection_item in collections %}
+                                {% if collection_item.handle != 'all' and collection_item.products_count > 0 %}
+                                    <div class="mb-16">
+                                        <label class="flex-align gap-8 cursor-pointer">
+                                            <input type="checkbox" class="collection-filter-checkbox" data-collection="{{ collection_item.handle }}"{% if collection_item.handle == collection.handle %} checked{% endif %}>
+                                            <span class="text-gray-900">{{ collection_item.title }}</span>
+                                        </label>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="shop-sidebar__box border border-gray-100 rounded-8 p-32 mb-32">
+                        <h6 class="text-xl border-bottom border-gray-100 pb-24 mb-24">{{ 'general.brands' | t }}</h6>
+                        <div class="max-h-540  scroll-sm" id="brandFilter">
+                            <div class="mb-16">
+                                <label class="flex-align gap-8 cursor-pointer">
+                                    <input type="checkbox" class="brand-filter-checkbox" data-brand="all" checked>
+                                    <span class="text-gray-900">{{ 'general.all_brands' | t }}</span>
+                                </label>
+                            </div>
+                            
+                            {% assign product_vendors = '' %}
+                            {% for product in collection.products %}
+                                {% unless product_vendors contains product.vendor %}
+                                    {% if product_vendors == '' %}
+                                        {% assign product_vendors = product.vendor %}
+                                    {% else %}
+                                        {% assign product_vendors = product_vendors | append: ',' | append: product.vendor %}
+                                    {% endif %}
+                                {% endunless %}
+                            {% endfor %}
+                            {% assign product_vendors = product_vendors | split: ',' %}
+                            
+                            {% for vendor in product_vendors %}
+                                {% if vendor != blank %}
+                                    <div class="mb-16">
+                                        <label class="flex-align gap-8 cursor-pointer">
+                                            <input type="checkbox" class="brand-filter-checkbox" data-brand="{{ vendor | handleize }}">
+                                            <span class="text-gray-900">{{ vendor }}</span>
+                                        </label>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="shop-sidebar__box border border-gray-100 rounded-8 p-32 mb-32">
+                        <h6 class="text-xl border-bottom border-gray-100 pb-24 mb-24">{{ 'general.filter_by_price' | t }}</h6>
+                        <div class="custom--range">
+                            <div id="slider-range"></div>
+                            <div class="flex-between flex-wrap gap-8 mt-24">
+                                <div class="custom--range__content flex-align gap-8 flex-1">
+                                    <span class="text-gray-500 text-md flex-shrink-0">{{ 'general.price' | t }}:</span>
+                                    <input type="text" class="custom--range__prices text-neutral-600 text-start text-md fw-medium w-100" id="amount" readonly style="min-width: 120px;">
+                                </div>
+                                <button type="button" class="btn btn-main h-40 flex-align flex-shrink-0">{{ 'general.filter' | t }}</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="shop-sidebar__box">
+                        <img style="border-radius: 10px !important;" src="{{ 'ad.jpg' | asset_url }}" alt="{{ 'general.advertisement' | t }}" width="100%" height="auto">
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-9">
+                <div class="flex-between gap-16 flex-wrap mb-40">
+                    <span class="text-gray-900" id="resultCount">{{ 'general.showing_results' | t: start: 1, end: collection.products_count, total: collection.products_count }}</span>
+                    
+                    <div class="position-relative flex-align gap-16 flex-wrap">
+                        <div class="list-grid-btns flex-align gap-16">
+                            <button type="button" class="w-44 h-44 flex-center border border-main-600 text-white bg-main-600 rounded-6 text-2xl list-btn">
+                                <i class="ph-bold ph-list-dashes"></i>
+                            </button>
+                            <button type="button" class="w-44 h-44 flex-center border border-gray-100 rounded-6 text-2xl grid-btn">
+                                <i class="ph ph-squares-four"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="position-relative text-gray-500 flex-align gap-4 text-14">
+                            <label for="sorting" class="text-inherit flex-shrink-0">{{ 'general.sort_by' | t }}:</label>
+                            <select class="form-control common-input px-14 py-14 text-inherit rounded-6 w-auto" id="sorting">
+                                <option value="featured">{{ 'general.featured' | t }}</option>
+                                <option value="best-selling">{{ 'general.best_selling' | t }}</option>
+                                <option value="title-ascending">{{ 'general.alphabetically_a_z' | t }}</option>
+                                <option value="title-descending">{{ 'general.alphabetically_z_a' | t }}</option>
+                                <option value="price-ascending">{{ 'general.price_low_to_high' | t }}</option>
+                                <option value="price-descending">{{ 'general.price_high_to_low' | t }}</option>
+                                <option value="created-ascending">{{ 'general.date_old_to_new' | t }}</option>
+                                <option value="created-descending">{{ 'general.date_new_to_old' | t }}</option>
+                            </select>
+                        </div>
+                        
+                        <button type="button" class="w-44 h-44 d-lg-none d-flex flex-center border border-gray-100 rounded-6 text-2xl sidebar-btn">
+                            <i class="ph-bold ph-funnel"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="list-grid-wrapper list-view" id="productGrid">
+                    {% for product in collection.products %}
+                        <div class="product-item" 
+                             data-product-type="{{ product.type | handleize }}"
+                             data-product-title="{{ product.title | downcase }}"
+                             data-product-vendor="{{ product.vendor | handleize }}"
+                             data-product-vendor-name="{{ product.vendor | downcase }}"
+                             data-product-tags="{{ product.tags | join: ' ' | handleize }}"
+                             data-product-price="{{ product.price }}"
+                             data-product-collections="{% for coll in product.collections %}{{ coll.handle }}{% unless forloop.last %},{% endunless %}{% endfor %}">
+                            {% render 'product-card', product: product, columns: 4 %}
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <div id="pagination-wrapper" class="mt-40">
+                    <ul class="pagination flex-center flex-wrap gap-16" id="pagination-controls" style="display: none;">
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% stylesheet %}
+.collection-filter-checkbox,
+.brand-filter-checkbox {
+    position: relative;
+    width: 20px;
+    height: 20px;
+    appearance: none;
+    border: 2px solid #e5e7eb;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: white;
+    flex-shrink: 0;
+}
+
+.collection-filter-checkbox:hover,
+.brand-filter-checkbox:hover {
+    border-color: var(--main-600, #1976d2);
+    box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1);
+}
+
+.collection-filter-checkbox:checked,
+.brand-filter-checkbox:checked {
+    background: var(--main-600, #1976d2);
+    border-color: var(--main-600, #1976d2);
+    box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.2);
+}
+
+.collection-filter-checkbox:checked::after,
+.brand-filter-checkbox:checked::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    line-height: 1;
+}
+
+.collection-filter-checkbox:checked + span,
+.brand-filter-checkbox:checked + span {
+    color: var(--main-600, #1976d2);
+    font-weight: 600;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+    padding: 8px 12px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    margin: -8px -12px;
+}
+
+.cursor-pointer:hover {
+    background: rgba(25, 118, 210, 0.05);
+}
+
+.cursor-pointer:hover span {
+    color: var(--main-600, #1976d2);
+}
+
+.cursor-pointer:active {
+    transform: scale(0.98);
+}
+
+.product-item {
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.product-item.hidden {
+    display: none;
+}
+
+.filter-loading {
+    opacity: 0.6;
+    pointer-events: none;
+    position: relative;
+}
+
+.filter-loading::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 40px;
+    height: 40px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid var(--main-600, #1976d2);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    z-index: 10;
+    background: white;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+@keyframes spin {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+.no-results {
+    text-align: center;
+    padding: 60px 20px;
+    color: #666;
+    grid-column: 1 / -1;
+}
+
+.no-results h3 {
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.price-filter-loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.price-filter-loading .btn {
+    position: relative;
+}
+
+.price-filter-loading .btn::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top: 2px solid white;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+{% endstylesheet %}
+
+<script>
+window.collectionTranslations = {
+    noProductsFound: '{{ 'general.no_products_found' | t | escape }}',
+    noProductsMessage: '{{ 'general.no_products_message' | t | escape }}',
+    showingResults: '{{ 'general.showing_results' | t | escape }}'
+};
+
+document.addEventListener('DOMContentLoaded', function() {
+    const sliderRange = document.getElementById('slider-range');
+    const amountInput = document.getElementById('amount');
+    const filterButton = document.querySelector('.custom--range .btn');
+    const collectionCheckboxes = document.querySelectorAll('.collection-filter-checkbox');
+    const brandCheckboxes = document.querySelectorAll('.brand-filter-checkbox');
+    const productGrid = document.getElementById('productGrid');
+    const productItems = document.querySelectorAll('.product-item');
+    const resultCountSpan = document.getElementById('resultCount');
+    const sortSelect = document.getElementById('sorting');
+    const listBtn = document.querySelector('.list-btn');
+    const gridBtn = document.querySelector('.grid-btn');
+    const listGridWrapper = document.querySelector('.list-grid-wrapper');
+    
+    // Get URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const collectionParam = urlParams.get('collection');
+    
+    let selectedCollections = ['all'];
+    let selectedBrands = ['all'];
+    let currentPriceFilter = { min: 0, max: 300 };
+    let currentSortBy = 'featured';
+    
+    // Apply URL collection filter if provided
+    if (collectionParam && collectionParam !== 'all') {
+        selectedCollections = [collectionParam];
+        
+        // Update checkbox states
+        const allCheckbox = document.querySelector('.collection-filter-checkbox[data-collection="all"]');
+        if (allCheckbox) allCheckbox.checked = false;
+        
+        const targetCheckbox = document.querySelector(`.collection-filter-checkbox[data-collection="${collectionParam}"]`);
+        if (targetCheckbox) targetCheckbox.checked = true;
+    }
+    
+    const noResultsDiv = document.createElement('div');
+    noResultsDiv.className = 'no-results hidden col-12';
+    noResultsDiv.innerHTML = `
+        <h3>${window.collectionTranslations.noProductsFound}</h3>
+        <p>${window.collectionTranslations.noProductsMessage}</p>
+    `;
+    productGrid.appendChild(noResultsDiv);
+    
+    if (sliderRange && amountInput) {
+        $(sliderRange).slider({
+            range: true,
+            min: 0,
+            max: 300,
+            values: [0, 300],
+            slide: function(event, ui) {
+                amountInput.value = '$' + ui.values[0] + ' - $' + ui.values[1];
+                currentPriceFilter = { min: ui.values[0], max: ui.values[1] };
+            }
+        });
+        
+        amountInput.value = '$' + $(sliderRange).slider('values', 0) + ' - $' + $(sliderRange).slider('values', 1);
+    }
+    
+    function filterProducts() {
+        let visibleCount = 0;
+        let filteredProducts = [];
+        
+        productItems.forEach(item => {
+            const productVendor = item.dataset.productVendor;
+            const productCollections = item.dataset.productCollections ? item.dataset.productCollections.split(',') : [];
+            const productPrice = parseFloat(item.dataset.productPrice) / 100;
+            
+            const shouldShowByCollection = selectedCollections.includes('all') || 
+                selectedCollections.some(collection => productCollections.includes(collection));
+            
+            const shouldShowByBrand = selectedBrands.includes('all') || 
+                selectedBrands.some(brand => brand === productVendor);
+            
+            const shouldShowByPrice = productPrice >= currentPriceFilter.min && 
+                productPrice <= currentPriceFilter.max;
+            
+            if (shouldShowByCollection && shouldShowByBrand && shouldShowByPrice) {
+                item.classList.remove('hidden');
+                filteredProducts.push(item);
+                visibleCount++;
+            } else {
+                item.classList.add('hidden');
+            }
+        });
+        
+        sortProducts(filteredProducts);
+        
+        if (visibleCount === 0) {
+            noResultsDiv.classList.remove('hidden');
+        } else {
+            noResultsDiv.classList.add('hidden');
+        }
+        
+        return visibleCount;
+    }
+    
+    function sortProducts(products) {
+        if (currentSortBy === 'featured') return;
+        
+        const sortedProducts = products.sort((a, b) => {
+            const aTitle = a.dataset.productTitle;
+            const bTitle = b.dataset.productTitle;
+            const aPrice = parseFloat(a.dataset.productPrice);
+            const bPrice = parseFloat(b.dataset.productPrice);
+            
+            switch (currentSortBy) {
+                case 'title-ascending':
+                    return aTitle.localeCompare(bTitle);
+                case 'title-descending':
+                    return bTitle.localeCompare(aTitle);
+                case 'price-ascending':
+                    return aPrice - bPrice;
+                case 'price-descending':
+                    return bPrice - aPrice;
+                default:
+                    return 0;
+            }
+        });
+        
+        sortedProducts.forEach((product, index) => {
+            productGrid.insertBefore(product, productGrid.children[index]);
+        });
+    }
+    
+    function updateCollectionSelection() {
+        const allCheckbox = document.querySelector('.collection-filter-checkbox[data-collection="all"]');
+        const otherCheckboxes = document.querySelectorAll('.collection-filter-checkbox:not([data-collection="all"])');
+        
+        if (selectedCollections.includes('all')) {
+            otherCheckboxes.forEach(checkbox => {
+                checkbox.checked = false;
+            });
+        } else {
+            allCheckbox.checked = false;
+            
+            if (selectedCollections.length === 0) {
+                selectedCollections = ['all'];
+                allCheckbox.checked = true;
+            }
+        }
+    }
+    
+    function updateBrandSelection() {
+        const allCheckbox = document.querySelector('.brand-filter-checkbox[data-brand="all"]');
+        const otherCheckboxes = document.querySelectorAll('.brand-filter-checkbox:not([data-brand="all"])');
+        
+        if (selectedBrands.includes('all')) {
+            otherCheckboxes.forEach(checkbox => {
+                checkbox.checked = false;
+            });
+        } else {
+            allCheckbox.checked = false;
+            
+            if (selectedBrands.length === 0) {
+                selectedBrands = ['all'];
+                allCheckbox.checked = true;
+            }
+        }
+    }
+    
+    function updateResultCount(count) {
+        if (resultCountSpan) {
+            if (count === 0) {
+                resultCountSpan.textContent = 'No results found';
+            } else {
+                resultCountSpan.textContent = `Showing 1-${count} of ${count} result${count !== 1 ? 's' : ''}`;
+            }
+        }
+    }
+    
+    collectionCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const collectionValue = this.dataset.collection;
+            
+            productGrid.classList.add('filter-loading');
+            
+            if (collectionValue === 'all') {
+                selectedCollections = this.checked ? ['all'] : [];
+            } else {
+                if (this.checked) {
+                    selectedCollections = selectedCollections.filter(collection => collection !== 'all');
+                    if (!selectedCollections.includes(collectionValue)) {
+                        selectedCollections.push(collectionValue);
+                    }
+                } else {
+                    selectedCollections = selectedCollections.filter(collection => collection !== collectionValue);
+                }
+            }
+            
+            updateCollectionSelection();
+            
+            setTimeout(() => {
+                const visibleCount = filterProducts();
+                updateResultCount(visibleCount);
+                productGrid.classList.remove('filter-loading');
+            }, 300);
+        });
+    });
+    
+    brandCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const brandValue = this.dataset.brand;
+            
+            productGrid.classList.add('filter-loading');
+            
+            if (brandValue === 'all') {
+                selectedBrands = this.checked ? ['all'] : [];
+            } else {
+                if (this.checked) {
+                    selectedBrands = selectedBrands.filter(brand => brand !== 'all');
+                    if (!selectedBrands.includes(brandValue)) {
+                        selectedBrands.push(brandValue);
+                    }
+                } else {
+                    selectedBrands = selectedBrands.filter(brand => brand !== brandValue);
+                }
+            }
+            
+            updateBrandSelection();
+            
+            setTimeout(() => {
+                const visibleCount = filterProducts();
+                updateResultCount(visibleCount);
+                productGrid.classList.remove('filter-loading');
+            }, 300);
+        });
+    });
+    
+    if (filterButton) {
+        filterButton.addEventListener('click', function() {
+            this.parentElement.parentElement.classList.add('price-filter-loading');
+            
+            setTimeout(() => {
+                const visibleCount = filterProducts();
+                updateResultCount(visibleCount);
+                this.parentElement.parentElement.classList.remove('price-filter-loading');
+            }, 300);
+        });
+    }
+    
+    if (sortSelect) {
+        sortSelect.addEventListener('change', function() {
+            currentSortBy = this.value;
+            productGrid.classList.add('filter-loading');
+            
+            setTimeout(() => {
+                const visibleCount = filterProducts();
+                updateResultCount(visibleCount);
+                productGrid.classList.remove('filter-loading');
+            }, 300);
+        });
+    }
+    
+    if (listBtn && gridBtn && listGridWrapper) {
+        const isTabletOrBelow = window.innerWidth <= 992;
+        
+        if (isTabletOrBelow) {
+            gridBtn.classList.add('border-main-600', 'text-white', 'bg-main-600');
+            gridBtn.classList.remove('border-gray-100');
+            listBtn.classList.add('border-gray-100');
+            listBtn.classList.remove('border-main-600', 'text-white', 'bg-main-600');
+            listGridWrapper.classList.remove('list-view');
+        } else {
+            listBtn.classList.add('border-main-600', 'text-white', 'bg-main-600');
+            listBtn.classList.remove('border-gray-100');
+            gridBtn.classList.add('border-gray-100');
+            gridBtn.classList.remove('border-main-600', 'text-white', 'bg-main-600');
+            listGridWrapper.classList.add('list-view');
+        }
+        
+        listBtn.addEventListener('click', function() {
+            listBtn.classList.add('border-main-600', 'text-white', 'bg-main-600');
+            listBtn.classList.remove('border-gray-100');
+            gridBtn.classList.add('border-gray-100');
+            gridBtn.classList.remove('border-main-600', 'text-white', 'bg-main-600');
+            listGridWrapper.classList.add('list-view');
+        });
+        
+        gridBtn.addEventListener('click', function() {
+            gridBtn.classList.add('border-main-600', 'text-white', 'bg-main-600');
+            gridBtn.classList.remove('border-gray-100');
+            listBtn.classList.add('border-gray-100');
+            listBtn.classList.remove('border-main-600', 'text-white', 'bg-main-600');
+            listGridWrapper.classList.remove('list-view');
+        });
+    }
+    
+    const initialCount = filterProducts();
+    updateResultCount(initialCount);
+    
+    window.addEventListener('resize', function() {
+        if (listBtn && gridBtn && listGridWrapper) {
+            const isTabletOrBelow = window.innerWidth <= 992;
+            
+            const currentlyListView = listGridWrapper.classList.contains('list-view');
+            const wasDesktop = !currentlyListView;
+            const wasTablet = currentlyListView;
+            
+            if (isTabletOrBelow && wasDesktop) {
+                gridBtn.classList.add('border-main-600', 'text-white', 'bg-main-600');
+                gridBtn.classList.remove('border-gray-100');
+                listBtn.classList.add('border-gray-100');
+                listBtn.classList.remove('border-main-600', 'text-white', 'bg-main-600');
+                listGridWrapper.classList.remove('list-view');
+            } else if (!isTabletOrBelow && wasTablet) {
+                listBtn.classList.add('border-main-600', 'text-white', 'bg-main-600');
+                listBtn.classList.remove('border-gray-100');
+                gridBtn.classList.add('border-gray-100');
+                gridBtn.classList.remove('border-main-600', 'text-white', 'bg-main-600');
+                listGridWrapper.classList.add('list-view');
+            }
+        }
+    });
+});
+</script>

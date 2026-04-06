@@ -1,0 +1,302 @@
+{% stylesheet %}
+.hidden {
+  display: none !important;
+}
+
+.product-badges {
+  top: 12px;
+  left: 12px;
+  z-index: 10;
+  max-width: calc(100% - 24px);
+  gap: 8px;
+}
+
+.product-card__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 26px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.16);
+  letter-spacing: 0.2px;
+}
+
+.product-card__badge--hot {
+  color: #fff;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+}
+
+.product-card__badge--sale {
+  color: #fff;
+  background: linear-gradient(135deg, #f97316, #ea580c);
+}
+
+.product-card__badge--new {
+  color: #fff;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+.product-card__badge--best {
+  color: #fff;
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+}
+
+{% endstylesheet %}
+
+<div class="product-card h-100 p-16 border relative border-gray-100 hover-border-main-600 rounded-16 position-relative transition-2 max-w-xl" data-product-id="{{ product.selected_or_first_available_variant.id }}">
+    <a href="{{ product.url }}" class="product-card__thumb bg-white flex-center rounded-8 position-relative">
+        <div class="product-badges position-absolute inset-inline-start-0 inset-block-start-0 d-flex flex-wrap">
+            {% if product.tags contains 'hot' %}
+                <span class="product-card__badge product-card__badge--hot">HOT</span>
+            {% endif %}
+            {% if product.compare_at_price > product.price %}
+                <span class="product-card__badge product-card__badge--sale">
+                    {{ 'general.sale' | t }} {{ product.compare_at_price | minus: product.price | times: 100.0 | divided_by: product.compare_at_price | round }}%
+                </span>
+            {% endif %}
+            {% if product.tags contains 'new' %}
+                <span class="product-card__badge product-card__badge--new">{{ 'general.new' | t }}</span>
+            {% endif %}
+            {% if product.tags contains 'best-seller' %}
+                <span class="product-card__badge product-card__badge--best">{{ 'general.best_sale' | t }}</span>
+            {% endif %}
+        </div>
+        {% if product.featured_image %}
+            {% render 'image',
+                class: 'w-auto max-w-unset',
+                image: product.featured_image,
+            width: 400
+            %}
+        {% endif %}
+    </a>
+    <div class="product-card__content mt-16">
+        <h6 class="title text-lg fw-semibold mt-12 mb-8">
+            <a href="{{ product.url }}" class="link text-line-2" tabindex="0">{{ product.title | escape }}</a>
+        </h6>
+
+        <div class="flex-align mb-20 mt-16 gap-6">
+            <span class="text-xs fw-medium text-gray-500">4.8</span>
+            <span class="text-xs fw-medium text-warning-600 d-flex"><i class="ph-fill ph-star"></i></span>
+            <span class="text-xs fw-medium text-gray-500">(17k)</span>
+        </div>
+
+        <div class="mt-8">
+            <div class="progress w-100 bg-color-three rounded-pill h-4">
+                <div class="progress-bar bg-main-two-600 rounded-pill" style="width: 35%"></div>
+            </div>
+            <span class="text-gray-900 text-xs fw-medium mt-8">{{ 'general.sold' | t }}: 18/35</span>
+        </div>
+
+        <div class="product-card__price my-20">
+            {% if product.compare_at_price > product.price %}
+                <span class="text-gray-400 text-md fw-semibold text-decoration-line-through">{{ product.compare_at_price | money }}</span>
+            {% endif %}
+            <span class="text-heading text-md fw-semibold">{{ product.price | money }} <span class="text-gray-500 fw-normal">/{{ 'general.qty' | t }}</span></span>
+        </div>
+        <div class="product-action">
+            <button type="button" class="add-to-cart-btn btn bg-gray-50 text-heading hover-bg-main-600 hover-text-white py-11 px-24 rounded-8 flex-center gap-8 fw-medium w-100">
+                <span class="btn-text">{{ 'general.add_to_cart' | t }} <i class="ph ph-shopping-cart"></i></span>
+                <span class="btn-loader hidden"><i class="ph ph-spinner ph-spin"></i> {{ 'products.product.adding_to_cart' | t }}</span>
+            </button>
+            <div class="quantity-counter hidden flex-between w-100 bg-gray-50 rounded-8 py-11 px-16">
+              <button type="button" class="qty-minus text-heading text-lg fw-bold">−</button>
+                <span class="qty-value">1</span>
+              <button type="button" class="qty-plus text-heading text-lg fw-bold">+</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% javascript %}
+(() => {
+  if (window.__productCardCartSyncInit) return;
+  window.__productCardCartSyncInit = true;
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const cards = document.querySelectorAll('.product-card');
+
+    for (const card of cards) {
+      const productId = card.dataset.productId;
+      const addBtn = card.querySelector('.add-to-cart-btn');
+      const btnText = card.querySelector('.btn-text');
+      const btnLoader = card.querySelector('.btn-loader');
+      const counter = card.querySelector('.quantity-counter');
+      const qtyValue = card.querySelector('.qty-value');
+      const plus = card.querySelector('.qty-plus');
+      const minus = card.querySelector('.qty-minus');
+
+      if (!productId || !addBtn || !btnText || !btnLoader || !counter || !qtyValue || !plus || !minus) {
+        continue;
+      }
+
+      let isUpdating = false;
+      let currentItemKey = null;
+
+      const updateVisibility = (quantity) => {
+        const qty = Number(quantity) || 0;
+        if (qty > 0) {
+          qtyValue.textContent = String(qty);
+          addBtn.classList.add('hidden');
+          counter.classList.remove('hidden');
+          return;
+        }
+        addBtn.classList.remove('hidden');
+        counter.classList.add('hidden');
+      };
+
+      const showLoading = () => {
+        btnText.classList.add('hidden');
+        btnLoader.classList.remove('hidden');
+        addBtn.disabled = true;
+      };
+
+      const hideLoading = () => {
+        btnText.classList.remove('hidden');
+        btnLoader.classList.add('hidden');
+        addBtn.disabled = false;
+      };
+
+      const syncQuantityFromCart = async () => {
+        try {
+          const res = await fetch('/cart.js', { credentials: 'same-origin' });
+          if (!res.ok) {
+            return Number(qtyValue.textContent) || 0;
+          }
+          const cart = await res.json();
+          const item = cart.items.find((i) => String(i.id) === String(productId));
+          currentItemKey = item ? item.key : null;
+          const qty = item ? item.quantity : 0;
+          updateVisibility(qty);
+          return qty;
+        } catch (e) {
+          return Number(qtyValue.textContent) || 0;
+        }
+      };
+
+      const changeQuantity = async (nextQty) => {
+        try {
+          if (!currentItemKey) {
+            await syncQuantityFromCart();
+          }
+
+          if (!currentItemKey) {
+            return false;
+          }
+
+          const safeQty = Math.max(Number(nextQty) || 0, 0);
+          const payload = { updates: {} };
+          payload.updates[currentItemKey] = safeQty;
+
+          const response = await fetch('/cart/update.js', {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: {
+              'Content-Type': 'application/json',
+              Accept: 'application/json',
+            },
+            body: JSON.stringify(payload)
+          });
+
+          if (!response.ok) {
+            throw new Error('Cart change failed');
+          }
+
+          const cart = await response.json();
+          const item = cart.items.find((i) => i.key === currentItemKey || String(i.id) === String(productId));
+          currentItemKey = item ? item.key : null;
+          updateVisibility(item ? item.quantity : 0);
+          return true;
+        } catch (e) {
+          await syncQuantityFromCart();
+          return false;
+        }
+      };
+
+      const withLock = async (task) => {
+        if (isUpdating) return;
+        isUpdating = true;
+        addBtn.disabled = true;
+        plus.disabled = true;
+        minus.disabled = true;
+
+        try {
+          await task();
+        } finally {
+          isUpdating = false;
+          addBtn.disabled = false;
+          plus.disabled = false;
+          minus.disabled = false;
+        }
+      };
+
+      syncQuantityFromCart();
+
+      addBtn.addEventListener('click', async (e) => {
+        e.preventDefault();
+
+        await withLock(async () => {
+          showLoading();
+
+          try {
+            const addResponse = await fetch('/cart/add.js', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ id: productId, quantity: 1 })
+            });
+
+            if (!addResponse.ok) {
+              throw new Error('Add to cart failed');
+            }
+
+            await syncQuantityFromCart();
+            document.dispatchEvent(new CustomEvent('cart:updated'));
+            document.dispatchEvent(new CustomEvent('cart:item-added'));
+
+            const drawer = document.getElementById('cartDrawer');
+            const overlay = document.getElementById('cartOverlay');
+            if (typeof window.openCartDrawer === 'function') {
+              window.openCartDrawer();
+            } else if (drawer && overlay) {
+              drawer.classList.remove('translate-x-full');
+              overlay.classList.remove('hidden');
+            } else if (typeof toggleCartDrawer === 'function') {
+              toggleCartDrawer();
+            }
+          } catch (e) {
+            console.error('Error adding item to cart:', e);
+          } finally {
+            hideLoading();
+          }
+        });
+      });
+
+      plus.addEventListener('click', async () => {
+        await withLock(async () => {
+          const nextQty = (Number(qtyValue.textContent) || 0) + 1;
+          const changed = await changeQuantity(nextQty);
+          if (changed) {
+            document.dispatchEvent(new CustomEvent('cart:updated'));
+            document.dispatchEvent(new CustomEvent('cart:item-changed'));
+          }
+        });
+      });
+
+      minus.addEventListener('click', async () => {
+        await withLock(async () => {
+          const nextQty = Math.max((Number(qtyValue.textContent) || 0) - 1, 0);
+          const changed = await changeQuantity(nextQty);
+          if (changed) {
+            document.dispatchEvent(new CustomEvent('cart:updated'));
+            document.dispatchEvent(new CustomEvent('cart:item-changed'));
+          }
+        });
+      });
+    }
+  });
+})();
+{% endjavascript %}

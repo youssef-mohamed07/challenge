@@ -1,0 +1,199 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin language editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+    "general": {
+        "404": "Not found",
+        "article": "Article",
+        "block": "Block",
+        "blog": "Blog",
+        "cart": "Cart",
+        "collection": "Collection",
+        "collections": "Collections",
+        "collection_card": "Collection card",
+        "collections_grid": "Collections grid",
+        "colors": "Colors",
+        "column": "Column",
+        "content": "Content",
+        "custom_section": "Custom section",
+        "fonts": "Fonts",
+        "footer": "Footer",
+        "group": "Group",
+        "header": "Header",
+        "layout": "Layout",
+        "main": "Main",
+        "page": "Page",
+        "password": "Password",
+        "primary": "Primary",
+        "product": "Product",
+        "row": "Row",
+        "search": "Search",
+        "secondary": "Secondary",
+        "section": "Section",
+        "settings": "Settings",
+        "sidebar": "Sidebar",
+        "text": "Text",
+        "theme": "Theme",
+        "typography": "Typography"
+    },
+    "labels": {
+        "alignment": "Alignment",
+        "background": "Background",
+        "foreground": "Foreground",
+        "grid_gap": "Grid spacing",
+        "grid_item_width": "Grid item width",
+        "heading": "Heading",
+        "subheading": "Subheading",
+        "collections_to_show": "Collections to show",
+        "collections_limit": "Collections limit",
+        "enable_carousel": "Enable carousel",
+        "items_per_slide": "Items per slide",
+        "show_collection_count": "Show collection count",
+        "show_collection_description": "Show collection description",
+        "input_corner_radius": "Input corner radius",
+        "layout_direction": "Layout direction",
+        "menu": "Menu",
+        "padding": "Padding",
+        "page_margin": "Page margin",
+        "page_width": "Page width",
+        "show_payment_icons": "Show payment icons",
+        "text_style": "Text style",
+        "text": "Text"
+    },
+    "options": {
+        "alignment": {
+            "left": "Left",
+            "center": "Center",
+            "right": "Right"
+        },
+        "direction": {
+            "horizontal": "Horizontal",
+            "vertical": "Vertical"
+        },
+        "page_width": {
+            "narrow": "Narrow",
+            "wide": "Wide"
+        },
+        "size": {
+            "large": "Large",
+            "small": "Small"
+        },
+        "all_collections": "All collections",
+        "featured_collections": "Featured collections",
+        "text_style": {
+            "title": "Title",
+            "subtitle": "Subtitle",
+            "normal": "Normal text"
+        }
+    },
+    "help": {
+        "items_per_slide": "Number of items to show per slide in carousel mode"
+    },
+    "sections": {
+        "collections": {
+            "settings": {
+                "layout": {
+                    "header": "Layout"
+                },
+                "content": {
+                    "header": "Content"
+                },
+                "card_size": {
+                    "label": "Card size",
+                    "info": "Choose the size of collection cards",
+                    "options": {
+                        "compact": "Compact",
+                        "large": "Large"
+                    }
+                },
+                "spacing": {
+                    "label": "Card spacing",
+                    "info": "Adjust the space between collection cards"
+                },
+                "show_product_count": {
+                    "label": "Show product count",
+                    "info": "Display the number of products in each collection"
+                },
+                "show_description": {
+                    "label": "Show description"
+                }
+            }
+        },
+        "deal": {
+            "name": "Deal of the Day",
+            "settings": {
+                "links_header": {
+                    "content": "Product Links"
+                },
+                "product_link_1": {
+                    "label": "Product link 1"
+                },
+                "product_link_2": {
+                    "label": "Product link 2"
+                },
+                "product_link_3": {
+                    "label": "Product link 3"
+                },
+                "product_link_4": {
+                    "label": "Product link 4"
+                }
+            },
+            "presets": {
+                "name": "Deal of the Day"
+            }
+        },
+        "contact": {
+            "name": "Contact",
+            "settings": {
+                "form_header": {
+                    "content": "Contact Form Settings"
+                },
+                "form_title": {
+                    "label": "Form title"
+                },
+                "submit_button_text": {
+                    "label": "Submit button text"
+                },
+                "contact_info_header": {
+                    "content": "Contact Information"
+                },
+                "contact_info_title": {
+                    "label": "Contact info title"
+                },
+                "phone": {
+                    "label": "Phone number"
+                },
+                "email": {
+                    "label": "Email address"
+                },
+                "address": {
+                    "label": "Address"
+                },
+                "action_buttons_header": {
+                    "content": "Action Buttons"
+                },
+                "support_link": {
+                    "label": "Support link"
+                },
+                "support_text": {
+                    "label": "Support button text"
+                },
+                "direction_link": {
+                    "label": "Direction link"
+                },
+                "direction_text": {
+                    "label": "Direction button text"
+                }
+            },
+            "presets": {
+                "name": "Contact"
+            }
+        }
+    }
+}

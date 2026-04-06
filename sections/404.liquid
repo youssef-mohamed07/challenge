@@ -1,0 +1,62 @@
+<div class="custom-404">
+  <h1>404</h1>
+  <h2>{{ '404.title' | t }}</h2>
+  <p>{{ '404.not_found' | t }}</p>
+  <a href="{{ routes.root_url }}" class="home-button">{{ '404.back_to_home' | t }}</a>
+</div>
+
+<style>
+  .custom-404 {
+    text-align: center;
+    padding: 100px 20px;
+    background: linear-gradient(135deg, #eef2f3, #e0eafc);
+    color: #2c3e50;
+    font-family: 'Helvetica Neue', sans-serif;
+    min-height: 80vh;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .custom-404 h1 {
+    font-size: 100px;
+    margin: 0;
+    font-weight: 600;
+  }
+
+  .custom-404 h2 {
+    font-size: 28px;
+    margin: 20px 0 10px;
+  }
+
+  .custom-404 p {
+    font-size: 16px;
+    color: #7f8c8d;
+    margin-bottom: 30px;
+  }
+
+  .custom-404 .home-button {
+    background-color: #3a6ea5;
+    color: white;
+    padding: 12px 30px;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: 500;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease;
+  }
+
+  .custom-404 .home-button:hover {
+    background-color: #2f5e8c;
+  }
+  .custom-404::after {
+    content: '';
+    position: absolute;
+    bottom: -50px;
+    right: -50px;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(58,110,165,0.2), transparent);
+    border-radius: 50%;
+    z-index: -1;
+  }
+</style>

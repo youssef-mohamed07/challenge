@@ -1,0 +1,433 @@
+<section class="collections-section mb-80">
+  <div class="container container-lg">
+    <div class="collections-header text-center my-60">
+      
+      <h1 class="collections-header__title">
+        {{ 'collections.title' | t }}
+      </h1>
+      
+      <p class="collections-header__subtitle">
+        {{ 'collections.subtitle' | t }}
+      </p>
+    </div>
+
+    <div
+      class="collections-grid {{ section.settings.grid_item_width }}"
+      style="--grid-gap: {{ section.settings.grid_gap }}px"
+    >
+      {% for collection in collections %}
+        {% assign collection_url = routes.all_products_collection_url %}
+        {% if collection.handle != 'all' %}
+          {% assign collection_url = routes.all_products_collection_url | append: '?collection=' | append: collection.handle %}
+        {% endif %}
+        <a class="collection-card" href="{{ collection_url }}" data-aos="fade-up" data-aos-delay="{{ forloop.index0 | times: 100 }}">
+          <div class="collection-card__image-wrapper">
+            {% if collection.featured_image %}
+              {% render 'image',
+                class: 'collection-card__image',
+                image: collection.featured_image,
+                width: 600,
+                height: 600,
+                crop: 'center'
+              %}
+            {% else %}
+              <div class="collection-card__placeholder">
+                <svg width="60" height="60" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M19 7H18V6a4 4 0 0 0-4-4h-4a4 4 0 0 0-4 4v1H5a1 1 0 0 0-1 1v11a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V8a1 1 0 0 0-1-1zM8 6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v1H8V6zm10 13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V9h2v1a1 1 0 0 0 2 0V9h4v1a1 1 0 0 0 2 0V9h2v10z"/>
+                </svg>
+              </div>
+            {% endif %}
+            
+            <div class="collection-card__overlay">
+              {% if section.settings.show_product_count %}
+                <div class="collection-card__badge">
+                  {% if collection.products_count %}
+                    <span class="collection-card__count">{{ collection.products_count }} {{ 'general.products' | t }}</span>
+                  {% endif %}
+                </div>
+              {% endif %}
+              
+              <div class="collection-card__action">
+                <span class="collection-card__button">
+                  {{ 'general.explore' | t }}
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M13.025 1l-2.847 2.828 6.176 6.176h-16.354v3.992h16.354l-6.176 6.176 2.847 2.828 10.975-11z"/>
+                  </svg>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="collection-card__content">
+            <h3 class="collection-card__title">{{ collection.title }}</h3>
+
+            {% if section.settings.show_description and collection.description %}
+              <p class="collection-card__description">{{ collection.description | strip_html | truncatewords: 12 }}</p>
+            {% endif %}
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+
+    {% if collections.size == 0 %}
+      <div class="collections-empty text-center py-80">
+        <div class="collections-empty__icon mb-24">
+          <svg width="80" height="80" viewBox="0 0 24 24" fill="currentColor" opacity="0.3">
+            <path d="M19 7H18V6a4 4 0 0 0-4-4h-4a4 4 0 0 0-4 4v1H5a1 1 0 0 0-1 1v11a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V8a1 1 0 0 0-1-1zM8 6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v1H8V6zm10 13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V9h2v1a1 1 0 0 0 2 0V9h4v1a1 1 0 0 0 2 0V9h2v10z"/>
+          </svg>
+        </div>
+        <h3 class="collections-empty__title mb-16">{{ 'collections.no_collections' | t }}</h3>
+        <p class="collections-empty__text">{{ 'collections.empty_message' | t }}</p>
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+{% stylesheet %}
+  .collections-section {
+    background: transparent;
+    position: relative;
+  }
+
+  .collections-header {
+    position: relative;
+    z-index: 2;
+  }
+
+  .collections-header__decoration {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .collections-header__line {
+    width: 60px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent 0%, var(--main-600) 50%, transparent 100%);
+  }
+
+  .collections-header__icon {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, var(--main-600) 0%, var(--main-two-600) 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    box-shadow: 0 8px 25px rgba(42, 188, 121, 0.3);
+    animation: pulse-glow 2s ease-in-out infinite alternate;
+  }
+
+  @keyframes pulse-glow {
+    0% {
+      box-shadow: 0 8px 25px rgba(42, 188, 121, 0.3);
+      transform: scale(1);
+    }
+    100% {
+      box-shadow: 0 12px 35px rgba(42, 188, 121, 0.5);
+      transform: scale(1.05);
+    }
+  }
+
+  .collections-header__title {
+    font-family: var(--heading-font);
+    font-size: var(--heading-two);
+    font-weight: 700;
+    color: var(--neutral-600);
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, var(--neutral-600) 0%, var(--main-600) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .collections-header__subtitle {
+    font-family: var(--body-font);
+    font-size: var(--font-lg);
+    color: var(--gray-600);
+    max-width: 500px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  .collections-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(var(--collection-card-size), 100%), 1fr));
+    gap: var(--grid-gap);
+    position: relative;
+    z-index: 2;
+  }
+
+  .collections-grid.collections--compact {
+    --collection-card-size: 280px;
+  }
+
+  .collections-grid.collections--full {
+    --collection-card-size: 350px;
+  }
+
+  .collection-card {
+    display: block;
+    text-decoration: none;
+    background: white;
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    border: 1px solid rgba(255, 255, 255, 0.8);
+  }
+
+  .collection-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    text-decoration: none;
+  }
+
+  .collection-card__image-wrapper {
+    position: relative;
+    height: 220px;
+    overflow: hidden;
+    background: #f8f9fa;
+  }
+
+  .collection-card__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .collection-card:hover .collection-card__image {
+    transform: scale(1.1);
+  }
+
+  .collection-card__placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--gray-400);
+    background: #f8f9fa;
+  }
+
+  .collection-card__overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(42, 188, 121, 0.8) 0%, rgba(71, 89, 214, 0.8) 100%);
+    opacity: 0;
+    transition: all 0.4s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 1.5rem;
+  }
+
+  .collection-card:hover .collection-card__overlay {
+    opacity: 1;
+  }
+
+  .collection-card__badge {
+    align-self: flex-start;
+  }
+
+  .collection-card__count {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    color: white;
+    font-size: var(--font-sm);
+    font-weight: 600;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+
+  .collection-card__action {
+    align-self: flex-end;
+    transform: translateY(20px);
+    transition: transform 0.4s ease;
+  }
+
+  .collection-card:hover .collection-card__action {
+    transform: translateY(0);
+  }
+
+  .collection-card__button {
+    background: white;
+    color: var(--main-600);
+    padding: 0.75rem 1.5rem;
+    border-radius: 25px;
+    font-weight: 600;
+    font-size: var(--font-sm);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+  }
+
+  .collection-card__button:hover {
+    transform: translateX(5px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  }
+
+  .collection-card__content {
+    padding: 1.5rem;
+    text-align: center;
+  }
+
+  .collection-card__title {
+    font-family: var(--heading-font);
+    font-size: var(--font-xl);
+    font-weight: 700;
+    color: var(--neutral-600);
+    margin-bottom: 0.75rem;
+    line-height: 1.3;
+    transition: color 0.3s ease;
+  }
+
+  .collection-card:hover .collection-card__title {
+    color: var(--main-600);
+  }
+
+  .collection-card__description {
+    font-family: var(--body-font);
+    font-size: var(--font-sm);
+    color: var(--gray-600);
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  .collections-empty {
+    background: white;
+    border-radius: 24px;
+    padding: 3rem 2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+  }
+
+  .collections-empty__icon {
+    color: var(--gray-300);
+  }
+
+  .collections-empty__title {
+    font-family: var(--heading-font);
+    font-size: var(--font-2xl);
+    font-weight: 700;
+    color: var(--neutral-600);
+  }
+
+  .collections-empty__text {
+    font-family: var(--body-font);
+    color: var(--gray-600);
+    font-size: var(--font-md);
+  }
+
+  @media (max-width: 768px) {
+    .collections-grid.collections--compact {
+      --collection-card-size: 250px;
+    }
+
+    .collections-grid.collections--full {
+      --collection-card-size: 280px;
+    }
+
+    .collections-header__title {
+      font-size: var(--heading-three);
+    }
+
+    .collection-card__image-wrapper {
+      height: 190px;
+    }
+
+    .collections-header__decoration {
+      margin-bottom: 1.5rem;
+    }
+
+    .collections-header__line {
+      width: 40px;
+    }
+
+    .collections-header__icon {
+      width: 40px;
+      height: 40px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .collections-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .collection-card__content {
+      padding: 1.25rem;
+    }
+
+    .collections-empty {
+      padding: 2rem 1.5rem;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:general.collections_grid",
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:sections.collections.settings.layout.header"
+    },
+    {
+      "type": "select",
+      "id": "grid_item_width",
+      "label": "t:sections.collections.settings.card_size.label",
+      "options": [
+        { "value": "collections--compact", "label": "t:sections.collections.settings.card_size.options.compact" },
+        { "value": "collections--full", "label": "t:sections.collections.settings.card_size.options.large" }
+      ],
+      "default": "collections--full",
+      "info": "t:sections.collections.settings.card_size.info"
+    },
+    {
+      "type": "range",
+      "id": "grid_gap",
+      "label": "t:sections.collections.settings.spacing.label",
+      "min": 10,
+      "max": 60,
+      "step": 5,
+      "unit": "px",
+      "default": 30,
+      "info": "t:sections.collections.settings.spacing.info"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.collections.settings.content.header"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_product_count",
+      "label": "t:sections.collections.settings.show_product_count.label",
+      "default": true,
+      "info": "t:sections.collections.settings.show_product_count.info"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_description",
+      "label": "t:sections.collections.settings.show_description.label",
+      "default": true
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:general.collections_grid"
+    }
+  ]
+}
+{% endschema %}

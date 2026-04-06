@@ -1,0 +1,260 @@
+<section class="deals mb-80">
+  <div class="container container-lg">
+    <div class="bg-neutral-600 rounded-48 bg-img overflow-hidden relative" data-background-image="assets/images/bg/pattern-two.png">
+      <img src="{{ 'bg-gym.png' | asset_url }}" alt="Deal of the Day" class="w-100 h-100 blur-[2px] position-absolute top-0 left-0 object-fit-cover" width="1900" height="1300" loading="lazy">
+
+      <div class="row gy-4 align-items-center">
+        <div class="col-xl-6">
+          <div class="position-relative px-24">
+            <ul class="products-group">
+              {% for i in (1..4) %}
+              <li class="products-group__list pt-12">
+                {% assign product_to_show = blank %}
+                {% assign link_key = 'product_link_' | append: i %}
+                {% assign product_key = 'product_' | append: i %}
+                {% assign selected_product = section.settings[product_key] %}
+                {% assign product_link_key = 'product_link_' | append: i %}
+                {% assign product_url = section.settings[product_link_key] %}
+                {% assign trigger_url = blank %}
+
+                {% if selected_product != blank %}
+                  {% assign product_to_show = selected_product %}
+                  {% assign trigger_url = selected_product.url %}
+                {% elsif product_url != blank %}
+                  {% assign product_handle = product_url | split: '/products/' | last | split: '?' | first | split: '#' | first %}
+                  {% assign product_to_show = all_products[product_handle] %}
+                  {% if product_to_show != blank %}
+                    {% assign trigger_url = product_to_show.url %}
+                  {% else %}
+                    {% assign trigger_url = product_url %}
+                  {% endif %}
+                {% endif %}
+
+                {% if product_to_show == blank and collections.all.products.size > 0 %}
+                  {% assign fallback_index = forloop.index0 %}
+                  {% assign fallback_product = collections.all.products[fallback_index] %}
+                  {% if fallback_product == blank %}
+                    {% assign fallback_product = collections.all.products.first %}
+                  {% endif %}
+                  {% if fallback_product != blank %}
+                    {% assign product_to_show = fallback_product %}
+                    {% assign trigger_url = fallback_product.url %}
+                  {% endif %}
+                {% endif %}
+
+                {% if trigger_url == blank %}
+                  {% assign trigger_url = '#' %}
+                {% endif %}
+
+                <a href="{{ trigger_url }}">
+                  <span class="w-32 h-32 border-white rounded-circle flex-center position-relative overflow-hidden border-2 bg-blur cursor-pointer flex-col">
+                    <span class="w-12 h-12 rounded-circle bg-white"></span>
+                  </span>
+                </a>
+                <div class="products-group__card">
+                  {% if product_to_show != blank %}
+                    <img src="{{ product_to_show.featured_image | image_url: width: 200 }}" alt="{{ product_to_show.title }}" class="w-100 rounded-16" width="200" height="200">
+                    <p class="text-dark text-center mt-8 fw-medium">{{ product_to_show.title | truncate: 25 }}</p>
+                    <p class="text-center text-main fw-bold mb-2">{{ product_to_show.price | money }}</p>
+                    {% if product_to_show.compare_at_price > product_to_show.price %}
+                      <p class="text-center text-muted text-sm text-decoration-line-through mb-2">{{ product_to_show.compare_at_price | money }}</p>
+                    {% endif %}
+                    <a href="{{ product_to_show.url }}" class="btn btn-main btn-sm w-100">{{ 'products.product.view_details' | t | default: 'View Details' }}</a>
+                  {% else %}
+                    <div class="text-center text-muted p-3">
+                      <i class="ph ph-package text-4xl mb-2 d-block"></i>
+                      <p class="text-sm">{{ 'sections.deal.no_product_selected' | t | default: 'No product selected' }}</p>
+                    </div>
+                  {% endif %}
+                </div>
+              </li>
+              {% endfor %}
+            </ul>
+
+            <div class="text-end" data-aos="fade-up" data-aos-duration="600">
+              <img src="{{ 'deal-img.png' | asset_url }}" alt="Deal of the Day" class="pe-xxl-5 pe-lg-4 deals__img" width="1900" height="1300" loading="lazy"/>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-xl-6" data-aos="zoom-in">
+          <div class="p-56-px">
+            <div class="text-center border border-white rounded-80 rounded-top-right-0 p-56-px">
+              <div class="p-56-px bg-white rounded-80 rounded-top-right-0">
+                <div class="max-w-472 mx-auto">
+                  <span class="text-white bg-neutral-600 py-8 px-16 rounded-pill fw-medium text-md mb-32 text-uppercase">
+                    {{ 'sections.deal.badge_text' | t }}
+                  </span>
+                  <h3 class="mb-32 fw-medium text-uppercase">
+                    {{ 'sections.deal.title' | t }}
+                  </h3>
+                  <p class="text-neutral-600">
+                    {{ 'sections.deal.description' | t }}
+                  </p>
+                </div>
+
+                <div class="mt-48">
+                  <div class="countdown" id="countdown24">
+                    <ul class="countdown-list style-four flex-center flex-wrap gap-24">
+                      <li>
+                        <span class="days flex-center w-80 h-80 fw-semibold text-white rounded-16 bg-main-two-600 text-28"></span>
+                        <span class="mt-8 text-neutral-600 text-xl text-uppercase fw-medium d-block text-center">Days</span>
+                      </li>
+                      <li>
+                        <span class="hours flex-center w-80 h-80 fw-semibold text-white rounded-16 bg-main-two-600 text-28"></span>
+                        <span class="mt-8 text-neutral-600 text-xl text-uppercase fw-medium d-block text-center">Hour</span>
+                      </li>
+                      <li>
+                        <span class="minutes flex-center w-80 h-80 fw-semibold text-white rounded-16 bg-main-two-600 text-28"></span>
+                        <span class="mt-8 text-neutral-600 text-xl text-uppercase fw-medium d-block text-center">Min</span>
+                      </li>
+                      <li>
+                        <span class="seconds flex-center w-80 h-80 fw-semibold text-white rounded-16 bg-main-two-600 text-28"></span>
+                        <span class="mt-8 text-neutral-600 text-xl text-uppercase fw-medium d-block text-center">Sec</span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+.deals__img {
+  transform: translate(-20px, 70px);
+}
+.products-group__list {
+  position: absolute;
+  left: 15%;
+  bottom: 25%;
+  z-index: 1;
+}
+.products-group__list:nth-child(2) {
+  bottom: 20%;
+  left: 35%;
+}
+.products-group__list:nth-child(3) {
+  bottom: 30%;
+  left: 60%;
+}
+.products-group__list:nth-child(4) {
+  bottom: 20%;
+  left: 75%;
+}
+.products-group__card {
+  position: absolute;
+  bottom: 120%;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px) rotate(-5deg) scale(0.9);
+  margin-bottom: -32px;
+  visibility: hidden;
+  opacity: 0;
+  background: #fff;
+  border-radius: 16px;
+  padding: 16px;
+  width: 200px;
+  min-height: 280px;
+  transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  z-index: 100;
+  text-align: center;
+  border: 2px solid #f0f0f0;
+  backdrop-filter: blur(10px);
+}
+.products-group__card::before {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 8px solid #fff;
+  z-index: 101;
+}
+.products-group__list:hover .products-group__card {
+  visibility: visible;
+  opacity: 1;
+  transform: translateX(-50%) translateY(0) rotate(0deg) scale(1);
+}
+.products-group__card img {
+  border-radius: 12px;
+  object-fit: cover;
+  aspect-ratio: 1;
+}
+.products-group__card .btn {
+  font-size: 12px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+.products-group__card .btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+</style>
+
+{% schema %}
+{
+  "name": "t:sections.deal.name",
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:sections.deal.settings.links_header.content"
+    },
+    {
+      "type": "product",
+      "id": "product_1",
+      "label": "Select Product 1"
+    },
+    {
+      "type": "product",
+      "id": "product_2",
+      "label": "Select Product 2"
+    },
+    {
+      "type": "product",
+      "id": "product_3",
+      "label": "Select Product 3"
+    },
+    {
+      "type": "product",
+      "id": "product_4",
+      "label": "Select Product 4"
+    },
+    {
+      "type": "url",
+      "id": "product_link_1",
+      "label": "Product Link 1"
+    },
+    {
+      "type": "url",
+      "id": "product_link_2",
+      "label": "Product Link 2"
+    },
+    {
+      "type": "url",
+      "id": "product_link_3",
+      "label": "Product Link 3"
+    },
+    {
+      "type": "url",
+      "id": "product_link_4",
+      "label": "Product Link 4"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.deal.presets.name"
+    }
+  ]
+}
+{% endschema %}

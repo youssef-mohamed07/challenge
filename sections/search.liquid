@@ -1,0 +1,590 @@
+{% if search.performed %}
+  {% if search.results_count == 0 %}
+    <div class="search-no-results text-center py-80">
+      <div class="container container-lg">
+        <div class="search-no-results__icon mb-32">
+          <i class="ph ph-magnifying-glass text-6xl text-gray-300"></i>
+        </div>
+        <h2 class="text-2xl fw-semibold text-heading mb-16">{{ 'search.no_results_title' | t }}</h2>
+        <p class="text-lg text-gray-600 mb-32">{{ 'search.no_results_html' | t: terms: search.terms }}</p>
+        <a href="{{ routes.root_url }}" class="btn btn-main">{{ 'general.continue_shopping' | t }}</a>
+      </div>
+    </div>
+  {% else %}
+    <div class="search-page py-80">
+      <div class="container container-lg">
+        <div class="search-header text-center mb-48">
+          <h1 class="text-3xl fw-bold text-heading mb-16">{{ 'search.results_title' | t }}</h1>
+          <p class="text-lg text-gray-600">{{ 'search.results_for_html' | t: terms: search.terms, count: search.results_count }}</p>
+        </div>
+
+        <div class="search-results">
+          {% paginate search.results by 12 %}
+            <div class="search-grid">
+              {% for result in search.results %}
+                <div class="product-card h-100 p-16 border border-gray-100 hover-border-main-600 rounded-16 position-relative transition-2 max-w-xl" data-product-id="{{ result.selected_or_first_available_variant.id }}">
+                  <a href="{{ result.url }}" class="product-card__thumb flex-center rounded-8 position-relative">
+                    {% assign featured_image = result.featured_image | default: result.image %}
+                    {% if featured_image %}
+                      {% render 'image',
+                          class: 'w-auto max-w-unset',
+                          image: featured_image,
+                          width: 400
+                      %}
+                    {% endif %}
+                    
+                    {% if result.object_type == 'product' %}
+                      <div class="product-badges position-absolute inset-inline-start-0 inset-block-start-0 d-flex flex-wrap">
+                        {% if result.tags contains 'hot' %}
+                          <span class="product-card__badge product-card__badge--hot">HOT</span>
+                        {% endif %}
+                        {% if result.compare_at_price > result.price %}
+                          <span class="product-card__badge product-card__badge--sale">
+                            {{ 'general.sale' | t }} {{ result.compare_at_price | minus: result.price | times: 100.0 | divided_by: result.compare_at_price | round }}%
+                          </span>
+                        {% endif %}
+                        {% if result.tags contains 'new' %}
+                          <span class="product-card__badge product-card__badge--new">{{ 'general.new' | t }}</span>
+                        {% endif %}
+                        {% if result.tags contains 'best-seller' %}
+                          <span class="product-card__badge product-card__badge--best">{{ 'general.best_sale' | t }}</span>
+                        {% endif %}
+                      </div>
+                    {% elsif result.object_type == 'article' %}
+                      <div class="product-badges position-absolute inset-inline-start-0 inset-block-start-0 d-flex flex-wrap">
+                        <span class="product-card__badge product-card__badge--best">{{ 'general.article' | t }}</span>
+                      </div>
+                    {% elsif result.object_type == 'page' %}
+                      <div class="product-badges position-absolute inset-inline-start-0 inset-block-start-0 d-flex flex-wrap">
+                        <span class="product-card__badge product-card__badge--info">{{ 'general.page' | t }}</span>
+                      </div>
+                    {% endif %}
+                  </a>
+                  
+                  <div class="product-card__content mt-16">
+                    <h6 class="title text-lg fw-semibold mt-12 mb-8">
+                      <a href="{{ result.url }}" class="link text-line-2" tabindex="0">{{ result.title | escape }}</a>
+                    </h6>
+
+                    {% if result.object_type == 'product' %}
+                      <div class="flex-align mb-20 mt-16 gap-6">
+                        <span class="text-xs fw-medium text-gray-500">4.8</span>
+                        <span class="text-xs fw-medium text-warning-600 d-flex"><i class="ph-fill ph-star"></i></span>
+                        <span class="text-xs fw-medium text-gray-500">(17k)</span>
+                      </div>
+
+                      <div class="mt-8">
+                        <div class="progress w-100 bg-color-three rounded-pill h-4">
+                          <div class="progress-bar bg-main-two-600 rounded-pill" style="width: 35%"></div>
+                        </div>
+                        <span class="text-gray-900 text-xs fw-medium mt-8">{{ 'general.sold' | t }}: 18/35</span>
+                      </div>
+
+                      <div class="product-card__price my-20">
+                        {% if result.compare_at_price > result.price %}
+                          <span class="text-gray-400 text-md fw-semibold text-decoration-line-through">{{ result.compare_at_price | money }}</span>
+                        {% endif %}
+                        <span class="text-heading text-md fw-semibold">{{ result.price | money }} <span class="text-gray-500 fw-normal">/{{ 'general.qty' | t }}</span></span>
+                      </div>
+                      
+                      <div class="product-action">
+                        <button type="button" class="add-to-cart-btn btn bg-gray-50 text-heading hover-bg-main-600 hover-text-white py-11 px-24 rounded-8 flex-center gap-8 fw-medium w-100" data-product-id="{{ result.selected_or_first_available_variant.id }}">
+                          <span class="btn-text">{{ 'general.add_to_cart' | t }} <i class="ph ph-shopping-cart"></i></span>
+                          <span class="btn-loader hidden"><i class="ph ph-spinner ph-spin"></i> {{ 'products.product.adding_to_cart' | t }}</span>
+                        </button>
+                        <div class="quantity-counter hidden flex-between w-100 bg-gray-50 rounded-8 py-11 px-16">
+                          <button type="button" class="qty-minus text-heading text-lg fw-bold">−</button>
+                          <span class="qty-value">1</span>
+                          <button type="button" class="qty-plus text-heading text-lg fw-bold">+</button>
+                        </div>
+                      </div>
+                    {% else %}
+                      <div class="product-card__excerpt mb-20">
+                        {% if result.excerpt %}
+                          <p class="text-gray-600 text-sm line-clamp-3 leading-relaxed">{{ result.excerpt | strip_html | truncate: 120 }}</p>
+                        {% elsif result.content %}
+                          <p class="text-gray-600 text-sm line-clamp-3 leading-relaxed">{{ result.content | strip_html | truncate: 120 }}</p>
+                        {% endif %}
+                      </div>
+                      
+                      <div class="product-card__meta mb-20">
+                        {% if result.object_type == 'article' and result.published_at %}
+                          <span class="text-xs text-gray-500"><i class="ph ph-calendar me-4"></i>{{ result.published_at | date: '%B %d, %Y' }}</span>
+                        {% endif %}
+                      </div>
+                      
+                      <div class="product-card__action">
+                        <a href="{{ result.url }}" class="btn bg-gray-50 text-heading hover-bg-main-600 hover-text-white py-11 px-24 rounded-8 flex-center gap-8 fw-medium w-100">
+                          {{ 'general.read_more' | t }} <i class="ph ph-arrow-right"></i>
+                        </a>
+                      </div>
+                    {% endif %}
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+
+            {% if paginate.pages > 1 %}
+              <div class="search-pagination mt-64">
+                <ul class="pagination flex-center flex-wrap gap-16">
+                  {% if paginate.previous %}
+                    <li class="page-item">
+                      <a class="page-link h-64 w-64 flex-center text-xxl rounded-8 fw-medium text-neutral-600 border border-gray-100 hover-bg-main-100 hover-border-main-300 hover-text-main-600 transition-2" href="{{ paginate.previous.url }}">
+                        <i class="ph-bold ph-arrow-left"></i>
+                      </a>
+                    </li>
+                  {% endif %}
+                  
+                  {% for part in paginate.parts %}
+                    {% if part.is_link %}
+                      <li class="page-item">
+                        <a class="page-link h-64 w-64 flex-center text-md rounded-8 fw-medium text-neutral-600 border border-gray-100 hover-bg-main-100 hover-border-main-300 hover-text-main-600 transition-2" href="{{ part.url }}">{{ part.title }}</a>
+                      </li>
+                    {% else %}
+                      {% if part.title == paginate.current_page %}
+                        <li class="page-item active">
+                          <span class="page-link h-64 w-64 flex-center text-md rounded-8 fw-medium text-white bg-main-600 border border-main-600">{{ part.title }}</span>
+                        </li>
+                      {% else %}
+                        <li class="page-item">
+                          <span class="page-link h-64 w-64 flex-center text-md rounded-8 fw-medium text-neutral-600 border border-gray-100">{{ part.title }}</span>
+                        </li>
+                      {% endif %}
+                    {% endif %}
+                  {% endfor %}
+                  
+                  {% if paginate.next %}
+                    <li class="page-item">
+                      <a class="page-link h-64 w-64 flex-center text-xxl rounded-8 fw-medium text-neutral-600 border border-gray-100 hover-bg-main-100 hover-border-main-300 hover-text-main-600 transition-2" href="{{ paginate.next.url }}">
+                        <i class="ph-bold ph-arrow-right"></i>
+                      </a>
+                    </li>
+                  {% endif %}
+                </ul>
+              </div>
+            {% endif %}
+          {% endpaginate %}
+        </div>
+      </div>
+    </div>
+  {% endif %}
+{% endif %}
+
+{% stylesheet %}
+  .search-page {
+    background-color: #fafafa;
+  }
+  
+  .search-no-results {
+    background-color: #fafafa;
+  }
+  
+  .search-no-results__icon {
+    width: 120px;
+    height: 120px;
+    background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+  }
+  
+  .search-header {
+    position: relative;
+  }
+  
+  .search-header::after {
+    content: '';
+    position: absolute;
+    bottom: -24px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--main-600) 0%, var(--main-400) 100%);
+    border-radius: 2px;
+  }
+  
+  .search-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 32px;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .product-card {
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    transition: all 0.3s ease;
+  }
+
+  .product-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.12);
+  }
+
+  .product-card__thumb {
+    height: 280px;
+    background: #f8f9fa;
+    transition: all 0.3s ease;
+  }
+
+  .product-card:hover .product-card__thumb img {
+    transform: scale(1.05);
+  }
+
+  .product-badges {
+    top: 12px;
+    left: 12px;
+    z-index: 10;
+    max-width: calc(100% - 24px);
+    gap: 8px;
+  }
+
+  .product-card__badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 26px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1;
+    white-space: nowrap;
+    letter-spacing: 0.2px;
+    color: #fff;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.16);
+  }
+
+  .product-card__badge--hot {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+  }
+
+  .product-card__badge--sale {
+    background: linear-gradient(135deg, #f97316, #ea580c);
+  }
+
+  .product-card__badge--new {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+  }
+
+  .product-card__badge--best {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+  }
+
+  .product-card__badge--info {
+    background: linear-gradient(135deg, #06b6d4, #0891b2);
+  }
+
+  .product-card__content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .product-card__price {
+    flex-shrink: 0;
+  }
+
+  .product-action {
+    margin-top: auto;
+  }
+
+  .quantity-counter {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  }
+
+  .qty-minus:hover,
+  .qty-plus:hover {
+    transform: scale(1.1);
+  }
+
+  /* Pagination styles matching shop page */
+  .search-pagination {
+    text-align: center;
+  }
+
+  .search-pagination .pagination {
+    display: inline-flex;
+    gap: 16px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .search-pagination .page-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+
+  .search-pagination .page-link:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  }
+
+  .search-pagination .page-item.active .page-link {
+    box-shadow: 0 4px 16px rgba(35, 148, 190, 0.3);
+  }
+  
+  /* Responsive adjustments */
+  @media screen and (max-width: 1199px) {
+    .search-grid {
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+    }
+  }
+  
+  @media screen and (max-width: 991px) {
+    .search-grid {
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+    
+    .search-result-card__thumb {
+      height: 240px;
+    }
+  }
+  
+  @media screen and (max-width: 767px) {
+    .search-grid {
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+    }
+    
+    .product-card {
+      padding: 16px;
+    }
+    
+    .product-card__thumb {
+      height: 200px;
+    }
+    
+    .search-header h1 {
+      font-size: 1.75rem;
+    }
+  }
+  
+  @media screen and (max-width: 480px) {
+    .search-grid {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+    
+    .search-pagination .pagination {
+      gap: 8px;
+    }
+    
+    .search-pagination .page-link {
+      width: 48px;
+      height: 48px;
+      font-size: 0.875rem;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+(() => {
+  if (window.__searchCardCartSyncInit) return;
+  window.__searchCardCartSyncInit = true;
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const searchCards = document.querySelectorAll('.product-card');
+
+    for (const card of searchCards) {
+      const addBtn = card.querySelector('.add-to-cart-btn');
+      if (!addBtn) continue;
+
+      const productId = addBtn.dataset.productId;
+      const btnText = card.querySelector('.btn-text');
+      const btnLoader = card.querySelector('.btn-loader');
+      const counter = card.querySelector('.quantity-counter');
+      const qtyValue = card.querySelector('.qty-value');
+      const plus = card.querySelector('.qty-plus');
+      const minus = card.querySelector('.qty-minus');
+
+      if (!productId || !btnText || !btnLoader || !counter || !qtyValue || !plus || !minus) {
+        continue;
+      }
+
+      let isUpdating = false;
+      let currentItemKey = null;
+
+      const updateVisibility = (quantity) => {
+        const qty = Number(quantity) || 0;
+        if (qty > 0) {
+          qtyValue.textContent = String(qty);
+          addBtn.classList.add('hidden');
+          counter.classList.remove('hidden');
+          return;
+        }
+        addBtn.classList.remove('hidden');
+        counter.classList.add('hidden');
+      };
+
+      const showLoading = () => {
+        btnText.classList.add('hidden');
+        btnLoader.classList.remove('hidden');
+        addBtn.disabled = true;
+      };
+
+      const hideLoading = () => {
+        btnText.classList.remove('hidden');
+        btnLoader.classList.add('hidden');
+        addBtn.disabled = false;
+      };
+
+      const syncQuantityFromCart = async () => {
+        try {
+          const res = await fetch('/cart.js', { credentials: 'same-origin' });
+          if (!res.ok) {
+            return Number(qtyValue.textContent) || 0;
+          }
+          const cart = await res.json();
+          const item = cart.items.find((i) => String(i.id) === String(productId));
+          currentItemKey = item ? item.key : null;
+          const qty = item ? item.quantity : 0;
+          updateVisibility(qty);
+          return qty;
+        } catch (e) {
+          return Number(qtyValue.textContent) || 0;
+        }
+      };
+
+      const changeQuantity = async (nextQty) => {
+        try {
+          if (!currentItemKey) {
+            await syncQuantityFromCart();
+          }
+
+          if (!currentItemKey) {
+            return false;
+          }
+
+          const safeQty = Math.max(Number(nextQty) || 0, 0);
+          const payload = { updates: {} };
+          payload.updates[currentItemKey] = safeQty;
+
+          const response = await fetch('/cart/update.js', {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: {
+              'Content-Type': 'application/json',
+              Accept: 'application/json',
+            },
+            body: JSON.stringify(payload)
+          });
+
+          if (!response.ok) {
+            throw new Error('Cart change failed');
+          }
+
+          const cart = await response.json();
+          const item = cart.items.find((i) => i.key === currentItemKey || String(i.id) === String(productId));
+          currentItemKey = item ? item.key : null;
+          updateVisibility(item ? item.quantity : 0);
+          return true;
+        } catch (e) {
+          await syncQuantityFromCart();
+          return false;
+        }
+      };
+
+      const withLock = async (task) => {
+        if (isUpdating) return;
+        isUpdating = true;
+        addBtn.disabled = true;
+        plus.disabled = true;
+        minus.disabled = true;
+
+        try {
+          await task();
+        } finally {
+          isUpdating = false;
+          addBtn.disabled = false;
+          plus.disabled = false;
+          minus.disabled = false;
+        }
+      };
+
+      syncQuantityFromCart();
+
+      addBtn.addEventListener('click', async (e) => {
+        e.preventDefault();
+
+        await withLock(async () => {
+          showLoading();
+
+          try {
+            const addResponse = await fetch('/cart/add.js', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ id: productId, quantity: 1 })
+            });
+
+            if (!addResponse.ok) {
+              throw new Error('Add to cart failed');
+            }
+
+            await syncQuantityFromCart();
+            document.dispatchEvent(new CustomEvent('cart:updated'));
+            document.dispatchEvent(new CustomEvent('cart:item-added'));
+
+            if (typeof window.openCartDrawer === 'function') {
+              window.openCartDrawer();
+            } else {
+              const drawer = document.getElementById('cartDrawer');
+              const overlay = document.getElementById('cartOverlay');
+              if (drawer && overlay) {
+                drawer.classList.remove('translate-x-full');
+                overlay.classList.remove('hidden');
+              } else if (typeof toggleCartDrawer === 'function') {
+                toggleCartDrawer();
+              }
+            }
+          } catch (e) {
+            console.error('Error adding item to cart:', e);
+          } finally {
+            hideLoading();
+          }
+        });
+      });
+
+      plus.addEventListener('click', async () => {
+        await withLock(async () => {
+          const nextQty = (Number(qtyValue.textContent) || 0) + 1;
+          const changed = await changeQuantity(nextQty);
+          if (changed) {
+            document.dispatchEvent(new CustomEvent('cart:updated'));
+            document.dispatchEvent(new CustomEvent('cart:item-changed'));
+          }
+        });
+      });
+
+      minus.addEventListener('click', async () => {
+        await withLock(async () => {
+          const nextQty = Math.max((Number(qtyValue.textContent) || 0) - 1, 0);
+          const changed = await changeQuantity(nextQty);
+          if (changed) {
+            document.dispatchEvent(new CustomEvent('cart:updated'));
+            document.dispatchEvent(new CustomEvent('cart:item-changed'));
+          }
+        });
+      });
+    }
+  });
+})();
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "t:general.search",
+  "settings": []
+}
+{% endschema %}
