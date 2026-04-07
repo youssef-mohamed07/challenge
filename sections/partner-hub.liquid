@@ -1,30 +1,35 @@
 {% assign current_page_handle = page.handle | default: '' %}
 {% assign source_collection_handle = section.settings.source_collection %}
-{% assign partner_products = '' | split: ',' %}
+{% assign partner_products = collections.all.products %}
 
-{% if source_collection_handle != blank and collections[source_collection_handle] != blank %}
+{% if section.settings.show_all_products == false and source_collection_handle != blank and collections[source_collection_handle] != blank %}
   {% assign partner_products = collections[source_collection_handle].products %}
-{% endif %}
-
-{% if partner_products.size == 0 %}
-  {% assign hot_products = collections.all.products | where: 'tags', 'hot' %}
-  {% assign discounted_products = '' | split: ',' %}
-  {% for product in collections.all.products %}
-    {% if product.compare_at_price > product.price %}
-      {% assign discounted_products = discounted_products | concat: product %}
-    {% endif %}
-  {% endfor %}
-  {% assign partner_products = hot_products | concat: discounted_products | uniq %}
 {% endif %}
 
 {% if partner_products.size == 0 %}
   {% assign partner_products = collections.all.products %}
 {% endif %}
 
+{% assign partner_categories = '' | split: ',' %}
+{% for product in partner_products %}
+  {% unless section.settings.show_all_products %}
+    {% if forloop.index > section.settings.product_limit %}
+      {% break %}
+    {% endif %}
+  {% endunless %}
+  {% assign partner_category = product.type | strip %}
+  {% if partner_category == blank %}
+    {% assign partner_category = 'Other' %}
+  {% endif %}
+  {% assign partner_category_item = partner_category | split: '|||' %}
+  {% assign partner_categories = partner_categories | concat: partner_category_item %}
+{% endfor %}
+{% assign partner_categories = partner_categories | uniq %}
+
 {% assign partner_mailto_recipient = section.settings.mailto_email | default: shop.email %}
 
 {% if current_page_handle == 'partner-hub' or current_page_handle == 'partner_hub' %}
-<section class="partner-hub py-80">
+<section class="partner-hub py-80" data-catalog-initial-limit="{{ section.settings.catalog_initial_limit | default: 8 }}" data-catalog-load-step="{{ section.settings.catalog_load_more_step | default: 8 }}">
   <div class="container container-lg">
     <div class="partner-hub__intro text-center mb-40">
       <span class="partner-hub__eyebrow">B2B Wholesale Portal</span>
@@ -132,20 +137,20 @@
           <div class="row gy-4">
             <div class="col-md-6 partner-hub__field">
               <label class="partner-hub__label" for="Partner-name">Contact person *</label>
-              <input id="Partner-name" class="common-input px-16" type="text" name="contact[name]" value="{% if form.name %}{{ form.name }}{% elsif customer %}{{ customer.name }}{% endif %}" placeholder="Example: Ahmed Hassan" required>
+              <input id="Partner-name" class="common-input px-16" type="text" name="contact[name]" value="{% if form.name %}{{ form.name }}{% elsif customer %}{{ customer.name }}{% endif %}" placeholder="Example: Pierre Dubois" required>
             </div>
             <div class="col-md-6 partner-hub__field">
               <label class="partner-hub__label" for="Partner-email">Business email *</label>
-              <input id="Partner-email" class="common-input px-16" type="email" name="contact[email]" value="{% if form.email %}{{ form.email }}{% elsif customer %}{{ customer.email }}{% endif %}" placeholder="Example: ahmed@fitzone.com" required>
+              <input id="Partner-email" class="common-input px-16" type="email" name="contact[email]" value="{% if form.email %}{{ form.email }}{% elsif customer %}{{ customer.email }}{% endif %}" placeholder="Example: achats@nutritionparis.fr" required>
             </div>
             <div class="col-md-6 partner-hub__field">
               <label class="partner-hub__label" for="Partner-phone">Phone *</label>
-              <input id="Partner-phone" class="common-input px-16" type="tel" name="contact[phone]" value="{% if form.phone %}{{ form.phone }}{% endif %}" placeholder="Example: +20 10 1234 5678" required>
+              <input id="Partner-phone" class="common-input px-16" type="tel" name="contact[phone]" value="{% if form.phone %}{{ form.phone }}{% endif %}" placeholder="Example: +33 6 12 34 56 78" required>
             </div>
             <div class="col-md-6 partner-hub__field">
               <label class="partner-hub__label" for="Partner-role">Buyer role *</label>
               <select id="Partner-role" class="common-input px-16" name="contact[note][Buyer role]" required>
-                <option value="">Select (e.g. Procurement Manager)</option>
+                <option value="">Select (e.g. Responsable Achats)</option>
                 <option value="Owner">Owner</option>
                 <option value="Procurement Manager">Procurement Manager</option>
                 <option value="Operations Manager">Operations Manager</option>
@@ -155,31 +160,31 @@
             </div>
             <div class="col-md-6 partner-hub__field">
               <label class="partner-hub__label" for="Partner-company-legal">Company legal name *</label>
-              <input id="Partner-company-legal" class="common-input px-16" type="text" name="contact[note][Company legal name]" placeholder="Example: Fit Zone Trading LLC" required>
+              <input id="Partner-company-legal" class="common-input px-16" type="text" name="contact[note][Company legal name]" placeholder="Example: NutriForme Distribution SAS" required>
             </div>
             <div class="col-md-6 partner-hub__field">
               <label class="partner-hub__label" for="Partner-company">Trading brand / store name</label>
-              <input id="Partner-company" class="common-input px-16" type="text" name="contact[note][Trading name]" placeholder="Example: Fit Zone Gym">
+              <input id="Partner-company" class="common-input px-16" type="text" name="contact[note][Trading name]" placeholder="Example: Salle Energie Paris">
             </div>
             <div class="col-md-6 partner-hub__field">
               <label class="partner-hub__label" for="Partner-vat">VAT / Tax ID *</label>
-              <input id="Partner-vat" class="common-input px-16" type="text" name="contact[note][VAT / Tax ID]" placeholder="Example: EG123456789" required>
+              <input id="Partner-vat" class="common-input px-16" type="text" name="contact[note][VAT / Tax ID]" placeholder="Example: FR40303265045" required>
             </div>
             <div class="col-md-6 partner-hub__field">
               <label class="partner-hub__label" for="Partner-registration">Commercial registration no. *</label>
-              <input id="Partner-registration" class="common-input px-16" type="text" name="contact[note][Commercial registration]" placeholder="Example: CR-845921" required>
+              <input id="Partner-registration" class="common-input px-16" type="text" name="contact[note][Commercial registration]" placeholder="Example: RCS Paris B 552 100 554" required>
             </div>
             <div class="col-md-6 partner-hub__field">
               <label class="partner-hub__label" for="Partner-country">Country *</label>
-              <input id="Partner-country" class="common-input px-16" type="text" name="contact[note][Country]" placeholder="Example: Egypt" required>
+              <input id="Partner-country" class="common-input px-16" type="text" name="contact[note][Country]" placeholder="Example: France" required>
             </div>
             <div class="col-md-6 partner-hub__field">
               <label class="partner-hub__label" for="Partner-delivery-countries">Delivery countries *</label>
-              <input id="Partner-delivery-countries" class="common-input px-16" type="text" name="contact[note][Delivery countries]" placeholder="Example: Egypt, Saudi Arabia" required>
+              <input id="Partner-delivery-countries" class="common-input px-16" type="text" name="contact[note][Delivery countries]" placeholder="Example: France, Belgique, Suisse" required>
             </div>
             <div class="col-md-6 partner-hub__field">
               <label class="partner-hub__label" for="Partner-website">Website / Social</label>
-              <input id="Partner-website" class="common-input px-16" type="text" name="contact[note][Website]" placeholder="Example: https://instagram.com/fitzone">
+              <input id="Partner-website" class="common-input px-16" type="text" name="contact[note][Website]" placeholder="Example: https://instagram.com/nutritionparis">
             </div>
           </div>
           <div class="partner-hub__actions mt-24">
@@ -189,11 +194,40 @@
 
             <div class="partner-hub__step" data-step-panel="2">
           <h6 class="partner-hub__section-title">RFQ products and terms</h6>
-          <p class="partner-hub__section-subtitle">Select product lines using wholesale units. Catalog prices are reference only.</p>
+          <p class="partner-hub__section-subtitle">Browse the catalog, filter by category, and select your wholesale mix.</p>
 
-          <div class="partner-hub__products-grid mb-20">
-            {% for product in partner_products limit: section.settings.product_limit %}
-              <article class="partner-product" data-product-card>
+          <div class="partner-hub__catalog-head mb-12">
+            <div>
+              <p class="partner-hub__catalog-title">Product catalog</p>
+              <span class="partner-hub__catalog-count" id="PartnerCatalogCount">Showing {{ partner_products.size }} products</span>
+            </div>
+            <div class="partner-hub__catalog-search-wrap">
+              <label class="visually-hidden" for="PartnerProductSearch">Search products</label>
+              <input id="PartnerProductSearch" class="partner-hub__catalog-search" type="search" placeholder="Search products by name">
+            </div>
+          </div>
+
+          <div class="partner-hub__category-chips mb-16" role="tablist" aria-label="Product categories">
+            <button type="button" class="partner-hub__chip is-active" data-category-filter="all">All categories</button>
+            {% for category in partner_categories %}
+              {% if category != blank %}
+                <button type="button" class="partner-hub__chip" data-category-filter="{{ category | handleize }}">{{ category }}</button>
+              {% endif %}
+            {% endfor %}
+          </div>
+
+          <div class="partner-hub__products-grid mb-12" id="PartnerProductsGrid">
+            {% for product in partner_products %}
+              {% unless section.settings.show_all_products %}
+                {% if forloop.index > section.settings.product_limit %}
+                  {% break %}
+                {% endif %}
+              {% endunless %}
+              {% assign product_category = product.type | strip %}
+              {% if product_category == blank %}
+                {% assign product_category = 'Other' %}
+              {% endif %}
+              <article class="partner-product" data-product-card data-category="{{ product_category | handleize }}" data-title="{{ product.title | downcase | escape }}">
                 <a href="{{ product.url }}" class="partner-product__thumb">
                   {% if product.featured_image %}
                     <img src="{{ product.featured_image | image_url: width: 380, height: 280 }}" alt="{{ product.title | escape }}" width="190" height="140" loading="lazy">
@@ -203,6 +237,18 @@
                 </a>
 
                 <div class="partner-product__body">
+                  <div class="partner-product__meta">
+                    <span class="partner-product__badge">{{ product_category }}</span>
+                    <span class="partner-product__sku">
+                      {% if product.selected_or_first_available_variant.sku != blank %}
+                        SKU: {{ product.selected_or_first_available_variant.sku }}
+                      {% elsif product.vendor != blank %}
+                        {{ product.vendor }}
+                      {% else %}
+                        {{ shop.name }}
+                      {% endif %}
+                    </span>
+                  </div>
                   <h6 class="partner-product__title">
                     <a href="{{ product.url }}">{{ product.title }}</a>
                   </h6>
@@ -237,12 +283,16 @@
               </article>
             {% endfor %}
           </div>
+          <div class="partner-hub__catalog-actions mb-20" id="PartnerCatalogActions">
+            <button type="button" class="partner-hub__btn partner-hub__btn--ghost partner-hub__btn--compact" id="PartnerLoadMoreProducts" hidden>Load more products</button>
+          </div>
+          <p class="partner-hub__empty-state mb-20" id="PartnerProductsEmpty" hidden>No products matched this filter. Try another category or search term.</p>
 
           <div class="row gy-4">
             <div class="col-md-6 partner-hub__field">
               <label class="partner-hub__label" for="Partner-business-type">Business type *</label>
               <select id="Partner-business-type" class="common-input px-16" name="contact[note][Business type]" required>
-                <option value="">Select (e.g. Gym)</option>
+                <option value="">Select (e.g. Salle de sport)</option>
                 <option value="Gym">Gym</option>
                 <option value="Retail Store">Retail Store</option>
                 <option value="Coach / Trainer">Coach / Trainer</option>
@@ -254,7 +304,7 @@
             <div class="col-md-6 partner-hub__field">
               <label class="partner-hub__label" for="Partner-monthly-spend">Expected monthly spend *</label>
               <select id="Partner-monthly-spend" class="common-input px-16" name="contact[note][Expected monthly spend]" required>
-                <option value="">Select (e.g. 2,000 - 10,000)</option>
+                <option value="">Select (e.g. 2 000 - 10 000 EUR)</option>
                 <option value="Under 2,000">Under 2,000</option>
                 <option value="2,000 - 10,000">2,000 - 10,000</option>
                 <option value="10,000 - 50,000">10,000 - 50,000</option>
@@ -264,7 +314,7 @@
             <div class="col-md-6 partner-hub__field">
               <label class="partner-hub__label" for="Partner-payment-terms">Preferred payment terms *</label>
               <select id="Partner-payment-terms" class="common-input px-16" name="contact[note][Payment terms]" required>
-                <option value="">Select (e.g. Net 30)</option>
+                <option value="">Select (e.g. 30 jours fin de mois)</option>
                 <option value="Prepaid">Prepaid</option>
                 <option value="Net 15">Net 15</option>
                 <option value="Net 30">Net 30</option>
@@ -274,7 +324,7 @@
             <div class="col-md-6 partner-hub__field">
               <label class="partner-hub__label" for="Partner-payment-method">Preferred payment method *</label>
               <select id="Partner-payment-method" class="common-input px-16" name="contact[note][Payment method]" required>
-                <option value="">Select (e.g. Bank transfer)</option>
+                <option value="">Select (e.g. Virement bancaire)</option>
                 <option value="Bank transfer">Bank transfer</option>
                 <option value="Card">Card</option>
                 <option value="Cash on delivery">Cash on delivery</option>
@@ -284,7 +334,7 @@
             <div class="col-md-6 partner-hub__field">
               <label class="partner-hub__label" for="Partner-shipping-terms">Shipping terms *</label>
               <select id="Partner-shipping-terms" class="common-input px-16" name="contact[note][Shipping terms]" required>
-                <option value="">Select (e.g. DDP)</option>
+                <option value="">Select (e.g. DAP Paris)</option>
                 <option value="EXW">EXW</option>
                 <option value="FOB">FOB</option>
                 <option value="CIF">CIF</option>
@@ -293,7 +343,7 @@
             </div>
             <div class="col-md-6 partner-hub__field">
               <label class="partner-hub__label" for="Partner-destination">Delivery city / port *</label>
-              <input id="Partner-destination" class="common-input px-16" type="text" name="contact[note][Delivery destination]" placeholder="Example: Jeddah port" required>
+              <input id="Partner-destination" class="common-input px-16" type="text" name="contact[note][Delivery destination]" placeholder="Example: Port du Havre" required>
             </div>
             <div class="col-12 partner-hub__field">
               <label class="partner-hub__label" for="Partner-volume">Expected monthly volume</label>
@@ -306,7 +356,7 @@
             </div>
             <div class="col-12 partner-hub__field">
               <label class="partner-hub__label" for="Partner-custom-products">Custom product notes</label>
-              <textarea id="Partner-custom-products" class="common-input px-16" rows="4" name="contact[note][Custom products]" placeholder="Example: 40 whey vanilla + 20 creatine lemon"></textarea>
+              <textarea id="Partner-custom-products" class="common-input px-16" rows="4" name="contact[note][Custom products]" placeholder="Example: 40 whey vanille + 20 creatine citron"></textarea>
             </div>
           </div>
 
@@ -322,7 +372,7 @@
             <div class="col-md-6 partner-hub__field">
               <label class="partner-hub__label" for="Partner-budget">Target PO value</label>
               <select id="Partner-budget" class="common-input px-16" name="contact[note][Budget range]">
-                <option value="Not specified">Not specified (e.g. 500 - 2,000)</option>
+                <option value="Not specified">Not specified (e.g. 500 - 2 000 EUR)</option>
                 <option value="Under 500">Under 500</option>
                 <option value="500 - 2,000">500 - 2,000</option>
                 <option value="2,000 - 10,000">2,000 - 10,000</option>
@@ -332,7 +382,7 @@
             <div class="col-md-6 partner-hub__field">
               <label class="partner-hub__label" for="Partner-timeframe">Preferred timeframe *</label>
               <select id="Partner-timeframe" class="common-input px-16" name="contact[note][Timeframe]" required>
-                <option value="">Select (e.g. Within 2 weeks)</option>
+                <option value="">Select (e.g. Sous 2 semaines)</option>
                 <option value="ASAP">ASAP</option>
                 <option value="Within 2 weeks">Within 2 weeks</option>
                 <option value="Within 1 month">Within 1 month</option>
@@ -341,7 +391,7 @@
             </div>
             <div class="col-12 partner-hub__field">
               <label class="partner-hub__label" for="Partner-message">Additional details *</label>
-              <textarea id="Partner-message" class="common-input px-16" rows="5" name="contact[body]" placeholder="Example: Need weekly delivery to Cairo, mixed flavors, private label option." required></textarea>
+              <textarea id="Partner-message" class="common-input px-16" rows="5" name="contact[body]" placeholder="Example: Livraison hebdomadaire a Lyon, saveurs mixtes, option marque blanche." required></textarea>
             </div>
             <div class="col-12 partner-hub__field partner-hub__field--inline">
               <label class="partner-hub__checkline" for="Partner-trade-terms">
@@ -762,10 +812,97 @@
   resize: vertical;
 }
 
+.partner-hub__catalog-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.partner-hub__catalog-title {
+  margin: 0;
+  color: #183b52;
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.35px;
+}
+
+.partner-hub__catalog-count {
+  color: #4e687c;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.partner-hub__catalog-search-wrap {
+  width: min(100%, 280px);
+}
+
+.partner-hub__catalog-search {
+  width: 100%;
+  min-height: 40px;
+  border: 1px solid #cfe1ee;
+  border-radius: 10px;
+  padding: 8px 12px;
+  color: #1f3f55;
+  background: #f7fbff;
+}
+
+.partner-hub__catalog-search:focus {
+  outline: none;
+  border-color: #118ab2;
+  box-shadow: 0 0 0 3px rgba(17, 138, 178, 0.12);
+}
+
+.partner-hub__category-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.partner-hub__chip {
+  border: 1px solid #cde0ee;
+  background: #f6fbff;
+  color: #264f66;
+  min-height: 34px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  transition: all 0.2s ease;
+}
+
+.partner-hub__chip:hover {
+  border-color: #9fc5da;
+  background: #eef7ff;
+}
+
+.partner-hub__chip.is-active {
+  border-color: #118ab2;
+  background: rgba(17, 138, 178, 0.14);
+  color: #0b5f7c;
+}
+
+.partner-hub__empty-state {
+  margin: 0;
+  border: 1px dashed #c7dceb;
+  border-radius: 12px;
+  background: #f7fbff;
+  color: #4b687d;
+  font-size: 13px;
+  padding: 10px 12px;
+}
+
+.partner-hub__catalog-actions {
+  display: flex;
+  justify-content: center;
+}
+
 .partner-hub__products-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 14px;
 }
 
 .partner-product {
@@ -807,11 +944,42 @@
 .partner-product__body {
   padding: 12px;
   display: grid;
+  gap: 10px;
+}
+
+.partner-product__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   gap: 8px;
 }
 
+.partner-product__badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: #e9f6ff;
+  color: #0f6f8f;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.partner-product__sku {
+  color: #6d8294;
+  font-size: 11px;
+  font-weight: 700;
+  max-width: 55%;
+  text-align: end;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .partner-product__title {
-  font-size: 15px;
+  font-size: 14px;
+  line-height: 1.35;
   margin: 0;
   min-height: 40px;
 }
@@ -836,7 +1004,7 @@
 
 .partner-product__controls {
   display: grid;
-  grid-template-columns: auto minmax(88px, 1fr) minmax(68px, auto);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   align-items: end;
   gap: 8px;
 }
@@ -845,8 +1013,13 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  grid-column: 1 / -1;
+  border: 1px solid #d6e6f3;
+  border-radius: 10px;
+  background: #f7fbff;
+  padding: 6px 8px;
   color: #16364a;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
 }
 
@@ -892,7 +1065,7 @@
 }
 
 .partner-product-qty {
-  width: 58px;
+  width: 100%;
   min-height: 34px;
   border: 1px solid #d2e0ed;
   border-radius: 9px;
@@ -905,6 +1078,10 @@
 .partner-product-qty:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+.partner-product.is-hidden {
+  display: none;
 }
 
 .partner-hub__summary {
@@ -967,6 +1144,13 @@
   font-weight: 800;
   letter-spacing: 0.25px;
   transition: all 0.2s ease;
+}
+
+.partner-hub__btn--compact {
+  min-height: 40px;
+  min-width: 0;
+  padding: 8px 14px;
+  font-size: 13px;
 }
 
 .partner-hub__btn--primary {
@@ -1061,6 +1245,20 @@
     flex-direction: column;
   }
 
+  .partner-hub__catalog-head {
+    align-items: stretch;
+  }
+
+  .partner-hub__catalog-search-wrap {
+    width: 100%;
+  }
+
+  .partner-hub__category-chips {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+
   .partner-product__controls {
     grid-template-columns: 1fr 1fr;
   }
@@ -1100,9 +1298,20 @@
     const summaryBox = form.querySelector('#PartnerSummary p');
     const checkboxes = Array.from(form.querySelectorAll('.partner-product-check'));
     const unitSelects = Array.from(form.querySelectorAll('.partner-product-unit'));
+    const productCards = Array.from(form.querySelectorAll('[data-product-card]'));
+    const categoryButtons = Array.from(form.querySelectorAll('[data-category-filter]'));
+    const searchInput = form.querySelector('#PartnerProductSearch');
+    const catalogCount = form.querySelector('#PartnerCatalogCount');
+    const emptyState = form.querySelector('#PartnerProductsEmpty');
+    const loadMoreButton = form.querySelector('#PartnerLoadMoreProducts');
+    const catalogInitialLimit = Math.max(Number(root.dataset.catalogInitialLimit) || 8, 1);
+    const catalogLoadStep = Math.max(Number(root.dataset.catalogLoadStep) || 8, 1);
+    let visibleProductsLimit = catalogInitialLimit;
+    let activeCategory = 'all';
 
     const getStepByNumber = (stepNumber) => steps.find((step) => Number(step.dataset.stepPanel) === stepNumber);
     const getCurrentStepNumber = () => Number(form.dataset.currentStep || 1);
+    const normalizeText = (value = '') => value.toString().toLowerCase().trim();
 
     const setError = (message = '') => {
       if (!errorBox) return;
@@ -1113,6 +1322,50 @@
       }
       errorBox.hidden = false;
       errorBox.textContent = message;
+    };
+
+    const filterProducts = ({ resetLimit = false } = {}) => {
+      if (resetLimit) {
+        visibleProductsLimit = catalogInitialLimit;
+      }
+
+      const searchTerm = normalizeText(searchInput ? searchInput.value : '');
+      const matchedCards = [];
+
+      productCards.forEach((card) => {
+        const cardCategory = normalizeText(card.dataset.category || 'other');
+        const cardTitle = normalizeText(card.dataset.title || '');
+        const matchesCategory = activeCategory === 'all' || cardCategory === activeCategory;
+        const matchesSearch = !searchTerm || cardTitle.includes(searchTerm);
+        if (matchesCategory && matchesSearch) {
+          matchedCards.push(card);
+        }
+      });
+
+      productCards.forEach((card) => {
+        card.classList.add('is-hidden');
+      });
+
+      matchedCards.forEach((card, index) => {
+        card.classList.toggle('is-hidden', index >= visibleProductsLimit);
+      });
+
+      const visibleCount = Math.min(matchedCards.length, visibleProductsLimit);
+      if (catalogCount) {
+        catalogCount.textContent = `Showing ${visibleCount} of ${matchedCards.length} products`;
+      }
+
+      if (emptyState) {
+        emptyState.hidden = matchedCards.length > 0;
+      }
+
+      if (loadMoreButton) {
+        const remainingCount = matchedCards.length - visibleCount;
+        loadMoreButton.hidden = remainingCount <= 0;
+        if (remainingCount > 0) {
+          loadMoreButton.textContent = `Load more products (${remainingCount} more)`;
+        }
+      }
     };
 
     const setStep = (stepNumber) => {
@@ -1363,6 +1616,29 @@
       }
     });
 
+    categoryButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        activeCategory = normalizeText(button.dataset.categoryFilter || 'all');
+        categoryButtons.forEach((item) => {
+          item.classList.toggle('is-active', item === button);
+        });
+        filterProducts({ resetLimit: true });
+      });
+    });
+
+    if (searchInput) {
+      searchInput.addEventListener('input', () => {
+        filterProducts({ resetLimit: true });
+      });
+    }
+
+    if (loadMoreButton) {
+      loadMoreButton.addEventListener('click', () => {
+        visibleProductsLimit += catalogLoadStep;
+        filterProducts();
+      });
+    }
+
     nextButtons.forEach((button) => {
       button.addEventListener('click', () => {
         const currentStepElement = button.closest('[data-step-panel]');
@@ -1409,6 +1685,7 @@
       window.location.href = mailtoLink;
     });
 
+    filterProducts({ resetLimit: true });
     setStep(1);
   });
 })();
@@ -1466,13 +1743,38 @@
       "label": "Source collection for product picks"
     },
     {
+      "type": "checkbox",
+      "id": "show_all_products",
+      "label": "Show all store products",
+      "default": true,
+      "info": "Enable to display every product in the RFQ catalog. Disable to use source collection and product limit."
+    },
+    {
       "type": "range",
       "id": "product_limit",
-      "label": "Number of products to show",
+      "label": "Number of products to show when all products is disabled",
       "min": 4,
-      "max": 12,
+      "max": 24,
       "step": 1,
-      "default": 6
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "catalog_initial_limit",
+      "label": "Initial products to show",
+      "min": 4,
+      "max": 24,
+      "step": 1,
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "catalog_load_more_step",
+      "label": "Products to load per click",
+      "min": 4,
+      "max": 24,
+      "step": 1,
+      "default": 8
     },
     {
       "type": "text",
