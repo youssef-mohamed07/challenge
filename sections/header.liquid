@@ -240,6 +240,37 @@ body .nav-menu__item[data-force-active="true"] > a {
 {% assign our_brands_title = 'Our Brands' %}
 {% assign partner_hub_title = 'Partner Hub' %}
 
+{% assign has_hot_deals_link = false %}
+{% assign has_our_brands_link = false %}
+{% assign has_partner_hub_link = false %}
+{% for link in linklists.main-menu.links %}
+    {% assign link_path = link.url | downcase %}
+    {% if link_path contains '/pages/hot-deals' %}
+        {% assign has_hot_deals_link = true %}
+    {% endif %}
+    {% if link_path contains '/pages/our-brands' %}
+        {% assign has_our_brands_link = true %}
+    {% endif %}
+    {% if link_path contains '/pages/partner_hub' or link_path contains '/pages/partner-hub' %}
+        {% assign has_partner_hub_link = true %}
+    {% endif %}
+
+    {% if link.links.size > 0 %}
+        {% for sublink in link.links %}
+            {% assign sublink_path = sublink.url | downcase %}
+            {% if sublink_path contains '/pages/hot-deals' %}
+                {% assign has_hot_deals_link = true %}
+            {% endif %}
+            {% if sublink_path contains '/pages/our-brands' %}
+                {% assign has_our_brands_link = true %}
+            {% endif %}
+            {% if sublink_path contains '/pages/partner_hub' or sublink_path contains '/pages/partner-hub' %}
+                {% assign has_partner_hub_link = true %}
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+{% endfor %}
+
 <div class="mobile-menu scroll-sm d-lg-none d-block">
     <button type="button" class="close-button"><i class="ph ph-x"></i></button>
     <div class="mobile-menu__inner">
@@ -263,17 +294,23 @@ body .nav-menu__item[data-force-active="true"] > a {
                     </li>
                 {% endfor %}
 
-                <li class="on-hover-item nav-menu__item{% if request.path contains '/pages/hot-deals' %} activePage{% endif %}">
-                    <a href="{{ hot_deals_url }}" class="nav-menu__link text-heading-two">{{ hot_deals_title }}</a>
-                </li>
+                {% unless has_hot_deals_link %}
+                    <li class="on-hover-item nav-menu__item{% if request.path contains '/pages/hot-deals' %} activePage{% endif %}">
+                        <a href="{{ hot_deals_url }}" class="nav-menu__link text-heading-two">{{ hot_deals_title }}</a>
+                    </li>
+                {% endunless %}
 
-                <li class="on-hover-item nav-menu__item{% if request.path contains '/pages/our-brands' %} activePage{% endif %}">
-                    <a href="{{ our_brands_url }}" class="nav-menu__link text-heading-two">{{ our_brands_title }}</a>
-                </li>
+                {% unless has_our_brands_link %}
+                    <li class="on-hover-item nav-menu__item{% if request.path contains '/pages/our-brands' %} activePage{% endif %}">
+                        <a href="{{ our_brands_url }}" class="nav-menu__link text-heading-two">{{ our_brands_title }}</a>
+                    </li>
+                {% endunless %}
 
-                <li class="on-hover-item nav-menu__item{% if request.path contains '/pages/partner_hub' or request.path contains '/pages/partner-hub' %} activePage{% endif %}">
-                    <a href="{{ partner_hub_url }}" class="nav-menu__link text-heading-two">{{ partner_hub_title }}</a>
-                </li>
+                {% unless has_partner_hub_link %}
+                    <li class="on-hover-item nav-menu__item{% if request.path contains '/pages/partner_hub' or request.path contains '/pages/partner-hub' %} activePage{% endif %}">
+                        <a href="{{ partner_hub_url }}" class="nav-menu__link text-heading-two">{{ partner_hub_title }}</a>
+                    </li>
+                {% endunless %}
             </ul>
         </div>
     </div>
@@ -377,17 +414,23 @@ body .nav-menu__item[data-force-active="true"] > a {
                             </li>
                         {% endfor %}
 
-                        <li class="on-hover-item nav-menu__item{% if request.path contains '/pages/hot-deals' %} activePage{% endif %}">
-                            <a href="{{ hot_deals_url }}" class="nav-menu__link text-heading-two">{{ hot_deals_title }}</a>
-                        </li>
+                        {% unless has_hot_deals_link %}
+                            <li class="on-hover-item nav-menu__item{% if request.path contains '/pages/hot-deals' %} activePage{% endif %}">
+                                <a href="{{ hot_deals_url }}" class="nav-menu__link text-heading-two">{{ hot_deals_title }}</a>
+                            </li>
+                        {% endunless %}
 
-                        <li class="on-hover-item nav-menu__item{% if request.path contains '/pages/our-brands' %} activePage{% endif %}">
-                            <a href="{{ our_brands_url }}" class="nav-menu__link text-heading-two">{{ our_brands_title }}</a>
-                        </li>
+                        {% unless has_our_brands_link %}
+                            <li class="on-hover-item nav-menu__item{% if request.path contains '/pages/our-brands' %} activePage{% endif %}">
+                                <a href="{{ our_brands_url }}" class="nav-menu__link text-heading-two">{{ our_brands_title }}</a>
+                            </li>
+                        {% endunless %}
 
-                        <li class="on-hover-item nav-menu__item{% if request.path contains '/pages/partner_hub' or request.path contains '/pages/partner-hub' %} activePage{% endif %}">
-                            <a href="{{ partner_hub_url }}" class="nav-menu__link text-heading-two">{{ partner_hub_title }}</a>
-                        </li>
+                        {% unless has_partner_hub_link %}
+                            <li class="on-hover-item nav-menu__item{% if request.path contains '/pages/partner_hub' or request.path contains '/pages/partner-hub' %} activePage{% endif %}">
+                                <a href="{{ partner_hub_url }}" class="nav-menu__link text-heading-two">{{ partner_hub_title }}</a>
+                            </li>
+                        {% endunless %}
                     </ul>
                 </div>
             </div>
