@@ -33,6 +33,10 @@
     border-color: var(--main-600, #3b82f6);
   }
 
+  .feature-item:hover .feature-item__thumb .collection-3d-img {
+    transform: perspective(700px) rotateX(0deg) rotateY(0deg) scale(1.04);
+  }
+
   .feature-item__thumb::before {
     content: '';
     position: absolute;
@@ -146,7 +150,7 @@
               {% if collection.handle != 'all' %}
                 {% assign collection_url = routes.all_products_collection_url | append: '?collection=' | append: collection.handle %}
               {% endif %}
-              <a href="{{ collection_url }}" class="w-100 h-100 flex-center text-decoration-none" title="{{ collection.title }}">
+              <a href="{{ collection_url }}" class="w-100 h-100 flex-center text-decoration-none" aria-label="{{ collection.title | escape }}">
                 {% if collection.featured_image %}
                   <img 
                     src="{{ collection.featured_image | image_url: width: 400 }}" 

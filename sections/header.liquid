@@ -230,11 +230,11 @@ body .nav-menu__item[data-force-active="true"] > a {
 {% assign site_logo_asset = 'logo.webp' | asset_url %}
 {% assign hot_deals_url = routes.root_url | append: 'pages/hot-deals' %}
 {% assign our_brands_url = routes.root_url | append: 'pages/our-brands' %}
-{% assign partner_hub_page = pages['partner_hub'] %}
+{% assign partner_hub_page = pages['partner-hub'] %}
 {% if partner_hub_page == blank %}
-    {% assign partner_hub_page = pages['partner-hub'] %}
+    {% assign partner_hub_page = pages['partner_hub'] %}
 {% endif %}
-{% assign partner_hub_url_fallback = routes.root_url | append: 'pages/partner_hub' %}
+{% assign partner_hub_url_fallback = routes.root_url | append: 'pages/partner-hub' %}
 {% assign partner_hub_url = partner_hub_page.url | default: partner_hub_url_fallback %}
 {% assign hot_deals_title = 'Hot Deals' %}
 {% assign our_brands_title = 'Our Brands' %}
